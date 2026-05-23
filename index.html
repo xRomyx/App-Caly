@@ -272,8 +272,12 @@
 
                   {filteredTasks.map(task => (
                     <div key={task.id} className="task-card">
-                      <div style={{ textAlign: 'left', color: '#333' }}>
-                        <h3 style={{ margin: '0', fontSize: '18px', color: '#333', display: 'flex', alignItems: 'center', gap: '8px' }}><span>{task.icon}</span> <span>{task.name}</span></h3>
+                      <div style={{ textAlign: 'left', color: '#333', flexGrow: 1, cursor: 'pointer' }} onClick={() => speak(task.name)}>
+                        <h3 style={{ margin: '0', fontSize: '18px', color: '#333', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span>{task.icon}</span> 
+                          <span>{task.name}</span>
+                          <span style={{ fontSize: '14px', color: '#ff69b4' }}>🔊</span>
+                        </h3>
                         <p style={{ margin: '5px 0 0 0', color: '#888', fontSize: '14px' }}>+{task.points} {task.points > 1 ? 'étoiles' : 'étoile'}</p>
                       </div>
                       <button onClick={() => requestTaskValidation(task.id)} disabled={task.done || task.pending} className="btn-valider" style={{ background: task.done ? '#4caf50' : task.pending ? '#ff9800' : '#ff69b4' }}>
