@@ -4,16 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Princesse Caly ✨</title>
-    <!-- Chargement de React et Babel pour que tout fonctionne dans un seul fichier -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
         body { font-family: sans-serif; margin: 0; padding: 20px; background: #fff0f5; min-height: 100vh; }
-        .btn-mode { padding: 10px 20px; fontSize: 16px; border-radius: 20px; border: 1px solid #ffb6c1; background: #fff; cursor: pointer; font-weight: bold; }
+        .btn-mode { padding: 10px 20px; font-size: 16px; border-radius: 20px; border: 1px solid #ffb6c1; background: #fff; cursor: pointer; font-weight: bold; }
         .card { background: #fff; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 25px; }
         .task-card { background: #fff; border-radius: 15px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #ffe4e1; }
         .btn-valider { padding: 10px 15px; font-size: 15px; border-radius: 10px; border: none; color: #fff; cursor: pointer; font-weight: bold; white-space: nowrap; }
+        .btn-parent { padding: 10px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; flex: 1; color: #fff; }
     </style>
 </head>
 <body>
@@ -125,7 +125,7 @@
 
           const toggleModeSecure = () => {
             if (!childMode) {
-              const input = window.prompt("Entrez le code secret de Maman :");
+              const input = window.prompt("Entrez le code secret de Maman pour accéder à l'Espace Parent :");
               if (input === parentPassword) setChildMode(true);
               else if (input !== null) alert("Code incorrect ! 🤫");
             } else {
@@ -146,8 +146,7 @@
             setStars(newStars);
 
             const now = new Date();
-            const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
-            const logMessage = `${task.icon} [${task.category.toUpperCase()}] ${task.name} - Validé le ${days[now.getDay()]} à ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const logMessage = `${task.icon} [${task.category.toUpperCase()}] ${task.name} - Validé à ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             setHistoryLog([logMessage, ...historyLog]);
             speak('Bravo ma princesse !');
 
@@ -160,13 +159,44 @@
             speak('Mission à refaire.');
           };
 
+          const handleBonus = () => {
+            const newStars = stars + 15;
+            setStars(newStars);
+            setHistoryLog([`✨ BONUS PARENTAL (+15 ⭐)`, ...historyLog]);
+            speak('Super bonus pour ma princesse !');
+            const targetLevel = Math.floor(newStars / 60) + 1;
+            if (targetLevel > level) setLevel(targetLevel);
+          };
+
+          const handlePenalty = () => {
+            const newStars = Math.max(0, stars - 5);
+            setStars(newStars);
+            setHistoryLog([`⚠️ RETRAIT BÊTISE (-5 ⭐)`, ...historyLog]);
+            speak('Attention aux bêtises !');
+          };
+
+          const buyReward = (cost, rewardName) => {
+            if (stars >= cost) {
+              setStars(stars - cost);
+              setHistoryLog([`🛍️ RÉCOMPENSE ACHETÉE : ${rewardName} (-${cost} ⭐)`, ...historyLog]);
+              speak(`Félicitations pour ta récompense !`);
+            }
+          };
+
+          const resetWeek = () => {
+            if (window.confirm("Recommencer la semaine ?")) {
+              setTasks(defaultTasks.map(t => ({ ...t, done: false, pending: false })));
+              setHistoryLog([]);
+            }
+          };
+
           const filteredTasks = tasks.filter(t => currentCategory === 'all' || t.category === currentCategory);
 
           return (
             <div style={{ maxWidth: '600px', margin: '0 auto' }}>
               <div style={{ textAlign: 'center', marginBottom: '25px' }}>
                 <button onClick={toggleModeSecure} className="btn-mode">
-                  {childMode ? '🦄 Mode Caly' : '🔒 Mode Parent'}
+                  {childMode ? '🦄 Aller au Mode Caly' : '🔒 Accéder au Mode Parent'}
                 </button>
               </div>
 
@@ -174,38 +204,67 @@
                 <div>
                   <h1 style={{ color: '#4a148c', textAlign: 'center' }}>Espace Parent ⚙️</h1>
                   <div className="card">
-                    <p style={{ color: '#333' }}>Score de Caly : <strong style={{ color: '#ff69b4', fontSize: '30px' }}>⭐ {stars}</strong></p>
+                    <p style={{ color: '#333', fontSize: '18px' }}>Score de Caly :</p>
+                    <div style={{ fontSize: '45px', fontWeight: 'bold', color: '#ff69b4', margin: '5px 0' }}>⭐ {stars}</div>
+                    <p style={{ color: '#333' }}>Niveau actuel : {level}</p>
                   </div>
+
+                  <div style={{ display: 'flex', gap: '10px', marginBottom: '25px' }}>
+                    <button onClick={handleBonus} className="btn-parent" style={{ background: '#e1bee7', color: '#4a148c' }}>✨ Donner le Bonus (+15 ⭐)</button>
+                    <button onClick={handlePenalty} className="btn-parent" style={{ background: '#ffcdd2', color: '#b71c1c' }}>⚠️ Retrait Bêtise (-5 ⭐)</button>
+                  </div>
+
                   <div className="card" style={{ textAlign: 'left' }}>
-                    <h3 style={{ color: '#333' }}>⏳ À vérifier :</h3>
-                    {tasks.filter(t => t.pending).map(task => (
-                      <div key={task.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', color: '#333' }}>
-                        <span>{task.icon} {task.name}</span>
-                        <div>
-                          <button onClick={() => acceptTask(task.id, task.points)} style={{ background: 'green', color: '#fff', marginRight: '5px' }}>OK</button>
-                          <button onClick={() => rejectTask(task.id)} style={{ background: 'red', color: '#fff' }}>X</button>
+                    <h3 style={{ color: '#333' }}>⏳ Tâches à vérifier :</h3>
+                    {tasks.filter(t => t.pending).length === 0 ? (
+                      <p style={{ color: '#888', fontStyle: 'italic' }}>Aucune tâche en attente.</p>
+                    ) : (
+                      tasks.filter(t => t.pending).map(task => (
+                        <div key={task.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>
+                          <span>{task.icon} {task.name} (+{task.points}⭐)</span>
+                          <div>
+                            <button onClick={() => acceptTask(task.id, task.points)} style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer', marginRight: '5px', fontWeight: 'bold' }}>Accepter</button>
+                            <button onClick={() => rejectTask(task.id)} style={{ background: '#f44336', color: '#fff', border: 'none', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>Refuser</button>
+                          </div>
                         </div>
+                      ))
+                    )}
+                  </div>
+
+                  <div className="card" style={{ textAlign: 'left' }}>
+                    <h3 style={{ color: '#333' }}>💸 Caisse enregistreuse (Achat Boutique) :</h3>
+                    {rewards.map(r => (
+                      <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #f9f9f9', color: '#333' }}>
+                        <span style={{ color: stars >= r.cost ? '#333' : '#aaa' }}>{r.name} <strong>({r.cost} ⭐)</strong></span>
+                        <button onClick={() => buyReward(r.cost, r.name)} disabled={stars < r.cost} style={{ padding: '6px 12px', background: stars >= r.cost ? '#9c27b0' : '#e0e0e0', color: '#fff', border: 'none', borderRadius: '5px', cursor: stars >= r.cost ? 'pointer' : 'default', fontWeight: 'bold' }}>Acheter 🛒</button>
                       </div>
                     ))}
                   </div>
+
                   <div className="card" style={{ textAlign: 'left' }}>
                     <h3 style={{ color: '#333' }}>📊 Historique de la semaine :</h3>
-                    <div style={{ maxHeight: '150px', overflowY: 'auto', background: '#f5f5f5', padding: '10px' }}>
-                      {historyLog.map((log, i) => <p key={i} style={{ color: '#555', margin: '5px 0', fontSize: '13px' }}>{log}</p>)}
+                    <div style={{ maxHeight: '150px', overflowY: 'auto', background: '#f5f5f5', padding: '10px', borderRadius: '8px' }}>
+                      {historyLog.length === 0 ? <p style={{ color: '#888', fontStyle: 'italic', fontSize: '13px' }}>Aucun historique.</p> : historyLog.map((log, i) => <p key={i} style={{ color: '#555', margin: '5px 0', fontSize: '13px', borderBottom: '1px dashed #eee' }}>{log}</p>)}
                     </div>
+                  </div>
+
+                  <div style={{ textAlign: 'center' }}>
+                    <button onClick={resetWeek} style={{ padding: '10px', background: '#333', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>🔄 Remise à zéro semaine</button>
                   </div>
                 </div>
               ) : (
                 <div>
                   <div className="card">
-                    <div style={{ fontSize: '40px' }}>👩🏻‍🦰 👑 🏰 🐱</div>
-                    <h1 style={{ color: '#333' }}>Princesse Caly ✨</h1>
-                    <p style={{ color: '#ff69b4', fontSize: '24px', fontWeight: 'bold' }}>⭐ {stars} étoiles (Niveau {level})</p>
+                    <div style={{ fontSize: '40px', marginBottom: '10px' }}>👩🏻‍🦰 👑 🏰 🐱 🩷</div>
+                    <h1 style={{ color: '#333', margin: '0 0 5px 0' }}>Princesse Caly ✨</h1>
+                    <p style={{ color: '#888', margin: '0 0 15px 0', fontSize: '18px' }}>Niveau {level}</p>
+                    {stars >= 20 && <div style={{ fontSize: '50px', margin: '10px 0' }}>🎁✨</div>}
+                    <div style={{ color: '#ff69b4', fontSize: '32px', fontWeight: 'bold' }}>⭐ {stars} étoiles</div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '5px', overflowX: 'auto', marginBottom: '15px' }}>
+                  <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '15px', marginBottom: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
                     {categoriesList.map(cat => (
-                      <button key={cat.id} onClick={() => { setCurrentCategory(cat.id); speak(cat.voice); }} style={{ background: currentCategory === cat.id ? '#ff69b4' : '#fff', color: currentCategory === cat.id ? '#fff' : '#333', padding: '8px', borderRadius: '10px', cursor: 'pointer', border: '1px solid #ccc' }}>
+                      <button key={cat.id} onClick={() => { setCurrentCategory(cat.id); speak(cat.voice); }} style={{ background: currentCategory === cat.id ? '#ff69b4' : '#fff', color: currentCategory === cat.id ? '#fff' : '#333', padding: '8px 14px', borderRadius: '15px', cursor: 'pointer', border: 'none', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
                         {cat.label}
                       </button>
                     ))}
@@ -214,14 +273,23 @@
                   {filteredTasks.map(task => (
                     <div key={task.id} className="task-card">
                       <div style={{ textAlign: 'left', color: '#333' }}>
-                        <h3 style={{ margin: '0', fontSize: '16px' }}>{task.icon} {task.name}</h3>
-                        <p style={{ margin: '3px 0 0 0', color: '#888', fontSize: '12px' }}>+{task.points} ⭐</p>
+                        <h3 style={{ margin: '0', fontSize: '18px', color: '#333', display: 'flex', alignItems: 'center', gap: '8px' }}><span>{task.icon}</span> <span>{task.name}</span></h3>
+                        <p style={{ margin: '5px 0 0 0', color: '#888', fontSize: '14px' }}>+{task.points} {task.points > 1 ? 'étoiles' : 'étoile'}</p>
                       </div>
                       <button onClick={() => requestTaskValidation(task.id)} disabled={task.done || task.pending} className="btn-valider" style={{ background: task.done ? '#4caf50' : task.pending ? '#ff9800' : '#ff69b4' }}>
-                        {task.done ? '✓ Fait' : task.pending ? 'Attente ⏳' : 'Valider 🎉'}
+                        {task.done ? '✓ Fait' : task.pending ? 'Attente maman ⏳' : 'Valider 🎉'}
                       </button>
                     </div>
                   ))}
+
+                  <div className="card" style={{ background: '#fffde6', border: '1px solid #ffe4b5', textAlign: 'left' }}>
+                    <h3 style={{ margin: '0 0 10px 0', fontSize: '22px', color: '#333' }}>🛍️ Boutique magique</h3>
+                    {rewards.map(r => (
+                      <p key={r.id} style={{ margin: '8px 0', fontSize: '18px', color: stars >= r.cost ? '#2e7d32' : '#333' }}>
+                        {stars >= r.cost ? '✅ ' : '🔒 '} <strong>{r.cost} ⭐</strong> = {r.name}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
