@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Princesse Caly ✨</title>
+    <!-- Chargement de React et Babel pour que tout fonctionne dans un seul fichier -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { font-family: sans-serif; margin: 0; padding: 20px; background: #fff0f5; min-height: 100vh; }
+        .btn-mode { padding: 10px 20px; fontSize: 16px; border-radius: 20px; border: 1px solid #ffb6c1; background: #fff; cursor: pointer; font-weight: bold; }
+        .card { background: #fff; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 25px; }
+        .task-card { background: #fff; border-radius: 15px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #ffe4e1; }
+        .btn-valider { padding: 10px 15px; font-size: 15px; border-radius: 10px; border: none; color: #fff; cursor: pointer; font-weight: bold; white-space: nowrap; }
+    </style>
+</head>
+<body>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const defaultTasks = [
+          { id: 1, name: 'Brosser mes dents le matin', icon: '🪥', points: 1, done: false, pending: false, category: 'matin' },
+          { id: 2, name: 'Faire mon puff du matin', icon: '💨', points: 1, done: false, pending: false, category: 'matin' },
+          { id: 26, name: 'Se coiffer le matin', icon: '🎀', points: 1, done: false, pending: false, category: 'matin' },
+          { id: 6, name: 'Dormir dans mon lit', icon: '✨', points: 3, done: false, pending: false, category: 'matin' },
+          { id: 30, name: 'Mettre mes vêtements', icon: '👗', points: 1, done: false, pending: false, category: 'matin' },
+          { id: 7, name: 'Préparer mon sac à diner', icon: '🎒', points: 1, done: false, pending: false, category: 'ecole' },
+          { id: 8, name: 'Vider mon sac à diner', icon: '🍱', points: 1, done: false, pending: false, category: 'ecole' },
+          { id: 28, name: 'Préparer mon journal de classe et ma farde pour faire les devoirs', icon: '📖', points: 1, done: false, pending: false, category: 'ecole' },
+          { id: 29, name: 'Faire les devoirs', icon: '📝', points: 5, done: false, pending: false, category: 'ecole' },
+          { id: 3, name: 'Brosser mes dents le soir', icon: '🪥', points: 1, done: false, pending: false, category: 'soir' },
+          { id: 4, name: 'Prendre mon sirop du soir', icon: '💜', points: 1, done: false, pending: false, category: 'soir' },
+          { id: 5, name: 'Prendre ma douche', icon: '🚿', points: 1, done: false, pending: false, category: 'soir' },
+          { id: 27, name: 'Se démêler les cheveux le soir', icon: '🧜‍♀️', points: 1, done: false, pending: false, category: 'soir' },
+          { id: 31, name: 'Préparer mes vêtements pour le lendemain', icon: '👚', points: 1, done: false, pending: false, category: 'soir' },
+          { id: 9, name: 'Ranger mes chaussures', icon: '👟', points: 1, done: false, pending: false, category: 'maison' },
+          { id: 10, name: 'Ranger mes jeux', icon: '🧸', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 14, name: 'Mettre la table', icon: '🍽️', points: 1, done: false, pending: false, category: 'maison' },
+          { id: 15, name: 'Débarasser la table et mettre dans le lave-vaisselle', icon: '🥣', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 16, name: 'Vider le lave-vaisselle', icon: '🧼', points: 3, done: false, pending: false, category: 'maison' },
+          { id: 17, name: 'Mettre mes vêtements dans le bac à linge', icon: '👕', points: 1, done: false, pending: false, category: 'maison' },
+          { id: 18, name: 'Faire tourner une machine à lessiver', icon: '🧼', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 19, name: 'Faire secher la machine', icon: '🌀', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 20, name: 'Ranger mon linge propre', icon: '🧺', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 23, name: "Passer l'aspirateur", icon: '🧹', points: 4, done: false, pending: false, category: 'maison' },
+          { id: 21, name: "Mettre de l'eau aux chats", icon: '🐱', points: 1, done: false, pending: false, category: 'animaux' },
+          { id: 22, name: 'Donner à manger aux poules (le samedi et le dimanche)', icon: '🐔', points: 2, done: false, pending: false, category: 'animaux' },
+          { id: 11, name: 'Changer le lit (1x/semaine)', icon: '🛏️', points: 5, done: false, pending: false, category: 'nettoyage' },
+          { id: 12, name: "Passer l'aspirateur dans ma chambre", icon: '🧹', points: 3, done: false, pending: false, category: 'nettoyage' },
+          { id: 13, name: 'Faire les poussières dans ma chambre', icon: '🧽', points: 3, done: false, pending: false, category: 'nettoyage' },
+          { id: 24, name: 'Laver mes cheveux (le dimanche)', icon: '🧴', points: 3, done: false, pending: false, category: 'nettoyage' },
+          { id: 25, name: 'Aider maman à nettoyer les vitres (1x/semaine)', icon: '🪟', points: 6, done: false, pending: false, category: 'nettoyage' }
+        ];
+
+        const rewards = [
+          { id: 'r1', cost: 20, name: '20 min de Tablette ou Switch 🎮' },
+          { id: 'r2', cost: 30, name: 'Jeu du parent (15 minutes) 🎲' },
+          { id: 'r3', cost: 40, name: 'Choisir un repas sain 🍏' },
+          { id: 'r4', cost: 60, name: 'Atelier cuisine 👩‍🍳' },
+          { id: 'r5', cost: 80, name: 'Activité en tête-à-tête 🤍' },
+          { id: 'r6', cost: 100, name: 'Choisir le film du week-end 🎬' },
+          { id: 'r7', cost: 150, name: 'Une bonne Glace 🍦' },
+          { id: 'r8', cost: 200, name: 'Sortie au cinéma 🍿' },
+          { id: 'r9', cost: 250, name: 'Argent de poche (5 euros) 💶' },
+        ];
+
+        const categoriesList = [
+          { id: 'all', label: '🌈 Tout', voice: 'Toutes les missions' },
+          { id: 'matin', label: '☀️ Matin', voice: 'Missions du matin' },
+          { id: 'ecole', label: '🎒 École', voice: "Missions de l'école" },
+          { id: 'soir', label: '🌙 Soir', voice: 'Missions du soir' },
+          { id: 'maison', label: '🏡 Maison', voice: 'Missions de la maison' },
+          { id: 'animaux', label: '🐱 Animaux', voice: "S'occuper des animaux" },
+          { id: 'nettoyage', label: '🧹 Grand Nettoyage', voice: 'Grand nettoyage de la semaine' },
+        ];
+
+        function App() {
+          const [tasks, setTasks] = React.useState(() => {
+            const saved = localStorage.getItem('caly_tasks');
+            return saved ? JSON.parse(saved) : defaultTasks;
+          });
+          const [stars, setStars] = React.useState(() => {
+            const saved = localStorage.getItem('caly_stars');
+            return saved ? parseInt(saved, 10) : 0;
+          });
+          const [level, setLevel] = React.useState(() => {
+            const saved = localStorage.getItem('caly_level');
+            return saved ? parseInt(saved, 10) : 1;
+          });
+          const [parentPassword, setParentPassword] = React.useState(() => {
+            const saved = localStorage.getItem('caly_parent_pin');
+            return saved ? saved : '1234';
+          });
+          const [historyLog, setHistoryLog] = React.useState(() => {
+            const saved = localStorage.getItem('caly_history_log');
+            return saved ? JSON.parse(saved) : [];
+          });
+          const [childMode, setChildMode] = React.useState(false); 
+          const [currentCategory, setCurrentCategory] = React.useState('all');
+
+          React.useEffect(() => {
+            const todayStr = new Date().toDateString();
+            const lastSavedDate = localStorage.getItem('caly_last_date');
+            if (lastSavedDate && lastSavedDate !== todayStr) {
+              setTasks(tasks.map(t => t.category !== 'nettoyage' ? { ...t, done: false, pending: false } : t));
+            }
+            localStorage.setItem('caly_last_date', todayStr);
+          }, []);
+
+          React.useEffect(() => { localStorage.setItem('caly_tasks', JSON.stringify(tasks)); }, [tasks]);
+          React.useEffect(() => { localStorage.setItem('caly_stars', stars.toString()); }, [stars]);
+          React.useEffect(() => { localStorage.setItem('caly_level', level.toString()); }, [level]);
+          React.useEffect(() => { localStorage.setItem('caly_parent_pin', parentPassword); }, [parentPassword]);
+          React.useEffect(() => { localStorage.setItem('caly_history_log', JSON.stringify(historyLog)); }, [historyLog]);
+
+          const speak = (text) => {
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'fr-FR';
+            window.speechSynthesis.speak(msg);
+          };
+
+          const toggleModeSecure = () => {
+            if (!childMode) {
+              const input = window.prompt("Entrez le code secret de Maman :");
+              if (input === parentPassword) setChildMode(true);
+              else if (input !== null) alert("Code incorrect ! 🤫");
+            } else {
+              setChildMode(false);
+            }
+          };
+
+          const requestTaskValidation = (id) => {
+            setTasks(tasks.map(t => t.id === id ? { ...t, pending: true } : t));
+            speak('Demande envoyée à maman !');
+          };
+
+          const acceptTask = (id, points) => {
+            const task = tasks.find(t => t.id === id);
+            if (!task) return;
+            setTasks(tasks.map(t => t.id === id ? { ...t, done: true, pending: false } : t));
+            const newStars = stars + points;
+            setStars(newStars);
+
+            const now = new Date();
+            const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+            const logMessage = `${task.icon} [${task.category.toUpperCase()}] ${task.name} - Validé le ${days[now.getDay()]} à ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            setHistoryLog([logMessage, ...historyLog]);
+            speak('Bravo ma princesse !');
+
+            const targetLevel = Math.floor(newStars / 60) + 1;
+            if (targetLevel > level) setLevel(targetLevel);
+          };
+
+          const rejectTask = (id) => {
+            setTasks(tasks.map(t => t.id === id ? { ...t, done: false, pending: false } : t));
+            speak('Mission à refaire.');
+          };
+
+          const filteredTasks = tasks.filter(t => currentCategory === 'all' || t.category === currentCategory);
+
+          return (
+            <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+              <div style={{ textAlign: 'center', marginBottom: '25px' }}>
+                <button onClick={toggleModeSecure} className="btn-mode">
+                  {childMode ? '🦄 Mode Caly' : '🔒 Mode Parent'}
+                </button>
+              </div>
+
+              {childMode ? (
+                <div>
+                  <h1 style={{ color: '#4a148c', textAlign: 'center' }}>Espace Parent ⚙️</h1>
+                  <div className="card">
+                    <p style={{ color: '#333' }}>Score de Caly : <strong style={{ color: '#ff69b4', fontSize: '30px' }}>⭐ {stars}</strong></p>
+                  </div>
+                  <div className="card" style={{ textAlign: 'left' }}>
+                    <h3 style={{ color: '#333' }}>⏳ À vérifier :</h3>
+                    {tasks.filter(t => t.pending).map(task => (
+                      <div key={task.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px', color: '#333' }}>
+                        <span>{task.icon} {task.name}</span>
+                        <div>
+                          <button onClick={() => acceptTask(task.id, task.points)} style={{ background: 'green', color: '#fff', marginRight: '5px' }}>OK</button>
+                          <button onClick={() => rejectTask(task.id)} style={{ background: 'red', color: '#fff' }}>X</button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="card" style={{ textAlign: 'left' }}>
+                    <h3 style={{ color: '#333' }}>📊 Historique de la semaine :</h3>
+                    <div style={{ maxHeight: '150px', overflowY: 'auto', background: '#f5f5f5', padding: '10px' }}>
+                      {historyLog.map((log, i) => <p key={i} style={{ color: '#555', margin: '5px 0', fontSize: '13px' }}>{log}</p>)}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div>
+                  <div className="card">
+                    <div style={{ fontSize: '40px' }}>👩🏻‍🦰 👑 🏰 🐱</div>
+                    <h1 style={{ color: '#333' }}>Princesse Caly ✨</h1>
+                    <p style={{ color: '#ff69b4', fontSize: '24px', fontWeight: 'bold' }}>⭐ {stars} étoiles (Niveau {level})</p>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '5px', overflowX: 'auto', marginBottom: '15px' }}>
+                    {categoriesList.map(cat => (
+                      <button key={cat.id} onClick={() => { setCurrentCategory(cat.id); speak(cat.voice); }} style={{ background: currentCategory === cat.id ? '#ff69b4' : '#fff', color: currentCategory === cat.id ? '#fff' : '#333', padding: '8px', borderRadius: '10px', cursor: 'pointer', border: '1px solid #ccc' }}>
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {filteredTasks.map(task => (
+                    <div key={task.id} className="task-card">
+                      <div style={{ textAlign: 'left', color: '#333' }}>
+                        <h3 style={{ margin: '0', fontSize: '16px' }}>{task.icon} {task.name}</h3>
+                        <p style={{ margin: '3px 0 0 0', color: '#888', fontSize: '12px' }}>+{task.points} ⭐</p>
+                      </div>
+                      <button onClick={() => requestTaskValidation(task.id)} disabled={task.done || task.pending} className="btn-valider" style={{ background: task.done ? '#4caf50' : task.pending ? '#ff9800' : '#ff69b4' }}>
+                        {task.done ? '✓ Fait' : task.pending ? 'Attente ⏳' : 'Valider 🎉'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          );
+        }
+
+        const root = tragedies = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
