@@ -8,13 +8,174 @@
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        body { font-family: sans-serif; margin: 0; padding: 20px; background: #fff0f5; min-height: 100vh; }
-        .btn-mode { padding: 10px 20px; font-size: 16px; border-radius: 20px; border: 1px solid #ffb6c1; background: #fff; cursor: pointer; font-weight: bold; }
-        .card { background: #fff; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        .task-card { background: #fff; border-radius: 15px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #ffe4e1; }
-        .btn-valider { padding: 10px 15px; font-size: 15px; border-radius: 10px; border: none; color: #fff; cursor: pointer; font-weight: bold; white-space: nowrap; }
-        .btn-timer { padding: 8px 12px; font-size: 14px; border-radius: 10px; border: none; color: #fff; cursor: pointer; font-weight: bold; margin-top: 5px; background: #9c27b0; display: inline-block; }
-        .btn-parent { padding: 10px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; flex: 1; color: #fff; }
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #ffeef4 0%, #ffd1dc 100%); 
+            min-height: 100vh; 
+        }
+        
+        /* Style Espace Parent */
+        .btn-mode { 
+            padding: 12px 25px; 
+            font-size: 15px; 
+            border-radius: 30px; 
+            border: 2px solid #ffb6c1; 
+            background: rgba(255, 255, 255, 0.9); 
+            cursor: pointer; 
+            font-weight: bold;
+            color: #d81b60;
+            box-shadow: 0 4px 15px rgba(255, 182, 193, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-mode:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 182, 193, 0.6);
+        }
+
+        /* Grand Badge Princesse Royal */
+        .royal-header {
+            background: linear-gradient(135deg, #ffffff 0%, #fff0f5 100%);
+            border-radius: 30px;
+            padding: 35px 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(216, 27, 96, 0.1);
+            border: 3px solid #ffd700; /* Bordure Or */
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .royal-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 6px;
+            background: linear-gradient(90deg, #ffd700, #ffa500, #ffd700);
+        }
+
+        /* Couronne Royale en CSS pur */
+        .royal-crown-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .royal-crown {
+            position: relative;
+            width: 80px;
+            height: 50px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+            clip-path: polygon(0% 100%, 100% 100%, 90% 30%, 70% 70%, 50% 10%, 30% 70%, 10% 30%);
+            filter: drop-shadow(0px 4px 5px rgba(0,0,0,0.15));
+            animation: float 3s ease-in-out infinite;
+        }
+        /* Petits joyaux sur la couronne */
+        .royal-crown::after {
+            content: '💎';
+            position: absolute;
+            top: 15px;
+            left: 26px;
+            font-size: 16px;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-6px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .princess-title {
+            font-size: 36px;
+            font-weight: 800;
+            margin: 5px 0;
+            color: #880e4f;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            font-family: 'Georgia', serif;
+        }
+
+        /* Médaillon de Score Magique */
+        .star-medallion {
+            background: linear-gradient(135deg, #ff69b4 0%, #da70d6 100%);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 26px;
+            font-weight: bold;
+            box-shadow: 0 5px 20px rgba(244, 67, 54, 0.3);
+            margin-top: 15px;
+            border: 2px solid #ffffff;
+        }
+
+        /* Onglets de Catégories Girly */
+        .category-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-X: auto;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .btn-category {
+            padding: 10px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            border: none;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            transition: all 0.2s ease;
+        }
+        .btn-category:hover {
+            transform: scale(1.05);
+        }
+
+        /* Cartes de Tâches Scintillantes */
+        .task-card { 
+            background: #ffffff; 
+            border-radius: 20px; 
+            padding: 18px 22px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 12px; 
+            box-shadow: 0 4px 15px rgba(216, 27, 96, 0.04); 
+            border: 1px solid #fff0f5;
+            transition: transform 0.2s ease;
+        }
+        .task-card:hover {
+            transform: translateX(3px);
+        }
+
+        .btn-valider { 
+            padding: 12px 22px; 
+            font-size: 15px; 
+            border-radius: 15px; 
+            border: none; 
+            color: #fff; 
+            cursor: pointer; 
+            font-weight: bold; 
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .btn-timer { 
+            padding: 8px 14px; 
+            font-size: 13px; 
+            border-radius: 12px; 
+            border: none; 
+            color: #fff; 
+            cursor: pointer; 
+            font-weight: bold; 
+            margin-top: 8px; 
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-parent { padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 1; color: #fff; }
+        .card { background: #fff; border-radius: 24px; padding: 25px; box-shadow: 0 6px 20px rgba(0,0,0,0.03); margin-bottom: 25px; }
     </style>
 </head>
 <body>
@@ -124,8 +285,6 @@
           });
           const [childMode, setChildMode] = React.useState(false); 
           const [currentCategory, setCurrentCategory] = React.useState('all');
-          
-          // Gestion des minuteurs par ID de tâche
           const [activeTimers, setActiveTimers] = React.useState({});
 
           React.useEffect(() => {
@@ -159,19 +318,6 @@
           React.useEffect(() => { localStorage.setItem('caly_history_log', JSON.stringify(historyLog)); }, [historyLog]);
 
           React.useEffect(() => {
-            const loadVoices = () => {
-              window.speechSynthesis.getVoices();
-            };
-
-            loadVoices();
-
-            if (speechSynthesis.onvoiceschanged !== undefined) {
-              speechSynthesis.onvoiceschanged = loadVoices;
-            }
-          }, []);
-
-          // Effet pour faire descendre les minuteurs actifs
-          React.useEffect(() => {
             const interval = setInterval(() => {
               setActiveTimers(prev => {
                 const next = { ...prev };
@@ -179,7 +325,6 @@
                   if (next[id] > 1) {
                     next[id] -= 1;
                   } else {
-                    // Fin du minuteur !
                     delete next[id];
                     triggerTimerEnd();
                   }
@@ -191,7 +336,6 @@
           }, []);
 
           const triggerTimerEnd = () => {
-            // Création d'un bip sonore de fin
             try {
               const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
               const oscillator = audioCtx.createOscillator();
@@ -199,36 +343,19 @@
               oscillator.connect(gainNode);
               gainNode.connect(audioCtx.destination);
               oscillator.type = 'sine';
-              oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Note A5 (bip aigu)
+              oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
               gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
               oscillator.start();
               oscillator.stop(audioCtx.currentTime + 0.3);
-              setTimeout(() => {
-                const osc2 = audioCtx.createOscillator();
-                osc2.connect(gainNode);
-                osc2.type = 'sine';
-                osc2.frequency.setValueAtTime(880, audioCtx.currentTime);
-                osc2.start();
-                osc2.stop(audioCtx.currentTime + 0.3);
-              }, 400);
             } catch (e) { console.log(e); }
-
-            setTimeout(() => {
-              speak('Bravo ma princesse, tu as fini de brosser tes dents !');
-            }, 800);
+            setTimeout(() => { speak('Bravo ma princesse, tu as fini de brosser tes dents !'); }, 500);
           };
 
           const handleTimerClick = (id, e) => {
-            e.stopPropagation(); // Évite de déclencher la synthèse vocale de la ligne entière
+            e.stopPropagation();
             if (activeTimers[id]) {
-              // Si déjà actif, on l'arrête
-              setActiveTimers(prev => {
-                const next = { ...prev };
-                delete next[id];
-                return next;
-              });
+              setActiveTimers(prev => { const next = { ...prev }; delete next[id]; return next; });
             } else {
-              // Lance le chrono à 120 secondes (2 minutes)
               setActiveTimers(prev => ({ ...prev, [id]: 120 }));
               speak('C’est parti pour 2 minutes de brossage !');
             }
@@ -241,36 +368,15 @@
           };
 
           const speak = (text) => {
-            if (!('speechSynthesis' in window)) {
-              console.log("Synthèse vocale non supportée");
-              return;
-            }
-
             window.speechSynthesis.cancel();
-
             const msg = new SpeechSynthesisUtterance(text);
             msg.lang = 'fr-FR';
-            msg.volume = 1;
-            msg.rate = 1;
-            msg.pitch = 1;
-
-            const voices = window.speechSynthesis.getVoices();
-            const frenchVoice = voices.find(
-              voice => voice.lang && voice.lang.toLowerCase().includes('fr')
-            );
-
-            if (frenchVoice) {
-              msg.voice = frenchVoice;
-            }
-
-            msg.onerror = (e) => console.log("Erreur vocale:", e);
-
             window.speechSynthesis.speak(msg);
           };
 
           const toggleModeSecure = () => {
             if (!childMode) {
-              const input = window.prompt("Entrez le code secret de Maman pour accéder à l'Espace Parent :");
+              const input = window.prompt("Entrez le code secret de Maman :");
               if (input === parentPassword) setChildMode(true);
               else if (input !== null) alert("Code incorrect ! 🤫");
             } else {
@@ -291,7 +397,7 @@
             setStars(newStars);
 
             const now = new Date();
-            const logMessage = `${task.icon} [${task.category.toUpperCase()}] ${task.name} - Validé à ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const logMessage = `${task.icon} ${task.name} - Validé à ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             setHistoryLog([logMessage, ...historyLog]);
             speak('Bravo ma princesse !');
 
@@ -307,7 +413,7 @@
           const handleBonus = () => {
             const newStars = stars + 15;
             setStars(newStars);
-            setHistoryLog([`✨ BONUS PARENTAL (+10 ⭐)`, ...historyLog]);
+            setHistoryLog([`✨ BONUS PARENTAL (+15 ⭐)`, ...historyLog]);
             speak('Super bonus pour ma princesse !');
             const targetLevel = Math.floor(newStars / 60) + 1;
             if (targetLevel > level) setLevel(targetLevel);
@@ -341,75 +447,98 @@
             <div style={{ maxWidth: '600px', margin: '0 auto' }}>
               <div style={{ textAlign: 'center', marginBottom: '25px' }}>
                 <button onClick={toggleModeSecure} className="btn-mode">
-                  {childMode ? '🦄 Aller au Mode Caly' : '🔒 Accéder au Mode Parent'}
+                  {childMode ? '👑 Retour au Royaume de Caly' : '🔒 Configuration Parentale'}
                 </button>
               </div>
 
               {childMode ? (
+                /* ================= CONFIGURATION PARENT ================= */
                 <div>
-                  <h1 style={{ color: '#4a148c', textAlign: 'center' }}>Espace Parent ⚙️</h1>
-                  <div className="card">
-                    <p style={{ color: '#333', fontSize: '18px' }}>Score de Caly :</p>
-                    <div style={{ fontSize: '45px', fontWeight: 'bold', color: '#ff69b4', margin: '5px 0' }}>⭐ {stars}</div>
-                    <p style={{ color: '#333' }}>Niveau actuel : {level}</p>
+                  <h1 style={{ color: '#4a148c', textAlign: 'center' }}>Espace Maman ⚙Header</h1>
+                  <div className="card" style={{ textAlign: 'center' }}>
+                    <p style={{ color: '#333', fontSize: '18px', margin: '0' }}>Score actuel de Caly :</p>
+                    <div style={{ fontSize: '45px', fontWeight: 'bold', color: '#e91e63', margin: '5px 0' }}>⭐ {stars}</div>
+                    <p style={{ color: '#666', margin: '0' }}>Niveau : {level}</p>
                   </div>
 
                   <div style={{ display: 'flex', gap: '10px', marginBottom: '25px' }}>
-                    <button onClick={handleBonus} className="btn-parent" style={{ background: '#e1bee7', color: '#4a148c' }}>✨ Donner le Bonus (+15 ⭐)</button>
-                    <button onClick={handlePenalty} className="btn-parent" style={{ background: '#ffcdd2', color: '#b71c1c' }}>⚠️ Retrait Bêtise (-5 ⭐)</button>
+                    <button onClick={handleBonus} className="btn-parent" style={{ background: '#ba68c8' }}>✨ Donner un Bonus (+15 ⭐)</button>
+                    <button onClick={handlePenalty} className="btn-parent" style={{ background: '#ef5350' }}>⚠️ Retrait Bêtise (-5 ⭐)</button>
                   </div>
 
-                  <div className="card" style={{ textAlign: 'left' }}>
-                    <h3 style={{ color: '#333' }}>⏳ Tâches à vérifier :</h3>
+                  <div className="card">
+                    <h3 style={{ color: '#333', marginTop: '0' }}>⏳ Missions en attente de bisou-validation :</h3>
                     {tasks.filter(t => t.pending).length === 0 ? (
-                      <p style={{ color: '#888', fontStyle: 'italic' }}>Aucune tâche en attente.</p>
+                      <p style={{ color: '#888', fontStyle: 'italic', margin: '0' }}>Caly n'a pas encore envoyé de mission à valider.</p>
                     ) : (
                       tasks.filter(t => t.pending).map(task => (
-                        <div key={task.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>
+                        <div key={task.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
                           <span>{task.icon} {task.name} (+{task.points}⭐)</span>
                           <div>
-                            <button onClick={() => acceptTask(task.id, task.points)} style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer', marginRight: '5px', fontWeight: 'bold' }}>Accepter</button>
-                            <button onClick={() => rejectTask(task.id)} style={{ background: '#f44336', color: '#fff', border: 'none', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>Refuser</button>
+                            <button onClick={() => acceptTask(task.id, task.points)} style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', marginRight: '5px', fontWeight: 'bold' }}>Valider</button>
+                            <button onClick={() => rejectTask(task.id)} style={{ background: '#f44336', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Refuser</button>
                           </div>
                         </div>
                       ))
                     )}
                   </div>
 
-                  <div className="card" style={{ textAlign: 'left' }}>
-                    <h3 style={{ color: '#333' }}>💸 Caisse enregistreuse (Achat Boutique) :</h3>
+                  <div className="card">
+                    <h3 style={{ color: '#333', marginTop: '0' }}>🛍️ Boutique magique (Acheter un cadeau) :</h3>
                     {rewards.map(r => (
-                      <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #f9f9f9', color: '#333' }}>
+                      <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f9f9f9', color: '#333' }}>
                         <span style={{ color: stars >= r.cost ? '#333' : '#aaa' }}>{r.name} <strong>({r.cost} ⭐)</strong></span>
-                        <button onClick={() => buyReward(r.cost, r.name)} disabled={stars < r.cost} style={{ padding: '6px 12px', background: stars >= r.cost ? '#9c27b0' : '#e0e0e0', color: '#fff', border: 'none', borderRadius: '5px', cursor: stars >= r.cost ? 'pointer' : 'default', fontWeight: 'bold' }}>Acheter 🛒</button>
+                        <button onClick={() => buyReward(r.cost, r.name)} disabled={stars < r.cost} style={{ padding: '6px 14px', background: stars >= r.cost ? '#e91e63' : '#e0e0e0', color: '#fff', border: 'none', borderRadius: '8px', cursor: stars >= r.cost ? 'pointer' : 'default', fontWeight: 'bold' }}>Débloquer 🛒</button>
                       </div>
                     ))}
                   </div>
 
-                  <div className="card" style={{ textAlign: 'left' }}>
-                    <h3 style={{ color: '#333' }}>📊 Historique de la semaine :</h3>
-                    <div style={{ maxHeight: '150px', overflowY: 'auto', background: '#f5f5f5', padding: '10px', borderRadius: '8px' }}>
-                      {historyLog.length === 0 ? <p style={{ color: '#888', fontStyle: 'italic', fontSize: '13px' }}>Aucun historique.</p> : historyLog.map((log, i) => <p key={i} style={{ color: '#555', margin: '5px 0', fontSize: '13px', borderBottom: '1px dashed #eee' }}>{log}</p>)}
+                  <div className="card">
+                    <h3 style={{ color: '#333', marginTop: '0' }}>📊 Historique de la semaine :</h3>
+                    <div style={{ maxHeight: '150px', overflowY: 'auto', background: '#fafafa', padding: '12px', borderRadius: '10px', border: '1px solid #eee' }}>
+                      {historyLog.length === 0 ? <p style={{ color: '#888', fontStyle: 'italic', fontSize: '13px', margin: '0' }}>Rien dans l'historique pour le moment.</p> : historyLog.map((log, i) => <p key={i} style={{ color: '#555', margin: '5px 0', fontSize: '13px', borderBottom: '1px dashed #eee', paddingBottom: '4px' }}>{log}</p>)}
                     </div>
                   </div>
 
                   <div style={{ textAlign: 'center' }}>
-                    <button onClick={resetWeek} style={{ padding: '10px', background: '#333', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>🔄 Remise à zéro semaine</button>
+                    <button onClick={resetWeek} style={{ padding: '12px 20px', background: '#333', color: '#fff', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>🔄 Recommencer la semaine</button>
                   </div>
                 </div>
               ) : (
+                /* ================= REYAUME DE CALY (INTERFACE ENFANT) ================= */
                 <div>
-                  <div className="card">
-                    <div style={{ fontSize: '40px', marginBottom: '10px' }}>👩🏻‍🦰 👑 🏰 🐱 🩷</div>
-                    <h1 style={{ color: '#333', margin: '0 0 5px 0' }}>Princesse Caly ✨</h1>
-                    <p style={{ color: '#888', margin: '0 0 15px 0', fontSize: '18px' }}>Niveau {level}</p>
-                    {stars >= 20 && <div style={{ fontSize: '50px', margin: '10px 0' }}>🎁✨</div>}
-                    <div style={{ color: '#ff69b4', fontSize: '32px', fontWeight: 'bold' }}>⭐ {stars} étoiles</div>
+                  <div className="royal-header">
+                    <div className="royal-crown-container">
+                      <div className="royal-crown"></div>
+                    </div>
+                    <h1 className="princess-title" onClick={() => speak('Bonjour Princesse Caly ! Passe une magnifique journée !')}>Princesse Caly</h1>
+                    <p style={{ color: '#c2185b', margin: '0', fontSize: '16px', fontWeight: 'bold', trackingLetter: '1px' }}>✨ ROYAUME DE NIVEAU {level} ✨</p>
+                    
+                    {stars >= 20 && (
+                      <div style={{ fontSize: '55px', margin: '15px 0 5px 0', animation: 'float 2s infinite', cursor: 'pointer' }} onClick={() => speak('Ton coffre à cadeaux magique t’attend dans la boutique avec maman !')}>
+                        🎁✨
+                      </div>
+                    )}
+                    
+                    <div>
+                      <div className="star-medallion">
+                        <span>💖</span> {stars} Étoiles
+                      </div>
+                    </div>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '15px', marginBottom: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
+                  <div className="category-scroll">
                     {categoriesList.map(cat => (
-                      <button key={cat.id} onClick={() => { setCurrentCategory(cat.id); speak(cat.voice); }} style={{ background: currentCategory === cat.id ? '#ff69b4' : '#fff', color: currentCategory === cat.id ? '#fff' : '#333', padding: '8px 14px', borderRadius: '15px', cursor: 'pointer', border: 'none', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
+                      <button 
+                        key={cat.id} 
+                        onClick={() => { setCurrentCategory(cat.id); speak(cat.voice); }} 
+                        className="btn-category"
+                        style={{ 
+                          background: currentCategory === cat.id ? 'linear-gradient(135deg, #e91e63 0%, #ff69b4 100%)' : '#ffffff', 
+                          color: currentCategory === cat.id ? '#ffffff' : '#444444',
+                          border: currentCategory === cat.id ? 'none' : '1px solid #ffccd8'
+                        }}
+                      >
                         {cat.label}
                       </button>
                     ))}
@@ -418,33 +547,40 @@
                   {filteredTasks.map(task => (
                     <div key={task.id} className="task-card">
                       <div style={{ textAlign: 'left', color: '#333', flexGrow: 1, cursor: 'pointer' }} onClick={() => speak(task.name)}>
-                        <h3 style={{ margin: '0', fontSize: '18px', color: '#333', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span>{task.icon}</span> 
+                        <h3 style={{ margin: '0', fontSize: '17px', color: '#3f0c1f', display: 'flex', alignItems: 'center', gap: '10px', fontWeight: '700' }}>
+                          <span style={{ fontSize: '22px' }}>{task.icon}</span> 
                           <span>{task.name}</span>
                           <span style={{ fontSize: '14px', color: '#ff69b4' }}>🔊</span>
                         </h3>
-                        <p style={{ margin: '5px 0 0 0', color: '#888', fontSize: '14px' }}>+{task.points} {task.points > 1 ? 'étoiles' : 'étoile'}</p>
+                        <p style={{ margin: '4px 0 0 0', color: '#e91e63', fontSize: '13px', fontWeight: 'bold' }}>+{task.points} {task.points > 1 ? 'étoiles' : 'étoile'}</p>
                         
-                        {/* Affichage du Minuteur si disponible pour la tâche */}
                         {task.hasTimer && !task.done && !task.pending && (
                           <div>
-                            <button className="btn-timer" onClick={(e) => handleTimerClick(task.id, e)} style={{ background: activeTimers[task.id] ? '#f44336' : '#9c27b0' }}>
+                            <button className="btn-timer" onClick={(e) => handleTimerClick(task.id, e)} style={{ background: activeTimers[task.id] ? '#ef5350' : '#ba68c8' }}>
                               {activeTimers[task.id] ? `🛑 Arrêter (${formatTime(activeTimers[task.id])})` : '⏱️ Lancer 2 min'}
                             </button>
                           </div>
                         )}
                       </div>
-                      <button onClick={() => requestTaskValidation(task.id)} disabled={task.done || task.pending} className="btn-valider" style={{ background: task.done ? '#4caf50' : task.pending ? '#ff9800' : '#ff69b4' }}>
-                        {task.done ? '✓ Fait' : task.pending ? 'Attente maman ⏳' : 'Valider 🎉'}
+                      <button 
+                        onClick={() => requestTaskValidation(task.id)} 
+                        disabled={task.done || task.pending} 
+                        className="btn-valider" 
+                        style={{ 
+                          background: task.done ? '#4caf50' : task.pending ? '#ffa726' : 'linear-gradient(135deg, #ff4081 0%, #e91e63 100%)',
+                          cursor: (task.done || task.pending) ? 'default' : 'pointer'
+                        }}
+                      >
+                        {task.done ? '✓ Fait' : task.pending ? 'Vérification ⏳' : 'Valider 🎉'}
                       </button>
                     </div>
                   ))}
 
-                  <div className="card" style={{ background: '#fffde6', border: '1px solid #ffe4b5', textAlign: 'left' }}>
-                    <h3 style={{ margin: '0 0 10px 0', fontSize: '22px', color: '#333' }}>🛍️ Boutique magique</h3>
+                  <div className="card" style={{ background: '#fffdeb', border: '2px solid #ffd700', borderRadius: '24px', textAlign: 'left' }}>
+                    <h3 style={{ margin: '0 0 12px 0', fontSize: '20px', color: '#5d4037', fontFamily: 'Georgia, serif' }}>👑 Boutique des Princesses</h3>
                     {rewards.map(r => (
-                      <p key={r.id} style={{ margin: '8px 0', fontSize: '18px', color: stars >= r.cost ? '#2e7d32' : '#333' }}>
-                        {stars >= r.cost ? '✅ ' : '🔒 '} <strong>{r.cost} ⭐</strong> = {r.name}
+                      <p key={r.id} style={{ margin: '8px 0', fontSize: '16px', color: stars >= r.cost ? '#2e7d32' : '#555', fontWeight: stars >= r.cost ? 'bold' : 'normal' }}>
+                        {stars >= r.cost ? '⭐ ' : '🔒 '} <strong>{r.cost} ⭐</strong> = {r.name}
                       </p>
                     ))}
                   </div>
