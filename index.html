@@ -157,6 +157,17 @@
           React.useEffect(() => { localStorage.setItem('caly_level', level.toString()); }, [level]);
           React.useEffect(() => { localStorage.setItem('caly_parent_pin', parentPassword); }, [parentPassword]);
           React.useEffect(() => { localStorage.setItem('caly_history_log', JSON.stringify(historyLog)); }, [historyLog]);
+          React.useEffect(() => {
+            window.speechSynthesis.getVoices();
+
+            if (speechSynthesis.onvoiceschanged !== undefined) {
+              speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+              };
+            }
+          }, []);
+
+
 
           // Effet pour faire descendre les minuteurs actifs
           React.useEffect(() => {
@@ -229,9 +240,29 @@
           };
 
           const speak = (text) => {
+            if (!window.speechSynthesis) {
+              alert("Voix non disponible");
+              return;
+            }
+
             window.speechSynthesis.cancel();
+
             const msg = new SpeechSynthesisUtterance(text);
             msg.lang = 'fr-FR';
+            msg.volume = 1;
+            msg.rate = 1;
+            msg.pitch = 1;
+
+            const voices = window.speechSynthesis.getVoices();
+
+            const frenchVoice = voices.find(v => 
+              v.lang && v.lang.includes('fr')
+            );
+
+            if (frenchVoice) {
+              msg.voice = frenchVoice;
+            }
+
             window.speechSynthesis.speak(msg);
           };
 
