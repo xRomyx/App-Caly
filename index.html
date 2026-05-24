@@ -22,32 +22,55 @@
 
     <script type="text/babel">
         const defaultTasks = [
-          { id: 1, name: 'Brosser mes dents le matin', icon: '🪥', points: 1, done: false, pending: false, category: 'matin' },
-          { id: 2, name: 'Faire mon puff du matin', icon: '💨', points: 1, done: false, pending: false, category: 'matin' },
-          { id: 26, name: 'Se coiffer le matin', icon: '🎀', points: 1, done: false, pending: false, category: 'matin' },
+          // --- catégorie: 'matin' ---
+          { id: 1, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'matin' },
+          { id: 2, name: 'Faire mon puff orange', icon: '💨', points: 1, done: false, pending: false, category: 'matin' },
+          { id: 26, name: 'Se coiffer', icon: '🪮', points: 1, done: false, pending: false, category: 'matin' },
           { id: 6, name: 'Dormir dans mon lit', icon: '✨', points: 3, done: false, pending: false, category: 'matin' },
           { id: 30, name: 'Mettre mes vêtements', icon: '👗', points: 1, done: false, pending: false, category: 'matin' },
+
+          // --- catégorie: 'ecole' ---
           { id: 7, name: 'Préparer mon sac à diner', icon: '🎒', points: 1, done: false, pending: false, category: 'ecole' },
           { id: 8, name: 'Vider mon sac à diner', icon: '🍱', points: 1, done: false, pending: false, category: 'ecole' },
           { id: 28, name: 'Préparer mon journal de classe et ma farde pour faire les devoirs', icon: '📖', points: 1, done: false, pending: false, category: 'ecole' },
           { id: 29, name: 'Faire les devoirs', icon: '📝', points: 5, done: false, pending: false, category: 'ecole' },
-          { id: 3, name: 'Brosser mes dents le soir', icon: '🪥', points: 1, done: false, pending: false, category: 'soir' },
-          { id: 4, name: 'Prendre mon sirop du soir', icon: '💜', points: 1, done: false, pending: false, category: 'soir' },
+
+          // --- catégorie: 'soir' ---
+          { id: 3, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'soir' },
+          { id: 4, name: 'Prendre mon sirop', icon: '💜', points: 1, done: false, pending: false, category: 'soir' },
           { id: 5, name: 'Prendre ma douche', icon: '🚿', points: 1, done: false, pending: false, category: 'soir' },
-          { id: 27, name: 'Se démêler les cheveux le soir', icon: '🧜‍♀️', points: 1, done: false, pending: false, category: 'soir' },
+          { id: 27, name: 'Se démêler les cheveux', icon: '🧜‍♀️', points: 1, done: false, pending: false, category: 'soir' },
           { id: 31, name: 'Préparer mes vêtements pour le lendemain', icon: '👚', points: 1, done: false, pending: false, category: 'soir' },
+
+          // --- catégorie: 'maison' ---
           { id: 9, name: 'Ranger mes chaussures', icon: '👟', points: 1, done: false, pending: false, category: 'maison' },
           { id: 10, name: 'Ranger mes jeux', icon: '🧸', points: 2, done: false, pending: false, category: 'maison' },
           { id: 14, name: 'Mettre la table', icon: '🍽️', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 15, name: 'Débarasser la table et mettre dans le lave-vaisselle', icon: '🥣', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 15, name: 'Débarrasser la table et mettre dans le lave-vaisselle', icon: '🥣', points: 2, done: false, pending: false, category: 'maison' },
           { id: 16, name: 'Vider le lave-vaisselle', icon: '🧼', points: 3, done: false, pending: false, category: 'maison' },
           { id: 17, name: 'Mettre mes vêtements dans le bac à linge', icon: '👕', points: 1, done: false, pending: false, category: 'maison' },
           { id: 18, name: 'Faire tourner une machine à lessiver', icon: '🧼', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 19, name: 'Faire secher la machine', icon: '🌀', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 19, name: 'Faire sécher la machine', icon: '🌀', points: 2, done: false, pending: false, category: 'maison' },
           { id: 20, name: 'Ranger mon linge propre', icon: '🧺', points: 2, done: false, pending: false, category: 'maison' },
           { id: 23, name: "Passer l'aspirateur", icon: '🧹', points: 4, done: false, pending: false, category: 'maison' },
+          { id: 35, name: 'Faire tourner le lave-vaisselle', icon: '🧼', points: 1, done: false, pending: false, category: 'maison' },
+          { id: 36, name: 'Aider à faire les courses', icon: '🛒', points: 1, done: false, pending: false, category: 'maison' },
+          { id: 37, name: 'Ranger les courses', icon: '🛒', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 38, name: 'Vider les poubelles de la maison', icon: '🗑️', points: 1, done: false, pending: false, category: 'maison' },
+          { id: 39, name: 'Aider maman', icon: '❤️', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 40, name: 'Boire 2 gourdes', icon: '🥛', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 41, name: 'Aider Mimy', icon: '✨', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 42, name: 'Aider Baloo', icon: '🐾', points: 2, done: false, pending: false, category: 'maison' },
+
+          // --- catégorie: 'animaux' ---
           { id: 21, name: "Mettre de l'eau aux chats", icon: '🐱', points: 1, done: false, pending: false, category: 'animaux' },
           { id: 22, name: 'Donner à manger aux poules (le samedi et le dimanche)', icon: '🐔', points: 2, done: false, pending: false, category: 'animaux' },
+          { id: 32, name: 'Nettoyer la litière des chats et se laver les mains après', icon: '🐱', points: 2, done: false, pending: false, category: 'animaux' },
+          { id: 33, name: 'Réapprovisionner le distributeur de croquettes', icon: '🧆', points: 1, done: false, pending: false, category: 'animaux' },
+          { id: 34, name: 'Aider à laver les chats', icon: '🧼', points: 2, done: false, pending: false, category: 'animaux' },
+          { id: 43, name: 'Faire rentrer Caty avant de partir de la maison', icon: '🏡', points: 1, done: false, pending: false, category: 'animaux' },
+
+          // --- catégorie: 'nettoyage' ---
           { id: 11, name: 'Changer le lit (1x/semaine)', icon: '🛏️', points: 5, done: false, pending: false, category: 'nettoyage' },
           { id: 12, name: "Passer l'aspirateur dans ma chambre", icon: '🧹', points: 3, done: false, pending: false, category: 'nettoyage' },
           { id: 13, name: 'Faire les poussières dans ma chambre', icon: '🧽', points: 3, done: false, pending: false, category: 'nettoyage' },
@@ -105,9 +128,25 @@
             const todayStr = new Date().toDateString();
             const lastSavedDate = localStorage.getItem('caly_last_date');
             if (lastSavedDate && lastSavedDate !== todayStr) {
-              setTasks(tasks.map(t => t.category !== 'nettoyage' ? { ...t, done: false, pending: false } : t));
+              setTasks(prev => prev.map(t => t.category !== 'nettoyage' ? { ...t, done: false, pending: false } : t));
             }
             localStorage.setItem('caly_last_date', todayStr);
+          }, []);
+
+          // Synchronisation automatique si des titres ou icônes changent dans le code
+          React.useEffect(() => {
+            const saved = localStorage.getItem('caly_tasks');
+            if (saved) {
+              const parsed = JSON.parse(saved);
+              const updated = defaultTasks.map(dt => {
+                const existing = parsed.find(pt => pt.id === dt.id);
+                if (existing) {
+                  return { ...dt, done: existing.done, pending: existing.pending };
+                }
+                return dt;
+              });
+              setTasks(updated);
+            }
           }, []);
 
           React.useEffect(() => { localStorage.setItem('caly_tasks', JSON.stringify(tasks)); }, [tasks]);
