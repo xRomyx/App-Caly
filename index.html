@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Caly Chat ✨</title>
+    <title>Caly chat ✨</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -53,69 +53,30 @@
             background: linear-gradient(90deg, #ffd700, #ffa500, #ffd700);
         }
 
-        /* Chaton Royal en CSS Pur */
+        /* Macaron Axolotl Royal Flottant */
         .royal-cat-container {
             display: flex;
             justify-content: center;
             align-items: center;
             margin-bottom: 15px;
         }
-        .royal-cat {
-            position: relative;
-            width: 60px;
-            height: 50px;
-            background: #fff;
-            border-radius: 40% 40% 50% 50%;
-            box-shadow: 0 4px 10px rgba(216, 27, 96, 0.15);
-            animation: floatCat 3s ease-in-out infinite;
-            border: 2px solid #ffb6c1;
-        }
-        /* Oreille Gauche */
-        .royal-cat::before {
-            content: '';
-            position: absolute;
-            top: -8px; left: 2px;
-            width: 0; height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-bottom: 18px solid #fff;
-            transform: rotate(-20deg);
-        }
-        /* Oreille Droite */
-        .royal-cat::after {
-            content: '';
-            position: absolute;
-            top: -8px; right: 2px;
-            width: 0; height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-bottom: 18px solid #fff;
-            transform: rotate(20deg);
-        }
-        /* Intérieur des oreilles, yeux et nez */
-        .cat-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0; left: 0;
-        }
-        .cat-face::before {
-            content: '👀';
-            position: absolute;
-            top: 12px; left: 14px;
-            font-size: 16px;
-            letter-spacing: 2px;
-        }
-        .cat-face::after {
-            content: '👃✨';
-            position: absolute;
-            top: 24px; left: 20px;
-            font-size: 10px;
+        .royal-cat-badge {
+            width: 75px;
+            height: 75px;
+            background: linear-gradient(135deg, #fff0f5 0%, #ffcbd5 100%);
+            border: 3px solid #ff69b4;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 45px;
+            box-shadow: 0 6px 15px rgba(216, 27, 96, 0.2);
+            animation: floatAxolotl 3s ease-in-out infinite;
         }
 
-        @keyframes floatCat {
+        @keyframes floatAxolotl {
             0% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-6px) scale(1.02); }
+            50% { transform: translateY(-6px) scale(1.03); }
             100% { transform: translateY(0px) scale(1); }
         }
 
@@ -223,7 +184,7 @@
           { id: 1, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'matin', hasTimer: true },
           { id: 2, name: 'Faire mon puff orange', icon: '💨', points: 1, done: false, pending: false, category: 'matin' },
           { id: 26, name: 'Se coiffer', icon: '🪮', points: 1, done: false, pending: false, category: 'matin' },
-          { id: 6, name: 'Dormir dans mon lit', icon: '✨', points: 3, done: false, pending: false, category: 'matin' },
+          { id: 6, name: 'Dormir dans mon lit', icon: '🛏️', points: 3, done: false, pending: false, category: 'matin' },
           { id: 30, name: 'Mettre mes vêtements', icon: '👗', points: 1, done: false, pending: false, category: 'matin' },
 
           // --- catégorie: 'ecole' ---
@@ -244,9 +205,9 @@
           { id: 10, name: 'Ranger mes jeux', icon: '🧸', points: 2, done: false, pending: false, category: 'maison' },
           { id: 14, name: 'Mettre la table', icon: '🍽️', points: 1, done: false, pending: false, category: 'maison' },
           { id: 15, name: 'Débarrasser la table et mettre dans le lave-vaisselle', icon: '🥣', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 16, name: 'Vider le lave-vaisselle', icon: '🧼', points: 3, done: false, pending: false, category: 'maison' },
+          { id: 16, name: 'Vider le lave-vaisselle', icon: '🍽️', points: 3, done: false, pending: false, category: 'maison' },
           { id: 17, name: 'Mettre mes vêtements dans le bac à linge', icon: '👕', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 18, name: 'Faire tourner une machine à lessiver', icon: '🧼', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 18, name: 'Faire tourner une machine à lessiver', icon: '🧼👕', points: 2, done: false, pending: false, category: 'maison' },
           { id: 19, name: 'Faire sécher la machine', icon: '🌀', points: 2, done: false, pending: false, category: 'maison' },
           { id: 20, name: 'Ranger mon linge propre', icon: '🧺', points: 2, done: false, pending: false, category: 'maison' },
           { id: 23, name: "Passer l'aspirateur", icon: '🧹', points: 4, done: false, pending: false, category: 'maison' },
@@ -448,7 +409,7 @@
           const handleBonus = () => {
             const newStars = stars + 15;
             setStars(newStars);
-            setHistoryLog([`✨ BONUS PARENTAL (+15 SIGNAL)`, ...historyLog]);
+            setHistoryLog([`✨ BONUS PARENTAL (+15 ⭐)`, ...historyLog]);
             speak('Super bonus pour ma princesse !');
             const targetLevel = Math.floor(newStars / 60) + 1;
             if (targetLevel > level) setLevel(targetLevel);
@@ -457,14 +418,14 @@
           const handlePenalty = () => {
             const newStars = Math.max(0, stars - 5);
             setStars(newStars);
-            setHistoryLog([`⚠️ RETRAIT BÊTISE (-5 SIGNAL)`, ...historyLog]);
+            setHistoryLog([`⚠️ RETRAIT BÊTISE (-5 ⭐)`, ...historyLog]);
             speak('Attention aux bêtises !');
           };
 
           const buyReward = (cost, rewardName) => {
             if (stars >= cost) {
               setStars(stars - cost);
-              setHistoryLog([`🛍️ RÉCOMPENSE ACHETÉE : ${rewardName} (-${cost} SIGNAL)`, ...historyLog]);
+              setHistoryLog([`🛍️ RÉCOMPENSE ACHETÉE : ${rewardName} (-${cost} ⭐)`, ...historyLog]);
               speak(`Félicitations pour ta récompense !`);
             }
           };
@@ -482,7 +443,7 @@
             <div style={{ maxWidth: '600px', margin: '0 auto' }}>
               <div style={{ textAlign: 'center', marginBottom: '25px' }}>
                 <button onClick={toggleModeSecure} className="btn-mode">
-                  {childMode ? '👑 Retour au Royaume de Caly' : '🔒 Configuration Parentale'}
+                  {childMode ? '👑 Retour au Monde de Caly' : '🔒 Configuration Parentale'}
                 </button>
               </div>
 
@@ -540,19 +501,17 @@
                   </div>
                 </div>
               ) : (
-                /* ================= ROYAUME DE CALY (INTERFACE ENFANT) ================= */
+                /* ================= MONDE DE CALY (INTERFACE ENFANT) ================= */
                 <div>
                   <div className="royal-header">
                     <div className="royal-cat-container">
-                      <div className="royal-cat">
-                        <div className="cat-face"></div>
-                      </div>
+                      <div className="royal-cat-badge">🌸🦎🌸</div>
                     </div>
-                    <h1 className="princess-title" onClick={() => speak('Bonjour Princesse Caly ! Passe une magnifique journée !')}>Princesse Caly</h1>
-                    <p style={{ color: '#c2185b', margin: '0', fontSize: '16px', fontWeight: 'bold' }}>✨ ROYAUME DE NIVEAU {level} ✨</p>
+                    <h1 className="princess-title" onClick={() => speak('Bonjour Caly chat ! Passe une magnifique journée !')}>Caly chat</h1>
+                    <p style={{ color: '#c2185b', margin: '0', fontSize: '16px', fontWeight: 'bold' }}>✨ MONDE DE NIVEAU {level} ✨</p>
                     
                     {stars >= 20 && (
-                      <div style={{ fontSize: '55px', margin: '15px 0 5px 0', animation: 'floatCat 2s infinite', cursor: 'pointer' }} onClick={() => speak('Ton coffre à cadeaux magique t’attend dans la boutique avec maman !')}>
+                      <div style={{ fontSize: '55px', margin: '15px 0 5px 0', animation: 'floatAxolotl 2s infinite', cursor: 'pointer' }} onClick={() => speak('Ton coffre à cadeaux magique t’attend dans la boutique avec maman !')}>
                         🎁✨
                       </div>
                     )}
@@ -614,7 +573,7 @@
                   ))}
 
                   <div className="card" style={{ background: '#fffdeb', border: '2px solid #ffd700', borderRadius: '24px', textAlign: 'left' }}>
-                    <h3 style={{ margin: '0 0 12px 0', fontSize: '20px', color: '#5d4037', fontFamily: 'Georgia, serif' }}>👑 Boutique des Princesses</h3>
+                    <h3 style={{ margin: '0 0 12px 0', fontSize: '20px', color: '#5d4037', fontFamily: 'Georgia, serif' }}>👑 Boutique magique</h3>
                     {rewards.map(r => (
                       <p key={r.id} style={{ margin: '8px 0', fontSize: '16px', color: stars >= r.cost ? '#2e7d32' : '#555', fontWeight: stars >= r.cost ? 'bold' : 'normal' }}>
                         {stars >= r.cost ? '⭐ ' : '🔒 '} <strong>{r.cost} ⭐</strong> = {r.name}
