@@ -53,7 +53,7 @@
             background: linear-gradient(90deg, #ffd700, #ffa500, #ffd700);
         }
 
-        /* Macaron Axolotl Royal Flottant */
+        /* Macaron Sirène Flottant */
         .royal-cat-container {
             display: flex;
             justify-content: center;
@@ -61,20 +61,20 @@
             margin-bottom: 15px;
         }
         .royal-cat-badge {
-            width: 75px;
-            height: 75px;
-            background: linear-gradient(135deg, #fff0f5 0%, #ffcbd5 100%);
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #fff0f5 0%, #ffdee9 100%);
             border: 3px solid #ff69b4;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 45px;
-            box-shadow: 0 6px 15px rgba(216, 27, 96, 0.2);
-            animation: floatAxolotl 3s ease-in-out infinite;
+            font-size: 40px;
+            box-shadow: 0 6px 15px rgba(216, 27, 96, 0.15);
+            animation: floatSirene 3s ease-in-out infinite;
         }
 
-        @keyframes floatAxolotl {
+        @keyframes floatSirene {
             0% { transform: translateY(0px) scale(1); }
             50% { transform: translateY(-6px) scale(1.03); }
             100% { transform: translateY(0px) scale(1); }
@@ -505,13 +505,13 @@
                 <div>
                   <div className="royal-header">
                     <div className="royal-cat-container">
-                      <div className="royal-cat-badge">🌸🦎🌸</div>
+                      <div className="royal-cat-badge">🧜‍♀️</div>
                     </div>
                     <h1 className="princess-title" onClick={() => speak('Bonjour Caly chat ! Passe une magnifique journée !')}>Caly chat</h1>
                     <p style={{ color: '#c2185b', margin: '0', fontSize: '16px', fontWeight: 'bold' }}>✨ MONDE DE NIVEAU {level} ✨</p>
                     
                     {stars >= 20 && (
-                      <div style={{ fontSize: '55px', margin: '15px 0 5px 0', animation: 'floatAxolotl 2s infinite', cursor: 'pointer' }} onClick={() => speak('Ton coffre à cadeaux magique t’attend dans la boutique avec maman !')}>
+                      <div style={{ fontSize: '55px', margin: '15px 0 5px 0', animation: 'floatSirene 2s infinite', cursor: 'pointer' }} onClick={() => speak('Ton coffre à cadeaux magique t’attend dans la boutique avec maman !')}>
                         🎁✨
                       </div>
                     )}
