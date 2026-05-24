@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Princesse Caly ✨</title>
+    <title> Caly Chat ✨</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -41,7 +41,7 @@
             padding: 35px 20px;
             text-align: center;
             box-shadow: 0 10px 30px rgba(216, 27, 96, 0.1);
-            border: 3px solid #ffd700; /* Bordure Or */
+            border: 3px solid #ffd700; 
             margin-bottom: 30px;
             position: relative;
             overflow: hidden;
@@ -53,35 +53,70 @@
             background: linear-gradient(90deg, #ffd700, #ffa500, #ffd700);
         }
 
-        /* Couronne Royale en CSS pur */
-        .royal-crown-container {
+        /* Chaton Royal en CSS Pur */
+        .royal-cat-container {
             display: flex;
             justify-content: center;
             align-items: center;
             margin-bottom: 15px;
         }
-        .royal-crown {
+        .royal-cat {
             position: relative;
-            width: 80px;
+            width: 60px;
             height: 50px;
-            background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
-            clip-path: polygon(0% 100%, 100% 100%, 90% 30%, 70% 70%, 50% 10%, 30% 70%, 10% 30%);
-            filter: drop-shadow(0px 4px 5px rgba(0,0,0,0.15));
-            animation: float 3s ease-in-out infinite;
+            background: #fff;
+            border-radius: 40% 40% 50% 50%;
+            box-shadow: 0 4px 10px rgba(216, 27, 96, 0.15);
+            animation: floatCat 3s ease-in-out infinite;
+            border: 2px solid #ffb6c1;
         }
-        /* Petits joyaux sur la couronne */
-        .royal-crown::after {
-            content: '💎';
+        /* Oreille Gauche */
+        .royal-cat::before {
+            content: '';
             position: absolute;
-            top: 15px;
-            left: 26px;
+            top: -8px; left: 2px;
+            width: 0; height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-bottom: 18px solid #fff;
+            transform: rotate(-20deg);
+        }
+        /* Oreille Droite */
+        .royal-cat::after {
+            content: '';
+            position: absolute;
+            top: -8px; right: 2px;
+            width: 0; height: 0;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-bottom: 18px solid #fff;
+            transform: rotate(20deg);
+        }
+        /* Intérieur des oreilles, yeux et nez */
+        .cat-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0; left: 0;
+        }
+        .cat-face::before {
+            content: '👀';
+            position: absolute;
+            top: 12px; left: 14px;
             font-size: 16px;
+            letter-spacing: 2px;
+        }
+        .cat-face::after {
+            content: '👃✨';
+            position: absolute;
+            top: 24px; left: 20px;
+            font-size: 10px;
         }
 
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-6px) rotate(2deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
+        @keyframes floatCat {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-6px) scale(1.02); }
+            100% { transform: translateY(0px) scale(1); }
         }
 
         .princess-title {
@@ -113,7 +148,7 @@
         .category-scroll {
             display: flex;
             gap: 10px;
-            overflow-X: auto;
+            overflow-x: auto;
             padding-bottom: 15px;
             margin-bottom: 25px;
             flex-wrap: wrap;
@@ -413,7 +448,7 @@
           const handleBonus = () => {
             const newStars = stars + 15;
             setStars(newStars);
-            setHistoryLog([`✨ BONUS PARENTAL (+15 ⭐)`, ...historyLog]);
+            setHistoryLog([`✨ BONUS PARENTAL (+15 SIGNAL)`, ...historyLog]);
             speak('Super bonus pour ma princesse !');
             const targetLevel = Math.floor(newStars / 60) + 1;
             if (targetLevel > level) setLevel(targetLevel);
@@ -422,14 +457,14 @@
           const handlePenalty = () => {
             const newStars = Math.max(0, stars - 5);
             setStars(newStars);
-            setHistoryLog([`⚠️ RETRAIT BÊTISE (-5 ⭐)`, ...historyLog]);
+            setHistoryLog([`⚠️ RETRAIT BÊTISE (-5 SIGNAL)`, ...historyLog]);
             speak('Attention aux bêtises !');
           };
 
           const buyReward = (cost, rewardName) => {
             if (stars >= cost) {
               setStars(stars - cost);
-              setHistoryLog([`🛍️ RÉCOMPENSE ACHETÉE : ${rewardName} (-${cost} ⭐)`, ...historyLog]);
+              setHistoryLog([`🛍️ RÉCOMPENSE ACHETÉE : ${rewardName} (-${cost} SIGNAL)`, ...historyLog]);
               speak(`Félicitations pour ta récompense !`);
             }
           };
@@ -454,7 +489,7 @@
               {childMode ? (
                 /* ================= CONFIGURATION PARENT ================= */
                 <div>
-                  <h1 style={{ color: '#4a148c', textAlign: 'center' }}>Espace Maman ⚙Header</h1>
+                  <h1 style={{ color: '#4a148c', textAlign: 'center' }}>Espace Maman ⚙️</h1>
                   <div className="card" style={{ textAlign: 'center' }}>
                     <p style={{ color: '#333', fontSize: '18px', margin: '0' }}>Score actuel de Caly :</p>
                     <div style={{ fontSize: '45px', fontWeight: 'bold', color: '#e91e63', margin: '5px 0' }}>⭐ {stars}</div>
@@ -505,17 +540,19 @@
                   </div>
                 </div>
               ) : (
-                /* ================= REYAUME DE CALY (INTERFACE ENFANT) ================= */
+                /* ================= ROYAUME DE CALY (INTERFACE ENFANT) ================= */
                 <div>
                   <div className="royal-header">
-                    <div className="royal-crown-container">
-                      <div className="royal-crown"></div>
+                    <div className="royal-cat-container">
+                      <div className="royal-cat">
+                        <div className="cat-face"></div>
+                      </div>
                     </div>
                     <h1 className="princess-title" onClick={() => speak('Bonjour Princesse Caly ! Passe une magnifique journée !')}>Princesse Caly</h1>
-                    <p style={{ color: '#c2185b', margin: '0', fontSize: '16px', fontWeight: 'bold', trackingLetter: '1px' }}>✨ ROYAUME DE NIVEAU {level} ✨</p>
+                    <p style={{ color: '#c2185b', margin: '0', fontSize: '16px', fontWeight: 'bold' }}>✨ ROYAUME DE NIVEAU {level} ✨</p>
                     
                     {stars >= 20 && (
-                      <div style={{ fontSize: '55px', margin: '15px 0 5px 0', animation: 'float 2s infinite', cursor: 'pointer' }} onClick={() => speak('Ton coffre à cadeaux magique t’attend dans la boutique avec maman !')}>
+                      <div style={{ fontSize: '55px', margin: '15px 0 5px 0', animation: 'floatCat 2s infinite', cursor: 'pointer' }} onClick={() => speak('Ton coffre à cadeaux magique t’attend dans la boutique avec maman !')}>
                         🎁✨
                       </div>
                     )}
