@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caly chat ✨</title>
+    <title>Caly ✨</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -507,7 +507,7 @@
                     <div className="royal-cat-container">
                       <div className="royal-cat-badge">🧜‍♀️</div>
                     </div>
-                    <h1 className="princess-title" onClick={() => speak('Bonjour Caly chat ! Passe une magnifique journée !')}>Caly chat</h1>
+                    <h1 className="princess-title" onClick={() => speak('Bonjour Caly ! Passe une magnifique journée !')}>Caly </h1>
                     <p style={{ color: '#c2185b', margin: '0', fontSize: '16px', fontWeight: 'bold' }}>✨ MONDE DE NIVEAU {level} ✨</p>
                     
                     {stars >= 20 && (
@@ -550,7 +550,7 @@
                         </h3>
                         <p style={{ margin: '4px 0 0 0', color: '#e91e63', fontSize: '13px', fontWeight: 'bold' }}>+{task.points} {task.points > 1 ? 'étoiles' : 'étoile'}</p>
                         
-                        {task.hasTimer && !task.done && !task.pending && (
+                       {task.hasTimer && !task.done && (
                           <div>
                             <button className="btn-timer" onClick={(e) => handleTimerClick(task.id, e)} style={{ background: activeTimers[task.id] ? '#ef5350' : '#ba68c8' }}>
                               {activeTimers[task.id] ? `🛑 Arrêter (${formatTime(activeTimers[task.id])})` : '⏱️ Lancer 2 min'}
