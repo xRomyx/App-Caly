@@ -16,6 +16,7 @@
             min-height: 100vh; 
         }
         
+        /* Style Espace Parent */
         .btn-mode { 
             padding: 12px 25px; 
             font-size: 15px; 
@@ -33,6 +34,7 @@
             box-shadow: 0 6px 20px rgba(166, 193, 238, 0.6);
         }
 
+        /* Grand Badge Princesse Royal - Style Nacré Miroir Magique comme sur l'image */
         .royal-header {
             background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(10px);
@@ -52,6 +54,7 @@
             background: linear-gradient(90deg, #ffd700, #ff9a9e, #ffd700);
         }
 
+        /* Macaron Sirène Flottant Magnifié de l'image 2 */
         .royal-cat-container {
             display: flex;
             justify-content: center;
@@ -95,6 +98,7 @@
             letter-spacing: 1px;
         }
 
+        /* Médaillon de Score Magique */
         .star-medallion {
             background: linear-gradient(135deg, #3f51b5 0%, #a6c1ee 100%);
             color: white;
@@ -110,6 +114,7 @@
             border: 2px solid #ffffff;
         }
 
+        /* Onglets de Catégories sous forme de Badges Ronds Pastel (Idée 1 validée) */
         .category-scroll {
             display: flex;
             gap: 15px;
@@ -153,6 +158,7 @@
             font-weight: 800;
         }
 
+        /* Cartes de Tâches Illustrées et Épurées comme la maquette */
         .task-card { 
             background: #ffffff; 
             border-radius: 24px; 
@@ -223,20 +229,27 @@
 
     <script type="text/babel">
         const defaultTasks = [
+          // --- catégorie: 'matin' ---
           { id: 1, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'matin', hasTimer: true },
           { id: 2, name: 'Faire mon puff orange', icon: '💨', points: 1, done: false, pending: false, category: 'matin' },
           { id: 26, name: 'Se coiffer', icon: '🪮', points: 1, done: false, pending: false, category: 'matin' },
           { id: 6, name: 'Dormir dans mon lit', icon: '🛏️', points: 3, done: false, pending: false, category: 'matin' },
           { id: 30, name: 'Mettre mes vêtements', icon: '👗', points: 1, done: false, pending: false, category: 'matin' },
+
+          // --- catégorie: 'ecole' ---
           { id: 7, name: 'Préparer mon sac à diner', icon: '🎒', points: 1, done: false, pending: false, category: 'ecole' },
           { id: 8, name: 'Vider mon sac à diner', icon: '🍱', points: 1, done: false, pending: false, category: 'ecole' },
           { id: 28, name: 'Préparer mon journal de classe et ma farde', icon: '📖', points: 1, done: false, pending: false, category: 'ecole' },
           { id: 29, name: 'Faire les devoirs', icon: '📝', points: 5, done: false, pending: false, category: 'ecole' },
+
+          // --- catégorie: 'soir' ---
           { id: 3, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'soir', hasTimer: true },
           { id: 4, name: 'Prendre mon sirop', icon: '💜', points: 1, done: false, pending: false, category: 'soir' },
           { id: 5, name: 'Prendre ma douche', icon: '🚿', points: 1, done: false, pending: false, category: 'soir' },
           { id: 27, name: 'Se démêler les cheveux', icon: '🧜‍♀️', points: 1, done: false, pending: false, category: 'soir' },
           { id: 31, name: 'Préparer mes vêtements pour le lendemain', icon: '👚', points: 1, done: false, pending: false, category: 'soir' },
+
+          // --- catégorie: 'maison' ---
           { id: 9, name: 'Ranger mes chaussures', icon: '👟', points: 1, done: false, pending: false, category: 'maison' },
           { id: 10, name: 'Ranger mes jeux', icon: '🧸', points: 2, done: false, pending: false, category: 'maison' },
           { id: 14, name: 'Mettre la table', icon: '🍽️', points: 1, done: false, pending: false, category: 'maison' },
@@ -255,10 +268,14 @@
           { id: 40, name: 'Boire 2 gourdes', icon: '🥛', points: 2, done: false, pending: false, category: 'maison' },
           { id: 41, name: 'Aider Mimy', icon: '✨', points: 2, done: false, pending: false, category: 'maison' },
           { id: 42, name: 'Aider Baloo', icon: '🐾', points: 2, done: false, pending: false, category: 'maison' },
+
+          // --- catégorie: 'animaux' ---
           { id: 21, name: "Mettre de l'eau aux chats", icon: '🐱', points: 1, done: false, pending: false, category: 'animaux' },
           { id: 22, name: 'Donner à manger aux poules (samedi/dimanche)', icon: '🐔', points: 2, done: false, pending: false, category: 'animaux' },
           { id: 32, name: 'Nettoyer la litière des chats', icon: '🐱', points: 2, done: false, pending: false, category: 'animaux' },
           { id: 43, name: 'Faire rentrer Caty avant de partir', icon: '🏡', points: 1, done: false, pending: false, category: 'animaux' },
+
+          // --- catégorie: 'nettoyage' ---
           { id: 11, name: 'Changer le lit (1x/semaine)', icon: '🛏️', points: 5, done: false, pending: false, category: 'nettoyage' },
           { id: 12, name: "Passer l'aspirateur dans ma chambre", icon: '🧹', points: 3, done: false, pending: false, category: 'nettoyage' },
           { id: 13, name: 'Faire les poussières dans ma chambre', icon: '🧽', points: 3, done: false, pending: false, category: 'nettoyage' },
@@ -266,6 +283,7 @@
           { id: 25, name: 'Aider maman à nettoyer les vitres', icon: '🪟', points: 6, done: false, pending: false, category: 'nettoyage' }
         ];
 
+        // TARIFS AUGMENTÉS ET ÉQUITABLES
         const rewards = [
           { id: 'r1', cost: 20, name: '20 min de Tablette ou Switch 🎮' },
           { id: 'r2', cost: 30, name: 'Jeu du parent (15 minutes) 🎲' },
@@ -275,7 +293,7 @@
           { id: 'r6', cost: 100, name: 'Choisir le film du week-end 🎬' },
           { id: 'r7', cost: 250, name: 'Une bonne Glace 🍦' },
           { id: 'r8', cost: 400, name: 'Sortie au cinéma 🍿' },
-          { id: 'r9', cost: 500, name: 'Argent de poche (5 euros) 💶' }
+          { id: 'r9', cost: 500, name: 'Argent de poche (5 euros) 💶' },
         ];
 
         const categoriesList = [
@@ -285,7 +303,7 @@
           { id: 'soir', label: 'Soir', icon: '🌙', color: '#e1bee7', voice: 'Missions du soir' },
           { id: 'maison', label: 'Maison', icon: '🏡', color: '#c8e6c9', voice: 'Missions de la maison' },
           { id: 'animaux', label: 'Animaux', icon: '🐱', color: '#ffe0b2', voice: "S'occuper des animaux" },
-          { id: 'nettoyage', label: 'Nettoyage', icon: '🧹', color: '#b3e5fc', voice: 'Grand nettoyage de la semaine' }
+          { id: 'nettoyage', label: 'Nettoyage', icon: '🧹', color: '#b3e5fc', voice: 'Grand nettoyage de la semaine' },
         ];
 
         function App() {
@@ -313,17 +331,20 @@
           const [currentCategory, setCurrentCategory] = React.useState('all');
           const [activeTimers, setActiveTimers] = React.useState({});
 
+          // --- IDÉE 2 REMISE À ZÉRO SANS TOUCHER À LA CAGNOTTE ---
           React.useEffect(() => {
             const now = new Date();
             const todayStr = now.toDateString();
             const lastSavedDate = localStorage.getItem('caly_last_date');
-            const currentDay = now.getDay(); 
+            const currentDay = now.getDay(); // 0 = Dimanche, 1 = Lundi
 
             if (lastSavedDate && lastSavedDate !== todayStr) {
               setTasks(prev => prev.map(t => {
+                // Les tâches quotidiennes se réinitialisent toutes les nuits
                 if (t.category !== 'nettoyage') {
                   return { ...t, done: false, pending: false };
                 }
+                // Si on passe au Lundi (jour 1), on nettoie aussi automatiquement le Grand Nettoyage
                 if (currentDay === 1) {
                   return { ...t, done: false, pending: false };
                 }
@@ -386,7 +407,7 @@
           const formatTime = (seconds) => {
             const m = Math.floor(seconds / 60);
             const s = seconds % 60;
-            return m + ':' + s.toString().padStart(2, '0');
+            return `${m}:${s.toString().padStart(2, '0')}`;
           };
 
           const speak = (text) => {
@@ -414,12 +435,12 @@
           const acceptTask = (id, points) => {
             const task = tasks.find(t => t.id === id);
             if (!task) return;
-            setTasks(tasks.map(t => t.id === id ? { ...t, done: true, pending: false } : t));
+            setTasks(tasks.map(t => t.id === id ? { ...t, done: true, pending: false } : f));
             const newStars = stars + points;
             setStars(newStars);
 
             const now = new Date();
-            const logMessage = task.icon + ' ' + task.name + ' - Validé à ' + String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+            const logMessage = `${task.icon} ${task.name} - Validé à ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             setHistoryLog([logMessage, ...historyLog]);
             speak('Bravo ma princesse !');
 
@@ -549,6 +570,7 @@
                     </div>
                   </div>
 
+                  {/* Boutons de catégories sous forme de badges ronds pastel */}
                   <div className="category-scroll">
                     {categoriesList.map(cat => (
                       <div 
@@ -571,6 +593,7 @@
                     ))}
                   </div>
 
+                  {/* Liste des cartes illustrées */}
                   {filteredTasks.map(task => (
                     <div key={task.id} className="task-card">
                       <div className="task-illustration-box">
@@ -606,6 +629,7 @@
                     </div>
                   ))}
 
+                  {/* Catalogue Magique */}
                   <div className="card" style={{ background: '#fffdeb', border: '2px solid #ffd700', borderRadius: '24px', textAlign: 'left' }}>
                     <h3 style={{ margin: '0 0 12px 0', fontSize: '20px', color: '#5d4037', fontFamily: 'Georgia, serif' }}>👑 Boutique magique</h3>
                     {rewards.map(r => (
