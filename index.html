@@ -12,215 +12,217 @@
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
             margin: 0; 
             padding: 20px; 
-            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); 
+            background: linear-gradient(135deg, #fad0c4 0%, #ffd1ff 100%); 
             min-height: 100vh; 
         }
         
-        /* Style Espace Parent */
         .btn-mode { 
-            padding: 12px 25px; 
-            font-size: 15px; 
-            border-radius: 30px; 
-            border: 2px solid #b5c7f7; 
-            background: rgba(255, 255, 255, 0.9); 
+            padding: 10px 22px; 
+            font-size: 14px; 
+            border-radius: 25px; 
+            border: none; 
+            background: rgba(255, 255, 255, 0.7); 
+            backdrop-filter: blur(5px);
             cursor: pointer; 
             font-weight: bold;
-            color: #4b6cb7;
-            box-shadow: 0 4px 15px rgba(166, 193, 238, 0.4);
+            color: #6c5ce7;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             transition: all 0.3s ease;
         }
         .btn-mode:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(166, 193, 238, 0.6);
+            background: #ffffff;
         }
 
-        /* Grand Badge Princesse Royal - Style Nacré Miroir Magique comme sur l'image */
         .royal-header {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            border-radius: 30px;
-            padding: 35px 20px;
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(15px);
+            border-radius: 32px;
+            padding: 40px 20px;
             text-align: center;
-            box-shadow: 0 15px 35px rgba(75, 108, 183, 0.15);
-            border: 3px solid #ffd700; 
+            box-shadow: 0 20px 40px rgba(255, 154, 158, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.6); 
             margin-bottom: 30px;
             position: relative;
-            overflow: hidden;
-        }
-        .royal-header::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0; height: 6px;
-            background: linear-gradient(90deg, #ffd700, #ff9a9e, #ffd700);
         }
 
-        /* Macaron Sirène Flottant Magnifié de l'image 2 */
         .royal-cat-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
+        
         .royal-cat-badge {
-            width: 110px;
-            height: 110px;
-            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-            border: 4px solid #ffffff;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle at 30% 30%, #ffffff 0%, #fbc2eb 50%, #a6c1ee 100%);
+            border: 6px solid #ffffff;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 65px;
-            box-shadow: 0 8px 25px rgba(142, 197, 252, 0.5);
+            box-shadow: 0 15px 35px rgba(166, 193, 238, 0.6), inset 0 -10px 20px rgba(0,0,0,0.05);
             animation: floatSirene 4s ease-in-out infinite;
             position: relative;
         }
-        .royal-cat-badge::after {
-            content: '💜';
+
+        .badge-heart-decor {
             position: absolute;
-            bottom: -5px;
-            font-size: 22px;
+            bottom: -12px;
+            width: 32px;
+            height: 32px;
+            background: #a29bfe;
+            transform: rotate(45deg);
+            box-shadow: 0 4px 10px rgba(162, 155, 254, 0.5);
+            border: 2px solid #ffffff;
+            border-radius: 4px 4px 0 4px;
         }
+        .badge-heart-decor::before, .badge-heart-decor::after {
+            content: '';
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            background: #a29bfe;
+            border-radius: 50%;
+        }
+        .badge-heart-decor::before { top: -16px; left: 0; }
+        .badge-heart-decor::after { left: -16px; top: 0; }
 
         @keyframes floatSirene {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-8px) rotate(3deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-10px) scale(1.02); }
+            100% { transform: translateY(0px) scale(1); }
         }
 
         .princess-title {
-            font-size: 38px;
-            font-weight: 800;
-            margin: 5px 0;
-            color: #3f51b5;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.08);
-            font-family: 'Georgia', serif;
-            letter-spacing: 1px;
+            font-size: 42px;
+            font-weight: 900;
+            margin: 10px 0 5px 0;
+            color: #2d3436;
+            font-family: 'Segoe UI', sans-serif;
+            letter-spacing: -0.5px;
         }
 
-        /* Médaillon de Score Magique */
         .star-medallion {
-            background: linear-gradient(135deg, #3f51b5 0%, #a6c1ee 100%);
+            background: linear-gradient(90deg, #ff7675 0%, #6c5ce7 100%);
             color: white;
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            padding: 12px 35px;
-            border-radius: 50px;
-            font-size: 26px;
+            gap: 8px;
+            padding: 14px 40px;
+            border-radius: 40px;
+            font-size: 24px;
             font-weight: bold;
-            box-shadow: 0 6px 20px rgba(63, 81, 181, 0.3);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.3);
             margin-top: 15px;
-            border: 2px solid #ffffff;
+            border: 2px solid rgba(255, 255, 255, 0.4);
         }
 
-        /* Onglets de Catégories sous forme de Badges Ronds Pastel (Idée 1 validée) */
         .category-scroll {
             display: flex;
-            gap: 15px;
+            gap: 20px;
             overflow-x: auto;
-            padding: 10px 5px 20px 5px;
-            margin-bottom: 20px;
+            padding: 15px 5px;
+            margin-bottom: 25px;
             justify-content: center;
-            flex-wrap: wrap;
         }
         .category-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             cursor: pointer;
+            transition: all 0.2s ease;
         }
         .btn-category-round {
-            width: 60px;
-            height: 60px;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
-            border: 3px solid #ffffff;
+            border: 4px solid #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 28px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            transition: all 0.25s ease;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
-        .category-item:hover .btn-category-round {
-            transform: scale(1.1) translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+        .category-item:hover .btn-category-round, .category-item.active .btn-category-round {
+            transform: scale(1.15) translateY(-4px);
+            box-shadow: 0 10px 25px rgba(108, 92, 231, 0.2);
         }
         .category-label {
             font-size: 13px;
-            font-weight: bold;
-            color: #444;
-            transition: color 0.2s;
+            font-weight: 700;
+            color: #636e72;
         }
         .category-item.active .category-label {
-            color: #3f51b5;
+            color: #2d3436;
             font-weight: 800;
         }
 
-        /* Cartes de Tâches Illustrées et Épurées comme la maquette */
         .task-card { 
             background: #ffffff; 
-            border-radius: 24px; 
-            padding: 20px 24px; 
+            border-radius: 28px; 
+            padding: 22px 28px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            margin-bottom: 15px; 
-            box-shadow: 0 6px 20px rgba(0,0,0,0.04); 
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            transition: all 0.25s ease;
+            margin-bottom: 16px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.02); 
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: all 0.3s ease;
         }
         .task-card:hover {
-            transform: translateX(4px) scale(1.01);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.07);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.05);
         }
 
         .task-illustration-box {
-            width: 55px;
-            height: 55px;
-            border-radius: 16px;
-            background: #f0f4ff;
+            width: 60px;
+            height: 60px;
+            border-radius: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 30px;
             flex-shrink: 0;
+            box-shadow: inset 0 2px 5px rgba(255,255,255,0.5);
         }
 
         .btn-valider { 
-            padding: 12px 25px; 
+            padding: 14px 28px; 
             font-size: 15px; 
-            border-radius: 18px; 
+            border-radius: 20px; 
             border: none; 
             color: #fff; 
             cursor: pointer; 
             font-weight: bold; 
             white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: all 0.2s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
         }
         .btn-valider:hover:not(:disabled) {
-            transform: scale(1.05);
+            transform: scale(1.03);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
         }
         
         .btn-timer { 
-            padding: 8px 16px; 
+            padding: 8px 18px; 
             font-size: 13px; 
-            border-radius: 12px; 
+            border-radius: 14px; 
             border: none; 
             color: #fff; 
             cursor: pointer; 
             font-weight: bold; 
-            margin-top: 10px; 
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            margin-top: 12px; 
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
 
-        .btn-parent { padding: 14px; border: none; border-radius: 14px; cursor: pointer; font-weight: bold; flex: 1; color: #fff; font-size: 14px; }
-        .card { background: #fff; border-radius: 24px; padding: 25px; box-shadow: 0 6px 20px rgba(0,0,0,0.03); margin-bottom: 25px; }
+        .btn-parent { padding: 14px; border: none; border-radius: 16px; cursor: pointer; font-weight: bold; flex: 1; color: #fff; font-size: 14px; }
+        .card { background: #fff; border-radius: 28px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); margin-bottom: 25px; }
     </style>
 </head>
 <body>
@@ -228,62 +230,65 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        const iconsSVG = {
+          sirene: <svg width="75" height="75" viewBox="0 0 64 64" fill="none"><path d="M32 4C24 4 18 10 18 18C18 28 32 42 32 42C32 42 46 28 46 18C46 10 40 4 32 4Z" fill="#ff9a9e"/><circle cx="32" cy="16" r="8" fill="#ffe0bd"/><path d="M22 40C22 50 32 60 32 60C32 60 42 50 42 40H22Z" fill="#4facfe"/><path d="M28 54L20 60V50L28 54ZM36 54L44 60V50L36 54Z" fill="#00f2fe"/><path d="M26 14C26 14 28 11 32 11C36 11 38 14 38 14" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round"/></svg>,
+          brosse: <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#ff7675" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2l4 4-14 14H2v-4L16 2z"/></svg>,
+          puff: <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#e67e22" stroke-width="2"><path d="M12 2v4M12 18v4M4 12h4M16 12h4" stroke-linecap="round"/><circle cx="12" cy="12" r="5" fill="#f39c12"/></svg>,
+          coiffer: <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#9b59b6" stroke-width="2"><path d="M3 5h18v4H3z"/><path d="M5 9v10M9 9v10M13 9v10M17 9v10M21 9v10" stroke-linecap="round"/></svg>,
+          lit: <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#2980b9" stroke-width="2" stroke-linecap="round"><path d="M2 4v16M22 10v10M2 11h20M4 11V7h6v4M11 11V8h9v3" fill="#e3fafc"/></svg>,
+          habits: <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#16a085" stroke-width="2"><path d="M20.37 4.65L12 12 3.63 4.65A2 2 0 0 1 5 1.5h14a2 2 0 0 1 1.37 3.15z" fill="#e8f8f5"/><path d="M12 12v10.5M3.5 8.5l3.5 14h10l3.5-14" stroke-linecap="round"/></svg>,
+          assiettes: <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#2c3e50" stroke-width="2"><circle cx="12" cy="12" r="8" fill="#f8f9fa"/><circle cx="12" cy="12" r="5" fill="#ffffff"/><path d="M19 19l3 3" stroke-linecap="round"/></svg>,
+          lessive: <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#27ae60" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" fill="#e8f8f5"/><circle cx="12" cy="13" r="5" stroke-dasharray="2 2"/><circle cx="12" cy="5" r="1"/></svg>,
+          sac: <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#d35400" stroke-width="2"><rect x="5" y="8" width="14" height="13" rx="2"/><path d="M9 8V5a3 3 0 0 1 6 0v3" stroke-linecap="round"/></svg>,
+          animaux: <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#e056fd" stroke-width="2"><circle cx="12" cy="12" r="7" fill="#fdf0ff"/><path d="M7 7c0-2 3-3 3-3s1 2 1 3M17 7c0-2-3-3-3-3s-1 2-1 3" stroke-linecap="round" fill="#fdf0ff"/></svg>,
+          menage: <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#7ed6df" stroke-width="2" stroke-linecap="round"><path d="M19 21H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2z"/><path d="M12 5v16M3 13h18"/></svg>
+        };
+
         const defaultTasks = [
-          // --- catégorie: 'matin' ---
-          { id: 1, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'matin', hasTimer: true },
-          { id: 2, name: 'Faire mon puff orange', icon: '💨', points: 1, done: false, pending: false, category: 'matin' },
-          { id: 26, name: 'Se coiffer', icon: '🪮', points: 1, done: false, pending: false, category: 'matin' },
-          { id: 6, name: 'Dormir dans mon lit', icon: '🛏️', points: 3, done: false, pending: false, category: 'matin' },
-          { id: 30, name: 'Mettre mes vêtements', icon: '👗', points: 1, done: false, pending: false, category: 'matin' },
-
-          // --- catégorie: 'ecole' ---
-          { id: 7, name: 'Préparer mon sac à diner', icon: '🎒', points: 1, done: false, pending: false, category: 'ecole' },
-          { id: 8, name: 'Vider mon sac à diner', icon: '🍱', points: 1, done: false, pending: false, category: 'ecole' },
-          { id: 28, name: 'Préparer mon journal de classe et ma farde', icon: '📖', points: 1, done: false, pending: false, category: 'ecole' },
-          { id: 29, name: 'Faire les devoirs', icon: '📝', points: 5, done: false, pending: false, category: 'ecole' },
-
-          // --- catégorie: 'soir' ---
-          { id: 3, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'soir', hasTimer: true },
-          { id: 4, name: 'Prendre mon sirop', icon: '💜', points: 1, done: false, pending: false, category: 'soir' },
-          { id: 5, name: 'Prendre ma douche', icon: '🚿', points: 1, done: false, pending: false, category: 'soir' },
-          { id: 27, name: 'Se démêler les cheveux', icon: '🧜‍♀️', points: 1, done: false, pending: false, category: 'soir' },
-          { id: 31, name: 'Préparer mes vêtements pour le lendemain', icon: '👚', points: 1, done: false, pending: false, category: 'soir' },
-
-          // --- catégorie: 'maison' ---
-          { id: 9, name: 'Ranger mes chaussures', icon: '👟', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 10, name: 'Ranger mes jeux', icon: '🧸', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 14, name: 'Mettre la table', icon: '🍽️', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 15, name: 'Débarrasser la table', icon: '🥣', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 16, name: 'Vider le lave-vaisselle', icon: '🍽️', points: 3, done: false, pending: false, category: 'maison' },
-          { id: 17, name: 'Mettre mes vêtements dans le bac à linge', icon: '👕', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 18, name: 'Faire tourner une machine à lessiver', icon: '🧼', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 19, name: 'Faire sécher la machine', icon: '🌀', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 20, name: 'Ranger mon linge propre', icon: '🧺', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 23, name: "Passer l'aspirateur", icon: '🧹', points: 4, done: false, pending: false, category: 'maison' },
-          { id: 35, name: 'Faire tourner le lave-vaisselle', icon: '🧼', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 36, name: 'Aider à faire les courses', icon: '🛒', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 37, name: 'Ranger les courses', icon: '🛒', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 38, name: 'Vider les poubelles de la maison', icon: '🗑️', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 39, name: 'Aider maman', icon: '❤️', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 40, name: 'Boire 2 gourdes', icon: '🥛', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 41, name: 'Aider Mimy', icon: '✨', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 42, name: 'Aider Baloo', icon: '🐾', points: 2, done: false, pending: false, category: 'maison' },
-
-          // --- catégorie: 'animaux' ---
-          { id: 21, name: "Mettre de l'eau aux chats", icon: '🐱', points: 1, done: false, pending: false, category: 'animaux' },
-          { id: 22, name: 'Donner à manger aux poules (samedi/dimanche)', icon: '🐔', points: 2, done: false, pending: false, category: 'animaux' },
-          { id: 32, name: 'Nettoyer la litière des chats', icon: '🐱', points: 2, done: false, pending: false, category: 'animaux' },
-          { id: 43, name: 'Faire rentrer Caty avant de partir', icon: '🏡', points: 1, done: false, pending: false, category: 'animaux' },
-
-          // --- catégorie: 'nettoyage' ---
-          { id: 11, name: 'Changer le lit (1x/semaine)', icon: '🛏️', points: 5, done: false, pending: false, category: 'nettoyage' },
-          { id: 12, name: "Passer l'aspirateur dans ma chambre", icon: '🧹', points: 3, done: false, pending: false, category: 'nettoyage' },
-          { id: 13, name: 'Faire les poussières dans ma chambre', icon: '🧽', points: 3, done: false, pending: false, category: 'nettoyage' },
-          { id: 24, name: 'Laver mes cheveux (le dimanche)', icon: '🧴', points: 3, done: false, pending: false, category: 'nettoyage' },
-          { id: 25, name: 'Aider maman à nettoyer les vitres', icon: '🪟', points: 6, done: false, pending: false, category: 'nettoyage' }
+          // REMISE EN PLACE DE HASTIMER: TRUE SUR LE MATIN
+          { id: 1, name: 'Brosser mes dents', icon: iconsSVG.brosse, bgBox: '#ffeaa7', points: 1, done: false, pending: false, category: 'matin', hasTimer: true },
+          { id: 2, name: 'Faire mon puff orange', icon: iconsSVG.puff, bgBox: '#ffe0b2', points: 1, done: false, pending: false, category: 'matin' },
+          { id: 26, name: 'Se coiffer', icon: iconsSVG.coiffer, bgBox: '#f8c291', points: 1, done: false, pending: false, category: 'matin' },
+          { id: 6, name: 'Dormir dans mon lit', icon: iconsSVG.lit, bgBox: '#dff9fb', points: 3, done: false, pending: false, category: 'matin' },
+          { id: 30, name: 'Mettre mes vêtements', icon: iconsSVG.habits, bgBox: '#e8f8f5', points: 1, done: false, pending: false, category: 'matin' },
+          { id: 7, name: 'Préparer mon sac à diner', icon: iconsSVG.sac, bgBox: '#ffccbc', points: 1, done: false, pending: false, category: 'ecole' },
+          { id: 8, name: 'Vider mon sac à diner', icon: iconsSVG.sac, bgBox: '#ffccbc', points: 1, done: false, pending: false, category: 'ecole' },
+          { id: 28, name: 'Préparer mon journal de classe et ma farde', icon: iconsSVG.sac, bgBox: '#ffe0b2', points: 1, done: false, pending: false, category: 'ecole' },
+          { id: 29, name: 'Faire les devoirs', icon: iconsSVG.coiffer, bgBox: '#f5f5f5', points: 5, done: false, pending: false, category: 'ecole' },
+          { id: 3, name: 'Brosser mes dents', icon: iconsSVG.brosse, bgBox: '#ffeaa7', points: 1, done: false, pending: false, category: 'soir', hasTimer: true },
+          { id: 4, name: 'Prendre mon sirop', icon: iconsSVG.puff, bgBox: '#e1bee7', points: 1, done: false, pending: false, category: 'soir' },
+          { id: 5, name: 'Prendre ma douche', icon: iconsSVG.brosse, bgBox: '#e3fafc', points: 1, done: false, pending: false, category: 'soir' },
+          { id: 27, name: 'Se démêler les cheveux', icon: iconsSVG.coiffer, bgBox: '#fdf0ff', points: 1, done: false, pending: false, category: 'soir' },
+          { id: 31, name: 'Préparer mes vêtements pour le lendemain', icon: iconsSVG.habits, bgBox: '#e8f8f5', points: 1, done: false, pending: false, category: 'soir' },
+          { id: 9, name: 'Ranger mes chaussures', icon: iconsSVG.habits, bgBox: '#f5f5f5', points: 1, done: false, pending: false, category: 'maison' },
+          { id: 10, name: 'Ranger mes jeux', icon: iconsSVG.sac, bgBox: '#fff9c4', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 14, name: 'Mettre la table', icon: iconsSVG.assiettes, bgBox: '#ffffff', points: 1, done: false, pending: false, category: 'maison' },
+          { id: 15, name: 'Débarrasser la table', icon: iconsSVG.assiettes, bgBox: '#ffffff', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 16, name: 'Vider le lave-vaisselle', icon: iconsSVG.assiettes, bgBox: '#ffffff', points: 3, done: false, pending: false, category: 'maison' },
+          { id: 17, name: 'Mettre mes vêtements dans le bac à linge', icon: iconsSVG.habits, bgBox: '#e8f8f5', points: 1, done: false, pending: false, category: 'maison' },
+          { id: 18, name: 'Faire tourner une machine à lessiver', icon: iconsSVG.lessive, bgBox: '#e8f8f5', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 19, name: 'Faire sécher la machine', icon: iconsSVG.lessive, bgBox: '#e3fafc', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 20, name: 'Ranger mon linge propre', icon: iconsSVG.habits, bgBox: '#e8f8f5', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 23, name: "Passer l'aspirateur", icon: iconsSVG.menage, bgBox: '#fafafa', points: 4, done: false, pending: false, category: 'maison' },
+          { id: 35, name: 'Faire tourner le lave-vaisselle', icon: iconsSVG.lessive, bgBox: '#e8f8f5', points: 1, done: false, pending: false, category: 'maison' },
+          { id: 36, name: 'Aider à faire les courses', icon: iconsSVG.sac, bgBox: '#ffe0b2', points: 1, done: false, pending: false, category: 'maison' },
+          { id: 37, name: 'Ranger les courses', icon: iconsSVG.sac, bgBox: '#ffe0b2', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 38, name: 'Vider les poubelles de la maison', icon: iconsSVG.menage, bgBox: '#fafafa', points: 1, done: false, pending: false, category: 'maison' },
+          { id: 39, name: 'Aider maman', icon: iconsSVG.puff, bgBox: '#ffccd5', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 40, name: 'Boire 2 gourdes', icon: iconsSVG.assiettes, bgBox: '#e3fafc', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 41, name: 'Aider Mimy', icon: iconsSVG.puff, bgBox: '#fff9c4', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 42, name: 'Aider Baloo', icon: iconsSVG.animaux, bgBox: '#ffe0b2', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 21, name: "Mettre de l'eau aux chats", icon: iconsSVG.animaux, bgBox: '#ffe0b2', points: 1, done: false, pending: false, category: 'animaux' },
+          { id: 22, name: 'Donner à manger aux poules (samedi/dimanche)', icon: iconsSVG.animaux, bgBox: '#fff9c4', points: 2, done: false, pending: false, category: 'animaux' },
+          { id: 32, name: 'Nettoyer la litière des chats', icon: iconsSVG.animaux, bgBox: '#ffe0b2', points: 2, done: false, pending: false, category: 'animaux' },
+          { id: 43, name: 'Faire rentrer Caty avant de partir', icon: iconsSVG.lit, bgBox: '#dff9fb', points: 1, done: false, pending: false, category: 'animaux' },
+          { id: 11, name: 'Changer le lit (1x/semaine)', icon: iconsSVG.lit, bgBox: '#dff9fb', points: 5, done: false, pending: false, category: 'nettoyage' },
+          { id: 12, name: "Passer l'aspirateur dans ma chambre", icon: iconsSVG.menage, bgBox: '#fafafa', points: 3, done: false, pending: false, category: 'nettoyage' },
+          { id: 13, name: 'Faire les poussières dans ma chambre', icon: iconsSVG.menage, bgBox: '#fafafa', points: 3, done: false, pending: false, category: 'nettoyage' },
+          { id: 24, name: 'Laver mes cheveux (le dimanche)', icon: iconsSVG.brosse, bgBox: '#e1bee7', points: 3, done: false, pending: false, category: 'nettoyage' },
+          { id: 25, name: 'Aider maman à nettoyer les vitres', icon: iconsSVG.menage, bgBox: '#e3fafc', points: 6, done: false, pending: false, category: 'nettoyage' }
         ];
 
-        // TARIFS AUGMENTÉS ET ÉQUITABLES
         const rewards = [
           { id: 'r1', cost: 20, name: '20 min de Tablette ou Switch 🎮' },
           { id: 'r2', cost: 30, name: 'Jeu du parent (15 minutes) 🎲' },
@@ -309,7 +314,14 @@
         function App() {
           const [tasks, setTasks] = React.useState(() => {
             const saved = localStorage.getItem('caly_tasks');
-            return saved ? JSON.parse(saved) : defaultTasks;
+            if (saved) {
+              const parsed = JSON.parse(saved);
+              return defaultTasks.map(dt => {
+                const existing = parsed.find(pt => pt.id === dt.id);
+                return existing ? { ...dt, done: existing.done, pending: existing.pending } : dt;
+              });
+            }
+            return defaultTasks;
           });
           const [stars, setStars] = React.useState(() => {
             const saved = localStorage.getItem('caly_stars');
@@ -331,20 +343,17 @@
           const [currentCategory, setCurrentCategory] = React.useState('all');
           const [activeTimers, setActiveTimers] = React.useState({});
 
-          // --- IDÉE 2 REMISE À ZÉRO SANS TOUCHER À LA CAGNOTTE ---
           React.useEffect(() => {
             const now = new Date();
             const todayStr = now.toDateString();
             const lastSavedDate = localStorage.getItem('caly_last_date');
-            const currentDay = now.getDay(); // 0 = Dimanche, 1 = Lundi
+            const currentDay = now.getDay(); 
 
             if (lastSavedDate && lastSavedDate !== todayStr) {
               setTasks(prev => prev.map(t => {
-                // Les tâches quotidiennes se réinitialisent toutes les nuits
                 if (t.category !== 'nettoyage') {
                   return { ...t, done: false, pending: false };
                 }
-                // Si on passe au Lundi (jour 1), on nettoie aussi automatiquement le Grand Nettoyage
                 if (currentDay === 1) {
                   return { ...t, done: false, pending: false };
                 }
@@ -354,7 +363,11 @@
             localStorage.setItem('caly_last_date', todayStr);
           }, []);
 
-          React.useEffect(() => { localStorage.setItem('caly_tasks', JSON.stringify(tasks)); }, [tasks]);
+          React.useEffect(() => {
+            const cleanStorageTasks = tasks.map(t => ({ id: t.id, done: t.done, pending: t.pending }));
+            localStorage.setItem('caly_tasks', JSON.stringify(cleanStorageTasks));
+          }, [tasks]);
+          
           React.useEffect(() => { localStorage.setItem('caly_stars', stars.toString()); }, [stars]);
           React.useEffect(() => { localStorage.setItem('caly_level', level.toString()); }, [level]);
           React.useEffect(() => { localStorage.setItem('caly_parent_pin', parentPassword); }, [parentPassword]);
@@ -435,12 +448,12 @@
           const acceptTask = (id, points) => {
             const task = tasks.find(t => t.id === id);
             if (!task) return;
-            setTasks(tasks.map(t => t.id === id ? { ...t, done: true, pending: false } : f));
+            setTasks(tasks.map(t => t.id === id ? { ...t, done: true, pending: false } : t));
             const newStars = stars + points;
             setStars(newStars);
 
             const now = new Date();
-            const logMessage = `${task.icon} ${task.name} - Validé à ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            const logMessage = `Validé à ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             setHistoryLog([logMessage, ...historyLog]);
             speak('Bravo ma princesse !');
 
@@ -510,13 +523,13 @@
                   </div>
 
                   <div className="card">
-                    <h3 style={{ color: '#333', marginTop: '0' }}>⏳ Missions en attente de bisou-validation :</h3>
+                    <h3 style={{ color: '#333', marginTop: '0' }}>⏳ Missions en attente de validation :</h3>
                     {tasks.filter(t => t.pending).length === 0 ? (
-                      <p style={{ color: '#888', fontStyle: 'italic', margin: '0' }}>Caly n'a pas encore envoyé de mission à valider.</p>
+                      <p style={{ color: '#888', fontStyle: 'italic', margin: '0' }}>Aucune mission en attente.</p>
                     ) : (
                       tasks.filter(t => t.pending).map(task => (
                         <div key={task.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
-                          <span>{task.icon} {task.name} (+{task.points}⭐)</span>
+                          <span>{task.name} (+{task.points}⭐)</span>
                           <div>
                             <button onClick={() => acceptTask(task.id, task.points)} style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', marginRight: '5px', fontWeight: 'bold' }}>Valider</button>
                             <button onClick={() => rejectTask(task.id)} style={{ background: '#f44336', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Refuser</button>
@@ -527,7 +540,7 @@
                   </div>
 
                   <div className="card">
-                    <h3 style={{ color: '#333', marginTop: '0' }}>🛍️ Boutique magique :</h3>
+                    <h3 style={{ color: '#333', marginTop: '0' }}>🛍️ Boutique magique (Mode Maman) :</h3>
                     {rewards.map(r => (
                       <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f9f9f9', color: '#333' }}>
                         <span style={{ color: stars >= r.cost ? '#333' : '#aaa' }}>{r.name} <strong>({r.cost} ⭐)</strong></span>
@@ -535,33 +548,19 @@
                       </div>
                     ))}
                   </div>
-
-                  <div className="card">
-                    <h3 style={{ color: '#333', marginTop: '0' }}>📊 Historique de la semaine :</h3>
-                    <div style={{ maxHeight: '150px', overflowY: 'auto', background: '#fafafa', padding: '12px', borderRadius: '10px', border: '1px solid #eee' }}>
-                      {historyLog.length === 0 ? <p style={{ color: '#888', fontStyle: 'italic', fontSize: '13px', margin: '0' }}>Rien dans l'historique pour le moment.</p> : historyLog.map((log, i) => <p key={i} style={{ color: '#555', margin: '5px 0', fontSize: '13px', borderBottom: '1px dashed #eee', paddingBottom: '4px' }}>{log}</p>)}
-                    </div>
-                  </div>
-
-                  <div style={{ textAlign: 'center' }}>
-                    <button onClick={resetWeek} style={{ padding: '12px 20px', background: '#333', color: '#fff', border: 'none', borderRadius: '10px', cursor: 'pointer', fontWeight: 'bold' }}>🔄 Recommencer la semaine</button>
-                  </div>
                 </div>
               ) : (
-                /* ================= MONDE DE CALY (INTERFACE ULTRA DE LA MAQUETTE) ================= */
+                /* ================= INTERFACE PREMIUM CALY CHAT ================= */
                 <div>
                   <div className="royal-header">
                     <div className="royal-cat-container">
-                      <div className="royal-cat-badge">🧜‍♀️</div>
-                    </div>
-                    <h1 className="princess-title" onClick={() => speak('Bonjour Caly chat ! Passe une magnifique journée !')}>Caly chat</h1>
-                    <p style={{ color: '#3f51b5', margin: '0', fontSize: '15px', fontWeight: 'bold', letterSpacing: '0.5px' }}>✨ ROYAUME DE NIVEAU {level} ✨</p>
-                    
-                    {stars >= 20 && (
-                      <div style={{ fontSize: '55px', margin: '15px 0 5px 0', animation: 'floatSirene 3s infinite', cursor: 'pointer' }} onClick={() => speak('Ton coffre à cadeaux magique t’attend dans la boutique avec maman !')}>
-                        🎁✨
+                      <div className="royal-cat-badge">
+                        {iconsSVG.sirene}
+                        <div className="badge-heart-decor"></div>
                       </div>
-                    )}
+                    </div>
+                    <h1 className="princess-title" onClick={() => speak('Bonjour Caly chat !')}>Caly chat</h1>
+                    <p style={{ color: '#6c5ce7', margin: '0', fontSize: '15px', fontWeight: 'bold' }}>✨ MONDE DE NIVEAU {level} ✨</p>
                     
                     <div>
                       <div className="star-medallion">
@@ -570,7 +569,6 @@
                     </div>
                   </div>
 
-                  {/* Boutons de catégories sous forme de badges ronds pastel */}
                   <div className="category-scroll">
                     {categoriesList.map(cat => (
                       <div 
@@ -582,34 +580,32 @@
                           className="btn-category-round"
                           style={{ 
                             background: cat.color,
-                            border: currentCategory === cat.id ? '4px solid #3f51b5' : '3px solid #ffffff',
-                            transform: currentCategory === cat.id ? 'scale(1.1)' : 'none'
+                            border: currentCategory === cat.id ? '4px solid #6c5ce7' : '3px solid #ffffff'
                           }}
                         >
-                          {cat.icon}
+                          <span style={{ fontSize: '24px' }}>{cat.icon}</span>
                         </div>
                         <span className="category-label">{cat.label}</span>
                       </div>
                     ))}
                   </div>
 
-                  {/* Liste des cartes illustrées */}
                   {filteredTasks.map(task => (
                     <div key={task.id} className="task-card">
-                      <div className="task-illustration-box">
+                      <div className="task-illustration-box" style={{ backgroundColor: task.bgBox }}>
                         {task.icon}
                       </div>
                       
-                      <div style={{ textAlign: 'left', color: '#333', flexGrow: 1, paddingLeft: '15px', cursor: 'pointer' }} onClick={() => speak(task.name)}>
-                        <h3 style={{ margin: '0', fontSize: '16px', color: '#2c3e50', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700' }}>
+                      <div style={{ textAlign: 'left', color: '#333', flexGrow: 1, paddingLeft: '18px', cursor: 'pointer' }} onClick={() => speak(task.name)}>
+                        <h3 style={{ margin: '0', fontSize: '17px', color: '#2d3436', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700' }}>
                           <span>{task.name}</span>
                           <span style={{ fontSize: '13px', color: '#a6c1ee' }}>🔊</span>
                         </h3>
-                        <p style={{ margin: '4px 0 0 0', color: '#3f51b5', fontSize: '13px', fontWeight: 'bold' }}>+{task.points} {task.points > 1 ? 'étoiles' : 'étoile'}</p>
+                        <p style={{ margin: '4px 0 0 0', color: '#6c5ce7', fontSize: '13px', fontWeight: 'bold' }}>+{task.points} {task.points > 1 ? 'étoiles' : 'étoile'}</p>
                         
                         {task.hasTimer && !task.done && !task.pending && (
                           <div>
-                            <button className="btn-timer" onClick={(e) => handleTimerClick(task.id, e)} style={{ background: activeTimers[task.id] ? '#ef5350' : '#7e57c2' }}>
+                            <button className="btn-timer" onClick={(e) => handleTimerClick(task.id, e)} style={{ background: activeTimers[task.id] ? '#ef5350' : '#6c5ce7' }}>
                               {activeTimers[task.id] ? `🛑 ${formatTime(activeTimers[task.id])}` : '⏱️ 2 min'}
                             </button>
                           </div>
@@ -620,7 +616,7 @@
                         disabled={task.done || task.pending} 
                         className="btn-valider" 
                         style={{ 
-                          background: task.done ? '#4caf50' : task.pending ? '#ffa726' : 'linear-gradient(135deg, #4b6cb7 0%, #182848 100%)',
+                          background: task.done ? '#4caf50' : task.pending ? '#ffa726' : 'linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%)',
                           cursor: (task.done || task.pending) ? 'default' : 'pointer'
                         }}
                       >
@@ -629,9 +625,8 @@
                     </div>
                   ))}
 
-                  {/* Catalogue Magique */}
                   <div className="card" style={{ background: '#fffdeb', border: '2px solid #ffd700', borderRadius: '24px', textAlign: 'left' }}>
-                    <h3 style={{ margin: '0 0 12px 0', fontSize: '20px', color: '#5d4037', fontFamily: 'Georgia, serif' }}>👑 Boutique magique</h3>
+                    <h3 style={{ margin: '0 0 12px 0', fontSize: '20px', color: '#5d4037', fontFamily: 'Georgia, serif' }}>🛍️ Boutique magique</h3>
                     {rewards.map(r => (
                       <p key={r.id} style={{ margin: '8px 0', fontSize: '16px', color: stars >= r.cost ? '#2e7d32' : '#555', fontWeight: stars >= r.cost ? 'bold' : 'normal' }}>
                         {stars >= r.cost ? '⭐ ' : '🔒 '} <strong>{r.cost} ⭐</strong> = {r.name}
