@@ -13,6 +13,7 @@
         .card { background: #fff; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 25px; }
         .task-card { background: #fff; border-radius: 15px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #ffe4e1; }
         .btn-valider { padding: 10px 15px; font-size: 15px; border-radius: 10px; border: none; color: #fff; cursor: pointer; font-weight: bold; white-space: nowrap; }
+        .btn-timer { padding: 8px 12px; font-size: 14px; border-radius: 10px; border: none; color: #fff; cursor: pointer; font-weight: bold; margin-top: 5px; background: #9c27b0; display: inline-block; }
         .btn-parent { padding: 10px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; flex: 1; color: #fff; }
     </style>
 </head>
@@ -23,7 +24,7 @@
     <script type="text/babel">
         const defaultTasks = [
           // --- catégorie: 'matin' ---
-          { id: 1, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'matin' },
+          { id: 1, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'matin', hasTimer: true },
           { id: 2, name: 'Faire mon puff orange', icon: '💨', points: 1, done: false, pending: false, category: 'matin' },
           { id: 26, name: 'Se coiffer', icon: '🪮', points: 1, done: false, pending: false, category: 'matin' },
           { id: 6, name: 'Dormir dans mon lit', icon: '✨', points: 3, done: false, pending: false, category: 'matin' },
@@ -36,7 +37,7 @@
           { id: 29, name: 'Faire les devoirs', icon: '📝', points: 5, done: false, pending: false, category: 'ecole' },
 
           // --- catégorie: 'soir' ---
-          { id: 3, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'soir' },
+          { id: 3, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'soir', hasTimer: true },
           { id: 4, name: 'Prendre mon sirop', icon: '💜', points: 1, done: false, pending: false, category: 'soir' },
           { id: 5, name: 'Prendre ma douche', icon: '🚿', points: 1, done: false, pending: false, category: 'soir' },
           { id: 27, name: 'Se démêler les cheveux', icon: '🧜‍♀️', points: 1, done: false, pending: false, category: 'soir' },
@@ -123,6 +124,9 @@
           });
           const [childMode, setChildMode] = React.useState(false); 
           const [currentCategory, setCurrentCategory] = React.useState('all');
+          
+          // Gestion des minuteurs par ID de tâche
+          const [activeTimers, setActiveTimers] = React.useState({});
 
           React.useEffect(() => {
             const todayStr = new Date().toDateString();
@@ -133,7 +137,6 @@
             localStorage.setItem('caly_last_date', todayStr);
           }, []);
 
-          // Synchronisation automatique si des titres ou icônes changent dans le code
           React.useEffect(() => {
             const saved = localStorage.getItem('caly_tasks');
             if (saved) {
@@ -154,6 +157,76 @@
           React.useEffect(() => { localStorage.setItem('caly_level', level.toString()); }, [level]);
           React.useEffect(() => { localStorage.setItem('caly_parent_pin', parentPassword); }, [parentPassword]);
           React.useEffect(() => { localStorage.setItem('caly_history_log', JSON.stringify(historyLog)); }, [historyLog]);
+
+          // Effet pour faire descendre les minuteurs actifs
+          React.useEffect(() => {
+            const interval = setInterval(() => {
+              setActiveTimers(prev => {
+                const next = { ...prev };
+                Object.keys(next).forEach(id => {
+                  if (next[id] > 1) {
+                    next[id] -= 1;
+                  } else {
+                    // Fin du minuteur !
+                    delete next[id];
+                    triggerTimerEnd();
+                  }
+                });
+                return next;
+              });
+            }, 1000);
+            return () => clearInterval(interval);
+          }, []);
+
+          const triggerTimerEnd = () => {
+            // Création d'un bip sonore de fin
+            try {
+              const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+              const oscillator = audioCtx.createOscillator();
+              const gainNode = audioCtx.createGain();
+              oscillator.connect(gainNode);
+              gainNode.connect(audioCtx.destination);
+              oscillator.type = 'sine';
+              oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Note A5 (bip aigu)
+              gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
+              oscillator.start();
+              oscillator.stop(audioCtx.currentTime + 0.3);
+              setTimeout(() => {
+                const osc2 = audioCtx.createOscillator();
+                osc2.connect(gainNode);
+                osc2.type = 'sine';
+                osc2.frequency.setValueAtTime(880, audioCtx.currentTime);
+                osc2.start();
+                osc2.stop(audioCtx.currentTime + 0.3);
+              }, 400);
+            } catch (e) { console.log(e); }
+
+            setTimeout(() => {
+              speak('Bravo ma princesse, tu as fini de brosser tes dents !');
+            }, 800);
+          };
+
+          const handleTimerClick = (id, e) => {
+            e.stopPropagation(); // Évite de déclencher la synthèse vocale de la ligne entière
+            if (activeTimers[id]) {
+              // Si déjà actif, on l'arrête
+              setActiveTimers(prev => {
+                const next = { ...prev };
+                delete next[id];
+                return next;
+              });
+            } else {
+              // Lance le chrono à 120 secondes (2 minutes)
+              setActiveTimers(prev => ({ ...prev, [id]: 120 }));
+              speak('C’est parti pour 2 minutes de brossage !');
+            }
+          };
+
+          const formatTime = (seconds) => {
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return `${m}:${s.toString().padStart(2, '0')}`;
+          };
 
           const speak = (text) => {
             window.speechSynthesis.cancel();
@@ -201,7 +274,7 @@
           const handleBonus = () => {
             const newStars = stars + 15;
             setStars(newStars);
-            setHistoryLog([`✨ BONUS PARENTAL (+15 ⭐)`, ...historyLog]);
+            setHistoryLog([`✨ BONUS PARENTAL (+10 ⭐)`, ...historyLog]);
             speak('Super bonus pour ma princesse !');
             const targetLevel = Math.floor(newStars / 60) + 1;
             if (targetLevel > level) setLevel(targetLevel);
@@ -318,6 +391,15 @@
                           <span style={{ fontSize: '14px', color: '#ff69b4' }}>🔊</span>
                         </h3>
                         <p style={{ margin: '5px 0 0 0', color: '#888', fontSize: '14px' }}>+{task.points} {task.points > 1 ? 'étoiles' : 'étoile'}</p>
+                        
+                        {/* Affichage du Minuteur si disponible pour la tâche */}
+                        {task.hasTimer && !task.done && !task.pending && (
+                          <div>
+                            <button className="btn-timer" onClick={(e) => handleTimerClick(task.id, e)} style={{ background: activeTimers[task.id] ? '#f44336' : '#9c27b0' }}>
+                              {activeTimers[task.id] ? `🛑 Arrêter (${formatTime(activeTimers[task.id])})` : '⏱️ Lancer 2 min'}
+                            </button>
+                          </div>
+                        )}
                       </div>
                       <button onClick={() => requestTaskValidation(task.id)} disabled={task.done || task.pending} className="btn-valider" style={{ background: task.done ? '#4caf50' : task.pending ? '#ff9800' : '#ff69b4' }}>
                         {task.done ? '✓ Fait' : task.pending ? 'Attente maman ⏳' : 'Valider 🎉'}
