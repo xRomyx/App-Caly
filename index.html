@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caly ✨</title>
+    <title>Caly chat ✨</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -12,7 +12,7 @@
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
             margin: 0; 
             padding: 20px; 
-            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); 
+            background: linear-gradient(135deg, #ffeef4 0%, #ffd1dc 100%); 
             min-height: 100vh; 
         }
         
@@ -21,27 +21,26 @@
             padding: 12px 25px; 
             font-size: 15px; 
             border-radius: 30px; 
-            border: 2px solid #b5c7f7; 
+            border: 2px solid #ffb6c1; 
             background: rgba(255, 255, 255, 0.9); 
             cursor: pointer; 
             font-weight: bold;
-            color: #4b6cb7;
-            box-shadow: 0 4px 15px rgba(166, 193, 238, 0.4);
+            color: #d81b60;
+            box-shadow: 0 4px 15px rgba(255, 182, 193, 0.4);
             transition: all 0.3s ease;
         }
         .btn-mode:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(166, 193, 238, 0.6);
+            box-shadow: 0 6px 20px rgba(255, 182, 193, 0.6);
         }
 
-        /* Grand Badge Princesse Royal - Style Nacré Miroir Magique comme sur l'image */
+        /* Grand Badge Princesse Royal */
         .royal-header {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
+            background: linear-gradient(135deg, #ffffff 0%, #fff0f5 100%);
             border-radius: 30px;
             padding: 35px 20px;
             text-align: center;
-            box-shadow: 0 15px 35px rgba(75, 108, 183, 0.15);
+            box-shadow: 0 10px 30px rgba(216, 27, 96, 0.1);
             border: 3px solid #ffd700; 
             margin-bottom: 30px;
             position: relative;
@@ -51,10 +50,10 @@
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0; height: 6px;
-            background: linear-gradient(90deg, #ffd700, #ff9a9e, #ffd700);
+            background: linear-gradient(90deg, #ffd700, #ffa500, #ffd700);
         }
 
-        /* Macaron Sirène Flottant Magnifié de l'image 2 */
+        /* Macaron Sirène Flottant */
         .royal-cat-container {
             display: flex;
             justify-content: center;
@@ -62,164 +61,116 @@
             margin-bottom: 15px;
         }
         .royal-cat-badge {
-            width: 110px;
-            height: 110px;
-            background: linear-gradient(135deg, #e0c3fc 0%, #8ec5fc 100%);
-            border: 4px solid #ffffff;
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #fff0f5 0%, #ffdee9 100%);
+            border: 3px solid #ff69b4;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 65px;
-            box-shadow: 0 8px 25px rgba(142, 197, 252, 0.5);
-            animation: floatSirene 4s ease-in-out infinite;
-            position: relative;
-        }
-        .royal-cat-badge::after {
-            content: '💜';
-            position: absolute;
-            bottom: -5px;
-            font-size: 22px;
+            font-size: 40px;
+            box-shadow: 0 6px 15px rgba(216, 27, 96, 0.15);
+            animation: floatSirene 3s ease-in-out infinite;
         }
 
         @keyframes floatSirene {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-8px) rotate(3deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-6px) scale(1.03); }
+            100% { transform: translateY(0px) scale(1); }
         }
 
         .princess-title {
-            font-size: 38px;
+            font-size: 36px;
             font-weight: 800;
             margin: 5px 0;
-            color: #3f51b5;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.08);
+            color: #880e4f;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
             font-family: 'Georgia', serif;
-            letter-spacing: 1px;
         }
 
         /* Médaillon de Score Magique */
         .star-medallion {
-            background: linear-gradient(135deg, #3f51b5 0%, #a6c1ee 100%);
+            background: linear-gradient(135deg, #ff69b4 0%, #da70d6 100%);
             color: white;
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 12px 35px;
+            padding: 12px 30px;
             border-radius: 50px;
             font-size: 26px;
             font-weight: bold;
-            box-shadow: 0 6px 20px rgba(63, 81, 181, 0.3);
+            box-shadow: 0 5px 20px rgba(244, 67, 54, 0.3);
             margin-top: 15px;
             border: 2px solid #ffffff;
         }
 
-        /* Onglets de Catégories sous forme de Badges Ronds Pastel (Idée 1 validée) */
+        /* Onglets de Catégories Girly */
         .category-scroll {
             display: flex;
-            gap: 15px;
+            gap: 10px;
             overflow-x: auto;
-            padding: 10px 5px 20px 5px;
-            margin-bottom: 20px;
-            justify-content: center;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
             flex-wrap: wrap;
-        }
-        .category-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            cursor: pointer;
-        }
-        .btn-category-round {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: 3px solid #ffffff;
-            display: flex;
             justify-content: center;
-            align-items: center;
-            font-size: 28px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            transition: all 0.25s ease;
         }
-        .category-item:hover .btn-category-round {
-            transform: scale(1.1) translateY(-3px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
-        }
-        .category-label {
-            font-size: 13px;
+        .btn-category {
+            padding: 10px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            border: none;
             font-weight: bold;
-            color: #444;
-            transition: color 0.2s;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+            transition: all 0.2s ease;
         }
-        .category-item.active .category-label {
-            color: #3f51b5;
-            font-weight: 800;
+        .btn-category:hover {
+            transform: scale(1.05);
         }
 
-        /* Cartes de Tâches Illustrées et Épurées comme la maquette */
+        /* Cartes de Tâches Scintillantes */
         .task-card { 
             background: #ffffff; 
-            border-radius: 24px; 
-            padding: 20px 24px; 
+            border-radius: 20px; 
+            padding: 18px 22px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            margin-bottom: 15px; 
-            box-shadow: 0 6px 20px rgba(0,0,0,0.04); 
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            transition: all 0.25s ease;
+            margin-bottom: 12px; 
+            box-shadow: 0 4px 15px rgba(216, 27, 96, 0.04); 
+            border: 1px solid #fff0f5;
+            transition: transform 0.2s ease;
         }
         .task-card:hover {
-            transform: translateX(4px) scale(1.01);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.07);
-        }
-
-        .task-illustration-box {
-            width: 55px;
-            height: 55px;
-            border-radius: 16px;
-            background: #f0f4ff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 30px;
-            flex-shrink: 0;
+            transform: translateX(3px);
         }
 
         .btn-valider { 
-            padding: 12px 25px; 
+            padding: 12px 22px; 
             font-size: 15px; 
-            border-radius: 18px; 
+            border-radius: 15px; 
             border: none; 
             color: #fff; 
             cursor: pointer; 
             font-weight: bold; 
             white-space: nowrap;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-            transition: all 0.2s;
-        }
-        .btn-valider:hover:not(:disabled) {
-            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
         
         .btn-timer { 
-            padding: 8px 16px; 
+            padding: 8px 14px; 
             font-size: 13px; 
             border-radius: 12px; 
             border: none; 
             color: #fff; 
             cursor: pointer; 
             font-weight: bold; 
-            margin-top: 10px; 
+            margin-top: 8px; 
             box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
         }
 
-        .btn-parent { padding: 14px; border: none; border-radius: 14px; cursor: pointer; font-weight: bold; flex: 1; color: #fff; font-size: 14px; }
+        .btn-parent { padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 1; color: #fff; }
         .card { background: #fff; border-radius: 24px; padding: 25px; box-shadow: 0 6px 20px rgba(0,0,0,0.03); margin-bottom: 25px; }
     </style>
 </head>
@@ -239,7 +190,7 @@
           // --- catégorie: 'ecole' ---
           { id: 7, name: 'Préparer mon sac à diner', icon: '🎒', points: 1, done: false, pending: false, category: 'ecole' },
           { id: 8, name: 'Vider mon sac à diner', icon: '🍱', points: 1, done: false, pending: false, category: 'ecole' },
-          { id: 28, name: 'Préparer mon journal de classe et ma farde', icon: '📖', points: 1, done: false, pending: false, category: 'ecole' },
+          { id: 28, name: 'Préparer mon journal de classe et ma farde pour faire les devoirs', icon: '📖', points: 1, done: false, pending: false, category: 'ecole' },
           { id: 29, name: 'Faire les devoirs', icon: '📝', points: 5, done: false, pending: false, category: 'ecole' },
 
           // --- catégorie: 'soir' ---
@@ -253,10 +204,10 @@
           { id: 9, name: 'Ranger mes chaussures', icon: '👟', points: 1, done: false, pending: false, category: 'maison' },
           { id: 10, name: 'Ranger mes jeux', icon: '🧸', points: 2, done: false, pending: false, category: 'maison' },
           { id: 14, name: 'Mettre la table', icon: '🍽️', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 15, name: 'Débarrasser la table', icon: '🥣', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 15, name: 'Débarrasser la table et mettre dans le lave-vaisselle', icon: '🥣', points: 2, done: false, pending: false, category: 'maison' },
           { id: 16, name: 'Vider le lave-vaisselle', icon: '🍽️', points: 3, done: false, pending: false, category: 'maison' },
           { id: 17, name: 'Mettre mes vêtements dans le bac à linge', icon: '👕', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 18, name: 'Faire tourner une machine à lessiver', icon: '🧼', points: 2, done: false, pending: false, category: 'maison' },
+          { id: 18, name: 'Faire tourner une machine à lessiver', icon: '🧼👕', points: 2, done: false, pending: false, category: 'maison' },
           { id: 19, name: 'Faire sécher la machine', icon: '🌀', points: 2, done: false, pending: false, category: 'maison' },
           { id: 20, name: 'Ranger mon linge propre', icon: '🧺', points: 2, done: false, pending: false, category: 'maison' },
           { id: 23, name: "Passer l'aspirateur", icon: '🧹', points: 4, done: false, pending: false, category: 'maison' },
@@ -271,19 +222,20 @@
 
           // --- catégorie: 'animaux' ---
           { id: 21, name: "Mettre de l'eau aux chats", icon: '🐱', points: 1, done: false, pending: false, category: 'animaux' },
-          { id: 22, name: 'Donner à manger aux poules (samedi/dimanche)', icon: '🐔', points: 2, done: false, pending: false, category: 'animaux' },
-          { id: 32, name: 'Nettoyer la litière des chats', icon: '🐱', points: 2, done: false, pending: false, category: 'animaux' },
-          { id: 43, name: 'Faire rentrer Caty avant de partir', icon: '🏡', points: 1, done: false, pending: false, category: 'animaux' },
+          { id: 22, name: 'Donner à manger aux poules (le samedi et le dimanche)', icon: '🐔', points: 2, done: false, pending: false, category: 'animaux' },
+          { id: 32, name: 'Nettoyer la litière des chats et se laver les mains après', icon: '🐱', points: 2, done: false, pending: false, category: 'animaux' },
+          { id: 33, name: 'Réapprovisionner le distributeur de croquettes', icon: '🧆', points: 1, done: false, pending: false, category: 'animaux' },
+          { id: 34, name: 'Aider à laver les chats', icon: '🧼', points: 2, done: false, pending: false, category: 'animaux' },
+          { id: 43, name: 'Faire rentrer Caty avant de partir de la maison', icon: '🏡', points: 1, done: false, pending: false, category: 'animaux' },
 
           // --- catégorie: 'nettoyage' ---
           { id: 11, name: 'Changer le lit (1x/semaine)', icon: '🛏️', points: 5, done: false, pending: false, category: 'nettoyage' },
           { id: 12, name: "Passer l'aspirateur dans ma chambre", icon: '🧹', points: 3, done: false, pending: false, category: 'nettoyage' },
           { id: 13, name: 'Faire les poussières dans ma chambre', icon: '🧽', points: 3, done: false, pending: false, category: 'nettoyage' },
           { id: 24, name: 'Laver mes cheveux (le dimanche)', icon: '🧴', points: 3, done: false, pending: false, category: 'nettoyage' },
-          { id: 25, name: 'Aider maman à nettoyer les vitres', icon: '🪟', points: 6, done: false, pending: false, category: 'nettoyage' }
+          { id: 25, name: 'Aider maman à nettoyer les vitres (1x/semaine)', icon: '🪟', points: 6, done: false, pending: false, category: 'nettoyage' }
         ];
 
-        // TARIFS AUGMENTÉS ET ÉQUITABLES
         const rewards = [
           { id: 'r1', cost: 20, name: '20 min de Tablette ou Switch 🎮' },
           { id: 'r2', cost: 30, name: 'Jeu du parent (15 minutes) 🎲' },
@@ -291,19 +243,19 @@
           { id: 'r4', cost: 60, name: 'Atelier cuisine 👩‍🍳' },
           { id: 'r5', cost: 80, name: 'Activité en tête-à-tête 🤍' },
           { id: 'r6', cost: 100, name: 'Choisir le film du week-end 🎬' },
-          { id: 'r7', cost: 250, name: 'Une bonne Glace 🍦' },
-          { id: 'r8', cost: 400, name: 'Sortie au cinéma 🍿' },
-          { id: 'r9', cost: 500, name: 'Argent de poche (5 euros) 💶' },
+          { id: 'r7', cost: 150, name: 'Une bonne Glace 🍦' },
+          { id: 'r8', cost: 200, name: 'Sortie au cinéma 🍿' },
+          { id: 'r9', cost: 250, name: 'Argent de poche (5 euros) 💶' },
         ];
 
         const categoriesList = [
-          { id: 'all', label: 'Tout', icon: '🌈', color: '#ffffff', voice: 'Toutes les missions' },
-          { id: 'matin', label: 'Matin', icon: '☀️', color: '#fff9c4', voice: 'Missions du matin' },
-          { id: 'ecole', label: 'École', icon: '🎒', color: '#ffccbc', voice: "Missions de l'école" },
-          { id: 'soir', label: 'Soir', icon: '🌙', color: '#e1bee7', voice: 'Missions du soir' },
-          { id: 'maison', label: 'Maison', icon: '🏡', color: '#c8e6c9', voice: 'Missions de la maison' },
-          { id: 'animaux', label: 'Animaux', icon: '🐱', color: '#ffe0b2', voice: "S'occuper des animaux" },
-          { id: 'nettoyage', label: 'Nettoyage', icon: '🧹', color: '#b3e5fc', voice: 'Grand nettoyage de la semaine' },
+          { id: 'all', label: '🌈 Tout', voice: 'Toutes les missions' },
+          { id: 'matin', label: '☀️ Matin', voice: 'Missions du matin' },
+          { id: 'ecole', label: '🎒 École', voice: "Missions de l'école" },
+          { id: 'soir', label: '🌙 Soir', voice: 'Missions du soir' },
+          { id: 'maison', label: '🏡 Maison', voice: 'Missions de la maison' },
+          { id: 'animaux', label: '🐱 Animaux', voice: "S'occuper des animaux" },
+          { id: 'nettoyage', label: '🧹 Grand Nettoyage', voice: 'Grand nettoyage de la semaine' },
         ];
 
         function App() {
@@ -331,27 +283,28 @@
           const [currentCategory, setCurrentCategory] = React.useState('all');
           const [activeTimers, setActiveTimers] = React.useState({});
 
-          // --- IDÉE 2 REMISE À ZÉRO SANS TOUCHER À LA CAGNOTTE ---
           React.useEffect(() => {
-            const now = new Date();
-            const todayStr = now.toDateString();
+            const todayStr = new Date().toDateString();
             const lastSavedDate = localStorage.getItem('caly_last_date');
-            const currentDay = now.getDay(); // 0 = Dimanche, 1 = Lundi
-
             if (lastSavedDate && lastSavedDate !== todayStr) {
-              setTasks(prev => prev.map(t => {
-                // Les tâches quotidiennes se réinitialisent toutes les nuits
-                if (t.category !== 'nettoyage') {
-                  return { ...t, done: false, pending: false };
-                }
-                // Si on passe au Lundi (jour 1), on nettoie aussi automatiquement le Grand Nettoyage
-                if (currentDay === 1) {
-                  return { ...t, done: false, pending: false };
-                }
-                return t;
-              }));
+              setTasks(prev => prev.map(t => t.category !== 'nettoyage' ? { ...t, done: false, pending: false } : t));
             }
             localStorage.setItem('caly_last_date', todayStr);
+          }, []);
+
+          React.useEffect(() => {
+            const saved = localStorage.getItem('caly_tasks');
+            if (saved) {
+              const parsed = JSON.parse(saved);
+              const updated = defaultTasks.map(dt => {
+                const existing = parsed.find(pt => pt.id === dt.id);
+                if (existing) {
+                  return { ...dt, done: existing.done, pending: existing.pending };
+                }
+                return dt;
+              });
+              setTasks(updated);
+            }
           }, []);
 
           React.useEffect(() => { localStorage.setItem('caly_tasks', JSON.stringify(tasks)); }, [tasks]);
@@ -435,7 +388,7 @@
           const acceptTask = (id, points) => {
             const task = tasks.find(t => t.id === id);
             if (!task) return;
-            setTasks(tasks.map(t => t.id === id ? { ...t, done: true, pending: false } : f));
+            setTasks(tasks.map(t => t.id === id ? { ...t, done: true, pending: false } : t));
             const newStars = stars + points;
             setStars(newStars);
 
@@ -497,15 +450,15 @@
               {childMode ? (
                 /* ================= CONFIGURATION PARENT ================= */
                 <div>
-                  <h1 style={{ color: '#3f51b5', textAlign: 'center' }}>Espace Maman ⚙️</h1>
+                  <h1 style={{ color: '#4a148c', textAlign: 'center' }}>Espace Maman ⚙️</h1>
                   <div className="card" style={{ textAlign: 'center' }}>
                     <p style={{ color: '#333', fontSize: '18px', margin: '0' }}>Score actuel de Caly :</p>
-                    <div style={{ fontSize: '45px', fontWeight: 'bold', color: '#3f51b5', margin: '5px 0' }}>⭐ {stars}</div>
+                    <div style={{ fontSize: '45px', fontWeight: 'bold', color: '#e91e63', margin: '5px 0' }}>⭐ {stars}</div>
                     <p style={{ color: '#666', margin: '0' }}>Niveau : {level}</p>
                   </div>
 
                   <div style={{ display: 'flex', gap: '10px', marginBottom: '25px' }}>
-                    <button onClick={handleBonus} className="btn-parent" style={{ background: '#7e57c2' }}>✨ Donner un Bonus (+15 ⭐)</button>
+                    <button onClick={handleBonus} className="btn-parent" style={{ background: '#ba68c8' }}>✨ Donner un Bonus (+15 ⭐)</button>
                     <button onClick={handlePenalty} className="btn-parent" style={{ background: '#ef5350' }}>⚠️ Retrait Bêtise (-5 ⭐)</button>
                   </div>
 
@@ -527,11 +480,11 @@
                   </div>
 
                   <div className="card">
-                    <h3 style={{ color: '#333', marginTop: '0' }}>🛍️ Boutique magique :</h3>
+                    <h3 style={{ color: '#333', marginTop: '0' }}>🛍️ Boutique magique (Acheter un cadeau) :</h3>
                     {rewards.map(r => (
                       <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f9f9f9', color: '#333' }}>
                         <span style={{ color: stars >= r.cost ? '#333' : '#aaa' }}>{r.name} <strong>({r.cost} ⭐)</strong></span>
-                        <button onClick={() => buyReward(r.cost, r.name)} disabled={stars < r.cost} style={{ padding: '6px 14px', background: stars >= r.cost ? '#3f51b5' : '#e0e0e0', color: '#fff', border: 'none', borderRadius: '8px', cursor: stars >= r.cost ? 'pointer' : 'default', fontWeight: 'bold' }}>Débloquer 🛒</button>
+                        <button onClick={() => buyReward(r.cost, r.name)} disabled={stars < r.cost} style={{ padding: '6px 14px', background: stars >= r.cost ? '#e91e63' : '#e0e0e0', color: '#fff', border: 'none', borderRadius: '8px', cursor: stars >= r.cost ? 'pointer' : 'default', fontWeight: 'bold' }}>Débloquer 🛒</button>
                       </div>
                     ))}
                   </div>
@@ -548,17 +501,17 @@
                   </div>
                 </div>
               ) : (
-                /* ================= MONDE DE CALY (INTERFACE ULTRA DE LA MAQUETTE) ================= */
+                /* ================= MONDE DE CALY (INTERFACE ENFANT) ================= */
                 <div>
                   <div className="royal-header">
                     <div className="royal-cat-container">
                       <div className="royal-cat-badge">🧜‍♀️</div>
                     </div>
                     <h1 className="princess-title" onClick={() => speak('Bonjour Caly chat ! Passe une magnifique journée !')}>Caly chat</h1>
-                    <p style={{ color: '#3f51b5', margin: '0', fontSize: '15px', fontWeight: 'bold', letterSpacing: '0.5px' }}>✨ ROYAUME DE NIVEAU {level} ✨</p>
+                    <p style={{ color: '#c2185b', margin: '0', fontSize: '16px', fontWeight: 'bold' }}>✨ MONDE DE NIVEAU {level} ✨</p>
                     
                     {stars >= 20 && (
-                      <div style={{ fontSize: '55px', margin: '15px 0 5px 0', animation: 'floatSirene 3s infinite', cursor: 'pointer' }} onClick={() => speak('Ton coffre à cadeaux magique t’attend dans la boutique avec maman !')}>
+                      <div style={{ fontSize: '55px', margin: '15px 0 5px 0', animation: 'floatSirene 2s infinite', cursor: 'pointer' }} onClick={() => speak('Ton coffre à cadeaux magique t’attend dans la boutique avec maman !')}>
                         🎁✨
                       </div>
                     )}
@@ -570,47 +523,37 @@
                     </div>
                   </div>
 
-                  {/* Boutons de catégories sous forme de badges ronds pastel */}
                   <div className="category-scroll">
                     {categoriesList.map(cat => (
-                      <div 
+                      <button 
                         key={cat.id} 
-                        onClick={() => { setCurrentCategory(cat.id); speak(cat.voice); }}
-                        className={`category-item ${currentCategory === cat.id ? 'active' : ''}`}
+                        onClick={() => { setCurrentCategory(cat.id); speak(cat.voice); }} 
+                        className="btn-category"
+                        style={{ 
+                          background: currentCategory === cat.id ? 'linear-gradient(135deg, #e91e63 0%, #ff69b4 100%)' : '#ffffff', 
+                          color: currentCategory === cat.id ? '#ffffff' : '#444444',
+                          border: currentCategory === cat.id ? 'none' : '1px solid #ffccd8'
+                        }}
                       >
-                        <div 
-                          className="btn-category-round"
-                          style={{ 
-                            background: cat.color,
-                            border: currentCategory === cat.id ? '4px solid #3f51b5' : '3px solid #ffffff',
-                            transform: currentCategory === cat.id ? 'scale(1.1)' : 'none'
-                          }}
-                        >
-                          {cat.icon}
-                        </div>
-                        <span className="category-label">{cat.label}</span>
-                      </div>
+                        {cat.label}
+                      </button>
                     ))}
                   </div>
 
-                  {/* Liste des cartes illustrées */}
                   {filteredTasks.map(task => (
                     <div key={task.id} className="task-card">
-                      <div className="task-illustration-box">
-                        {task.icon}
-                      </div>
-                      
-                      <div style={{ textAlign: 'left', color: '#333', flexGrow: 1, paddingLeft: '15px', cursor: 'pointer' }} onClick={() => speak(task.name)}>
-                        <h3 style={{ margin: '0', fontSize: '16px', color: '#2c3e50', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: '700' }}>
+                      <div style={{ textAlign: 'left', color: '#333', flexGrow: 1, cursor: 'pointer' }} onClick={() => speak(task.name)}>
+                        <h3 style={{ margin: '0', fontSize: '17px', color: '#3f0c1f', display: 'flex', alignItems: 'center', gap: '10px', fontWeight: '700' }}>
+                          <span style={{ fontSize: '22px' }}>{task.icon}</span> 
                           <span>{task.name}</span>
-                          <span style={{ fontSize: '13px', color: '#a6c1ee' }}>🔊</span>
+                          <span style={{ fontSize: '14px', color: '#ff69b4' }}>🔊</span>
                         </h3>
-                        <p style={{ margin: '4px 0 0 0', color: '#3f51b5', fontSize: '13px', fontWeight: 'bold' }}>+{task.points} {task.points > 1 ? 'étoiles' : 'étoile'}</p>
+                        <p style={{ margin: '4px 0 0 0', color: '#e91e63', fontSize: '13px', fontWeight: 'bold' }}>+{task.points} {task.points > 1 ? 'étoiles' : 'étoile'}</p>
                         
                         {task.hasTimer && !task.done && !task.pending && (
                           <div>
-                            <button className="btn-timer" onClick={(e) => handleTimerClick(task.id, e)} style={{ background: activeTimers[task.id] ? '#ef5350' : '#7e57c2' }}>
-                              {activeTimers[task.id] ? `🛑 ${formatTime(activeTimers[task.id])}` : '⏱️ 2 min'}
+                            <button className="btn-timer" onClick={(e) => handleTimerClick(task.id, e)} style={{ background: activeTimers[task.id] ? '#ef5350' : '#ba68c8' }}>
+                              {activeTimers[task.id] ? `🛑 Arrêter (${formatTime(activeTimers[task.id])})` : '⏱️ Lancer 2 min'}
                             </button>
                           </div>
                         )}
@@ -620,16 +563,15 @@
                         disabled={task.done || task.pending} 
                         className="btn-valider" 
                         style={{ 
-                          background: task.done ? '#4caf50' : task.pending ? '#ffa726' : 'linear-gradient(135deg, #4b6cb7 0%, #182848 100%)',
+                          background: task.done ? '#4caf50' : task.pending ? '#ffa726' : 'linear-gradient(135deg, #ff4081 0%, #e91e63 100%)',
                           cursor: (task.done || task.pending) ? 'default' : 'pointer'
                         }}
                       >
-                        {task.done ? '✓ Fait' : task.pending ? 'Vérif ⏳' : 'Valider 🎉'}
+                        {task.done ? '✓ Fait' : task.pending ? 'Vérification ⏳' : 'Valider 🎉'}
                       </button>
                     </div>
                   ))}
 
-                  {/* Catalogue Magique */}
                   <div className="card" style={{ background: '#fffdeb', border: '2px solid #ffd700', borderRadius: '24px', textAlign: 'left' }}>
                     <h3 style={{ margin: '0 0 12px 0', fontSize: '20px', color: '#5d4037', fontFamily: 'Georgia, serif' }}>👑 Boutique magique</h3>
                     {rewards.map(r => (
