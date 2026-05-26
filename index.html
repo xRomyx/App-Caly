@@ -628,11 +628,38 @@
                       </p>
                     ))}
                   </div>
+
+                    <div className="card" style={{
+  background:'#fff8fc',
+  border:'2px solid #ffdce8'
+}}>
+  <h3 style={{
+    color:'#c2185b',
+    marginTop:0
+  }}>
+    🏅 Mes badges magiques
+  </h3>
+
+  {badges.map(b => (
+    <p key={b.id} style={{
+      fontSize:'16px',
+      fontWeight:'bold',
+      color: stars >= b.goal ? '#4caf50' : '#999'
+    }}>
+      {stars >= b.goal ? '✅' : '🔒'} {b.name}
+      <span style={{ fontSize:'13px' }}>
+        {" "}({b.goal}⭐)
+      </span>
+    </p>
+  ))}
+</div>
                 </div>
               )}
             </div>
           );
         }
+
+        
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
