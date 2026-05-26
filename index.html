@@ -257,7 +257,13 @@
           { id: 'animaux', label: '🐱 Animaux', voice: "S'occuper des animaux" },
           { id: 'nettoyage', label: '🧹 Grand Nettoyage', voice: 'Grand nettoyage de la semaine' },
         ];
-
+        const levelNames = {
+         1: "Petite étoile ✨",
+         2: "Princesse magique 👑",
+         3: "Sirène brillante 🧜‍♀️",
+         4: "Reine arc-en-ciel 🌈",
+         5: "Gardienne des étoiles 🌟"
+        };
         function App() {
           const [tasks, setTasks] = React.useState(() => {
             const saved = localStorage.getItem('caly_tasks');
@@ -509,13 +515,6 @@
                     </div>
                     <h1 className="princess-title" onClick={() => speak('Bonjour Caly ! Passe une magnifique journée !')}>Caly </h1>
                   {(() => {
-  const levelNames = {
-    1: "Petite étoile ✨",
-    2: "Princesse magique 👑",
-    3: "Sirène brillante 🧜‍♀️",
-    4: "Reine arc-en-ciel 🌈",
-    5: "Gardienne des étoiles 🌟"
-  };
 
   const currentLevelName = levelNames[level] || "Légende magique 💎";
   const progress = (stars % 60) / 60 * 100;
