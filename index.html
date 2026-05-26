@@ -508,7 +508,56 @@
                       <div className="royal-cat-badge">🧜‍♀️</div>
                     </div>
                     <h1 className="princess-title" onClick={() => speak('Bonjour Caly ! Passe une magnifique journée !')}>Caly </h1>
-                    <p style={{ color: '#c2185b', margin: '0', fontSize: '16px', fontWeight: 'bold' }}>✨ MONDE DE NIVEAU {level} ✨</p>
+                  {(() => {
+  const levelNames = {
+    1: "Petite étoile ✨",
+    2: "Princesse magique 👑",
+    3: "Sirène brillante 🧜‍♀️",
+    4: "Reine arc-en-ciel 🌈",
+    5: "Gardienne des étoiles 🌟"
+  };
+
+  const currentLevelName = levelNames[level] || "Légende magique 💎";
+  const progress = (stars % 60) / 60 * 100;
+
+  return (
+    <div style={{ marginTop: '10px' }}>
+      <p style={{
+        color: '#c2185b',
+        margin: '0',
+        fontSize: '16px',
+        fontWeight: 'bold'
+      }}>
+        ✨ {currentLevelName} ✨
+      </p>
+
+      <div style={{
+        background: '#ffdce8',
+        borderRadius: '20px',
+        overflow: 'hidden',
+        height: '18px',
+        marginTop: '10px',
+        border: '2px solid white'
+      }}>
+        <div style={{
+          width: `${progress}%`,
+          height: '100%',
+          background: 'linear-gradient(90deg,#ff69b4,#ba68c8)',
+          transition: 'width 0.5s ease'
+        }} />
+      </div>
+
+      <p style={{
+        fontSize: '13px',
+        color: '#880e4f',
+        marginTop: '6px',
+        fontWeight: 'bold'
+      }}>
+        {stars % 60} / 60 ⭐ vers le niveau suivant
+      </p>
+    </div>
+  );
+})()}
                     
                     {stars >= 20 && (
                       <div style={{ fontSize: '55px', margin: '15px 0 5px 0', animation: 'floatSirene 2s infinite', cursor: 'pointer' }} onClick={() => speak('Ton coffre à cadeaux magique t’attend dans la boutique avec maman !')}>
