@@ -1,428 +1,988 @@
-<!DOCTYPE html>
-<html lang="fr">
+j'aime pas ce code reprend celui ci  et remet le minuteur et la validation :
+
+
+<!DOCTYPE
+html>
+<html
+lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Princesse Caly ✨</title>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <style>
-        body { font-family: sans-serif; margin: 0; padding: 20px; background: #fff0f5; min-height: 100vh; }
-        .btn-mode { padding: 10px 20px; font-size: 16px; border-radius: 20px; border: 1px solid #ffb6c1; background: #fff; cursor: pointer; font-weight: bold; }
-        .card { background: #fff; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 25px; }
-        .task-card { background: #fff; border-radius: 15px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid #ffe4e1; }
-        .btn-valider { padding: 10px 15px; font-size: 15px; border-radius: 10px; border: none; color: #fff; cursor: pointer; font-weight: bold; white-space: nowrap; }
-        .btn-timer { padding: 8px 12px; font-size: 14px; border-radius: 10px; border: none; color: #fff; cursor: pointer; font-weight: bold; margin-top: 5px; background: #9c27b0; display: inline-block; }
-        .btn-parent { padding: 10px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; flex: 1; color: #fff; }
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+content="width=device-width, initial-scale=1.0">
+    <title>Caly chat ✨</title>
+    <script
+src="https://unpkg.com/react@18/umd/react.production.min.js"
+crossorigin></script>
+    <script
+src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+crossorigin></script>
+    <script
+src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Roboto,
+Helvetica, Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: linear-gradient(135deg,
+#fbc2eb 0%, #a6c1ee 100%); 
+            min-height: 100vh; 
+        }
+        
+        /* Style Espace Parent */
+        .btn-mode { 
+            padding: 12px 25px; 
+            font-size: 15px; 
+            border-radius: 30px; 
+            border: 2px solid #b5c7f7; 
+            background: rgba(255, 255, 255,
+0.9); 
+            cursor: pointer; 
+            font-weight: bold;
+            color: #4b6cb7;
+            box-shadow: 0 4px 15px rgba(166,
+193, 238, 0.4);
+            transition: all 0.3s ease;
+        }
+        .btn-mode:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(166,
+193, 238, 0.6);
+        }
+ 
+        /* Grand Badge
+Princesse Royal - Style Nacré Miroir Magique comme sur l'image */
+        .royal-header {
+            background: rgba(255, 255, 255,
+0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 35px 20px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(75,
+108, 183, 0.15);
+            border: 3px solid #ffd700; 
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        .royal-header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height:
+6px;
+            background: linear-gradient(90deg,
+#ffd700, #ff9a9e, #ffd700);
+        }
+ 
+        /* Macaron
+Sirène Flottant Magnifié de l'image 2 */
+        .royal-cat-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .royal-cat-badge {
+            width: 110px;
+            height: 110px;
+            background: linear-gradient(135deg,
+#e0c3fc 0%, #8ec5fc 100%);
+            border: 4px solid #ffffff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 65px;
+            box-shadow: 0 8px 25px rgba(142,
+197, 252, 0.5);
+            animation: floatSirene 4s
+ease-in-out infinite;
+            position: relative;
+        }
+        .royal-cat-badge::after {
+            content: '💜';
+            position: absolute;
+            bottom: -5px;
+            font-size: 22px;
+        }
+ 
+        @keyframes floatSirene {
+            0% { transform: translateY(0px)
+rotate(0deg); }
+            50% { transform: translateY(-8px)
+rotate(3deg); }
+            100% { transform: translateY(0px)
+rotate(0deg); }
+        }
+ 
+        .princess-title {
+            font-size: 38px;
+            font-weight: 800;
+            margin: 5px 0;
+            color: #3f51b5;
+            text-shadow: 1px 1px 3px
+rgba(0,0,0,0.08);
+            font-family: 'Georgia', serif;
+            letter-spacing: 1px;
+        }
+ 
+        /* Médaillon
+de Score Magique */
+       .star-medallion {
+            background: linear-gradient(135deg,
+#3f51b5 0%, #a6c1ee 100%);
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 35px;
+            border-radius: 50px;
+            font-size: 26px;
+            font-weight: bold;
+            box-shadow: 0 6px 20px rgba(63, 81,
+181, 0.3);
+            margin-top: 15px;
+            border: 2px solid #ffffff;
+        }
+ 
+        /* Onglets de
+Catégories sous forme de Badges Ronds Pastel (Idée 1 validée) */
+        .category-scroll {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            padding: 10px 5px 20px 5px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .category-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+        .btn-category-round {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            box-shadow: 0 4px 15px
+rgba(0,0,0,0.08);
+            transition: all 0.25s ease;
+        }
+        .category-item:hover
+.btn-category-round {
+            transform: scale(1.1)
+translateY(-3px);
+            box-shadow: 0 6px 20px
+rgba(0,0,0,0.15);
+        }
+        .category-label {
+            font-size: 13px;
+            font-weight: bold;
+            color: #444;
+            transition: color 0.2s;
+        }
+        .category-item.active .category-label {
+            color: #3f51b5;
+           font-weight: 800;
+        }
+ 
+        /* Cartes de
+Tâches Illustrées et Épurées comme la maquette */
+        .task-card { 
+            background: #ffffff; 
+            border-radius: 24px; 
+            padding: 20px 24px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 15px; 
+            box-shadow: 0 6px 20px
+rgba(0,0,0,0.04); 
+            border: 1px solid rgba(255, 255,
+255, 0.7);
+            transition: all 0.25s ease;
+        }
+        .task-card:hover {
+            transform: translateX(4px)
+scale(1.01);
+            box-shadow: 0 8px 25px
+rgba(0,0,0,0.07);
+        }
+ 
+        .task-illustration-box {
+            width: 55px;
+            height: 55px;
+            border-radius: 16px;
+            background: #f0f4ff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            flex-shrink: 0;
+        }
+ 
+        .btn-valider { 
+            padding: 12px 25px; 
+            font-size: 15px; 
+           border-radius: 18px; 
+            border: none; 
+            color: #fff; 
+            cursor: pointer; 
+            font-weight: bold; 
+            white-space: nowrap;
+            box-shadow: 0 4px 12px
+rgba(0,0,0,0.08);
+            transition: all 0.2s;
+        }
+        .btn-valider:hover:not(:disabled) {
+            transform: scale(1.05);
+        }
+        
+        .btn-timer { 
+            padding: 8px 16px; 
+            font-size: 13px; 
+            border-radius: 12px; 
+            border: none; 
+            color: #fff; 
+            cursor: pointer; 
+            font-weight: bold; 
+            margin-top: 10px; 
+            box-shadow: 0 3px 8px
+rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+ 
+        .btn-parent { padding: 14px; border:
+none; border-radius: 14px; cursor: pointer; font-weight: bold; flex: 1; color:
+#fff; font-size: 14px; }
+        .card { background: #fff;
+border-radius: 24px; padding: 25px; box-shadow: 0 6px 20px rgba(0,0,0,0.03);
+margin-bottom: 25px; }
+    </style>
 </head>
 <body>
-
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const defaultTasks = [
-          // --- catégorie: 'matin' ---
-          { id: 1, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'matin', hasTimer: true },
-          { id: 2, name: 'Faire mon puff orange', icon: '💨', points: 1, done: false, pending: false, category: 'matin' },
-          { id: 26, name: 'Se coiffer', icon: '🪮', points: 1, done: false, pending: false, category: 'matin' },
-          { id: 6, name: 'Dormir dans mon lit', icon: '✨', points: 3, done: false, pending: false, category: 'matin' },
-          { id: 30, name: 'Mettre mes vêtements', icon: '👗', points: 1, done: false, pending: false, category: 'matin' },
-
-          // --- catégorie: 'ecole' ---
-          { id: 7, name: 'Préparer mon sac à diner', icon: '🎒', points: 1, done: false, pending: false, category: 'ecole' },
-          { id: 8, name: 'Vider mon sac à diner', icon: '🍱', points: 1, done: false, pending: false, category: 'ecole' },
-          { id: 28, name: 'Préparer mon journal de classe et ma farde pour faire les devoirs', icon: '📖', points: 1, done: false, pending: false, category: 'ecole' },
-          { id: 29, name: 'Faire les devoirs', icon: '📝', points: 5, done: false, pending: false, category: 'ecole' },
-
-          // --- catégorie: 'soir' ---
-          { id: 3, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'soir', hasTimer: true },
-          { id: 4, name: 'Prendre mon sirop', icon: '💜', points: 1, done: false, pending: false, category: 'soir' },
-          { id: 5, name: 'Prendre ma douche', icon: '🚿', points: 1, done: false, pending: false, category: 'soir' },
-          { id: 27, name: 'Se démêler les cheveux', icon: '🧜‍♀️', points: 1, done: false, pending: false, category: 'soir' },
-          { id: 31, name: 'Préparer mes vêtements pour le lendemain', icon: '👚', points: 1, done: false, pending: false, category: 'soir' },
-
-          // --- catégorie: 'maison' ---
-          { id: 9, name: 'Ranger mes chaussures', icon: '👟', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 10, name: 'Ranger mes jeux', icon: '🧸', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 14, name: 'Mettre la table', icon: '🍽️', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 15, name: 'Débarrasser la table et mettre dans le lave-vaisselle', icon: '🥣', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 16, name: 'Vider le lave-vaisselle', icon: '🧼', points: 3, done: false, pending: false, category: 'maison' },
-          { id: 17, name: 'Mettre mes vêtements dans le bac à linge', icon: '👕', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 18, name: 'Faire tourner une machine à lessiver', icon: '🧼', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 19, name: 'Faire sécher la machine', icon: '🌀', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 20, name: 'Ranger mon linge propre', icon: '🧺', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 23, name: "Passer l'aspirateur", icon: '🧹', points: 4, done: false, pending: false, category: 'maison' },
-          { id: 35, name: 'Faire tourner le lave-vaisselle', icon: '🧼', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 36, name: 'Aider à faire les courses', icon: '🛒', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 37, name: 'Ranger les courses', icon: '🛒', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 38, name: 'Vider les poubelles de la maison', icon: '🗑️', points: 1, done: false, pending: false, category: 'maison' },
-          { id: 39, name: 'Aider maman', icon: '❤️', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 40, name: 'Boire 2 gourdes', icon: '🥛', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 41, name: 'Aider Mimy', icon: '✨', points: 2, done: false, pending: false, category: 'maison' },
-          { id: 42, name: 'Aider Baloo', icon: '🐾', points: 2, done: false, pending: false, category: 'maison' },
-
-          // --- catégorie: 'animaux' ---
-          { id: 21, name: "Mettre de l'eau aux chats", icon: '🐱', points: 1, done: false, pending: false, category: 'animaux' },
-          { id: 22, name: 'Donner à manger aux poules (le samedi et le dimanche)', icon: '🐔', points: 2, done: false, pending: false, category: 'animaux' },
-          { id: 32, name: 'Nettoyer la litière des chats et se laver les mains après', icon: '🐱', points: 2, done: false, pending: false, category: 'animaux' },
-          { id: 33, name: 'Réapprovisionner le distributeur de croquettes', icon: '🧆', points: 1, done: false, pending: false, category: 'animaux' },
-          { id: 34, name: 'Aider à laver les chats', icon: '🧼', points: 2, done: false, pending: false, category: 'animaux' },
-          { id: 43, name: 'Faire rentrer Caty avant de partir de la maison', icon: '🏡', points: 1, done: false, pending: false, category: 'animaux' },
-
-          // --- catégorie: 'nettoyage' ---
-          { id: 11, name: 'Changer le lit (1x/semaine)', icon: '🛏️', points: 5, done: false, pending: false, category: 'nettoyage' },
-          { id: 12, name: "Passer l'aspirateur dans ma chambre", icon: '🧹', points: 3, done: false, pending: false, category: 'nettoyage' },
-          { id: 13, name: 'Faire les poussières dans ma chambre', icon: '🧽', points: 3, done: false, pending: false, category: 'nettoyage' },
-          { id: 24, name: 'Laver mes cheveux (le dimanche)', icon: '🧴', points: 3, done: false, pending: false, category: 'nettoyage' },
-          { id: 25, name: 'Aider maman à nettoyer les vitres (1x/semaine)', icon: '🪟', points: 6, done: false, pending: false, category: 'nettoyage' }
-        ];
-
-        const rewards = [
-          { id: 'r1', cost: 20, name: '20 min de Tablette ou Switch 🎮' },
-          { id: 'r2', cost: 30, name: 'Jeu du parent (15 minutes) 🎲' },
-          { id: 'r3', cost: 40, name: 'Choisir un repas sain 🍏' },
-          { id: 'r4', cost: 60, name: 'Atelier cuisine 👩‍🍳' },
-          { id: 'r5', cost: 80, name: 'Activité en tête-à-tête 🤍' },
-          { id: 'r6', cost: 100, name: 'Choisir le film du week-end 🎬' },
-          { id: 'r7', cost: 150, name: 'Une bonne Glace 🍦' },
-          { id: 'r8', cost: 200, name: 'Sortie au cinéma 🍿' },
-          { id: 'r9', cost: 250, name: 'Argent de poche (5 euros) 💶' },
-        ];
-
-        const categoriesList = [
-          { id: 'all', label: '🌈 Tout', voice: 'Toutes les missions' },
-          { id: 'matin', label: '☀️ Matin', voice: 'Missions du matin' },
-          { id: 'ecole', label: '🎒 École', voice: "Missions de l'école" },
-          { id: 'soir', label: '🌙 Soir', voice: 'Missions du soir' },
-          { id: 'maison', label: '🏡 Maison', voice: 'Missions de la maison' },
-          { id: 'animaux', label: '🐱 Animaux', voice: "S'occuper des animaux" },
-          { id: 'nettoyage', label: '🧹 Grand Nettoyage', voice: 'Grand nettoyage de la semaine' },
-        ];
-
-        function App() {
-          const [tasks, setTasks] = React.useState(() => {
-            const saved = localStorage.getItem('caly_tasks');
-            return saved ? JSON.parse(saved) : defaultTasks;
-          });
-          const [stars, setStars] = React.useState(() => {
-            const saved = localStorage.getItem('caly_stars');
-            return saved ? parseInt(saved, 10) : 0;
-          });
-          const [level, setLevel] = React.useState(() => {
-            const saved = localStorage.getItem('caly_level');
-            return saved ? parseInt(saved, 10) : 1;
-          });
-          const [parentPassword, setParentPassword] = React.useState(() => {
-            const saved = localStorage.getItem('caly_parent_pin');
-            return saved ? saved : '1234';
-          });
-          const [historyLog, setHistoryLog] = React.useState(() => {
-            const saved = localStorage.getItem('caly_history_log');
-            return saved ? JSON.parse(saved) : [];
-          });
-          const [childMode, setChildMode] = React.useState(false); 
-          const [currentCategory, setCurrentCategory] = React.useState('all');
-          
-          // Gestion des minuteurs par ID de tâche
-          const [activeTimers, setActiveTimers] = React.useState({});
-
-          React.useEffect(() => {
-            const todayStr = new Date().toDateString();
-            const lastSavedDate = localStorage.getItem('caly_last_date');
-            if (lastSavedDate && lastSavedDate !== todayStr) {
-              setTasks(prev => prev.map(t => t.category !== 'nettoyage' ? { ...t, done: false, pending: false } : t));
-            }
-            localStorage.setItem('caly_last_date', todayStr);
-          }, []);
-
-          React.useEffect(() => {
-            const saved = localStorage.getItem('caly_tasks');
-            if (saved) {
-              const parsed = JSON.parse(saved);
-              const updated = defaultTasks.map(dt => {
-                const existing = parsed.find(pt => pt.id === dt.id);
-                if (existing) {
-                  return { ...dt, done: existing.done, pending: existing.pending };
-                }
-                return dt;
-              });
-              setTasks(updated);
-            }
-          }, []);
-
-          React.useEffect(() => { localStorage.setItem('caly_tasks', JSON.stringify(tasks)); }, [tasks]);
-          React.useEffect(() => { localStorage.setItem('caly_stars', stars.toString()); }, [stars]);
-          React.useEffect(() => { localStorage.setItem('caly_level', level.toString()); }, [level]);
-          React.useEffect(() => { localStorage.setItem('caly_parent_pin', parentPassword); }, [parentPassword]);
-          React.useEffect(() => { localStorage.setItem('caly_history_log', JSON.stringify(historyLog)); }, [historyLog]);
-
-          // Effet pour faire descendre les minuteurs actifs
-          React.useEffect(() => {
-            const interval = setInterval(() => {
-              setActiveTimers(prev => {
-                const next = { ...prev };
-                Object.keys(next).forEach(id => {
-                  if (next[id] > 1) {
-                    next[id] -= 1;
-                  } else {
-                    // Fin du minuteur !
-                    delete next[id];
-                    triggerTimerEnd();
-                  }
-                });
-                return next;
-              });
-            }, 1000);
-            return () => clearInterval(interval);
-          }, []);
-
-          const triggerTimerEnd = () => {
-            // Création d'un bip sonore de fin
-            try {
-              const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-              const oscillator = audioCtx.createOscillator();
-              const gainNode = audioCtx.createGain();
-              oscillator.connect(gainNode);
-              gainNode.connect(audioCtx.destination);
-              oscillator.type = 'sine';
-              oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // Note A5 (bip aigu)
-              gainNode.gain.setValueAtTime(0.5, audioCtx.currentTime);
-              oscillator.start();
-              oscillator.stop(audioCtx.currentTime + 0.3);
-              setTimeout(() => {
-                const osc2 = audioCtx.createOscillator();
-                osc2.connect(gainNode);
-                osc2.type = 'sine';
-                osc2.frequency.setValueAtTime(880, audioCtx.currentTime);
-                osc2.start();
-                osc2.stop(audioCtx.currentTime + 0.3);
-              }, 400);
-            } catch (e) { console.log(e); }
-
-            setTimeout(() => {
-              speak('Bravo ma princesse, tu as fini de brosser tes dents !');
-            }, 800);
-          };
-
-          const handleTimerClick = (id, e) => {
-            e.stopPropagation(); // Évite de déclencher la synthèse vocale de la ligne entière
-            if (activeTimers[id]) {
-              // Si déjà actif, on l'arrête
-              setActiveTimers(prev => {
-                const next = { ...prev };
-                delete next[id];
-                return next;
-              });
-            } else {
-              // Lance le chrono à 120 secondes (2 minutes)
-              setActiveTimers(prev => ({ ...prev, [id]: 120 }));
-              speak('C’est parti pour 2 minutes de brossage !');
-            }
-          };
-
-          const formatTime = (seconds) => {
-            const m = Math.floor(seconds / 60);
-            const s = seconds % 60;
-            return `${m}:${s.toString().padStart(2, '0')}`;
-          };
-
-          const speak = (text) => {
-            window.speechSynthesis.cancel();
-            const msg = new SpeechSynthesisUtterance(text);
-            msg.lang = 'fr-FR';
-            window.speechSynthesis.speak(msg);
-          };
-
-          const toggleModeSecure = () => {
-            if (!childMode) {
-              const input = window.prompt("Entrez le code secret de Maman pour accéder à l'Espace Parent :");
-              if (input === parentPassword) setChildMode(true);
-              else if (input !== null) alert("Code incorrect ! 🤫");
-            } else {
-              setChildMode(false);
-            }
-          };
-
-          const requestTaskValidation = (id) => {
-            setTasks(tasks.map(t => t.id === id ? { ...t, pending: true } : t));
-            speak('Demande envoyée à maman !');
-          };
-
-          const acceptTask = (id, points) => {
-            const task = tasks.find(t => t.id === id);
-            if (!task) return;
-            setTasks(tasks.map(t => t.id === id ? { ...t, done: true, pending: false } : t));
-            const newStars = stars + points;
-            setStars(newStars);
-
-            const now = new Date();
-            const logMessage = `${task.icon} [${task.category.toUpperCase()}] ${task.name} - Validé à ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            setHistoryLog([logMessage, ...historyLog]);
-            speak('Bravo ma princesse !');
-
-            const targetLevel = Math.floor(newStars / 60) + 1;
-            if (targetLevel > level) setLevel(targetLevel);
-          };
-
-          const rejectTask = (id) => {
-            setTasks(tasks.map(t => t.id === id ? { ...t, done: false, pending: false } : t));
-            speak('Mission à refaire.');
-          };
-
-          const handleBonus = () => {
-            const newStars = stars + 15;
-            setStars(newStars);
-            setHistoryLog([`✨ BONUS PARENTAL (+10 ⭐)`, ...historyLog]);
-            speak('Super bonus pour ma princesse !');
-            const targetLevel = Math.floor(newStars / 60) + 1;
-            if (targetLevel > level) setLevel(targetLevel);
-          };
-
-          const handlePenalty = () => {
-            const newStars = Math.max(0, stars - 5);
-            setStars(newStars);
-            setHistoryLog([`⚠️ RETRAIT BÊTISE (-5 ⭐)`, ...historyLog]);
-            speak('Attention aux bêtises !');
-          };
-
-          const buyReward = (cost, rewardName) => {
-            if (stars >= cost) {
-              setStars(stars - cost);
-              setHistoryLog([`🛍️ RÉCOMPENSE ACHETÉE : ${rewardName} (-${cost} ⭐)`, ...historyLog]);
-              speak(`Félicitations pour ta récompense !`);
-            }
-          };
-
-          const resetWeek = () => {
-            if (window.confirm("Recommencer la semaine ?")) {
-              setTasks(defaultTasks.map(t => ({ ...t, done: false, pending: false })));
-              setHistoryLog([]);
-            }
-          };
-
-          const filteredTasks = tasks.filter(t => currentCategory === 'all' || t.category === currentCategory);
-
-          return (
-            <div style={{ maxWidth: '600px', margin: '0 auto' }}>
-              <div style={{ textAlign: 'center', marginBottom: '25px' }}>
-                <button onClick={toggleModeSecure} className="btn-mode">
-                  {childMode ? '🦄 Aller au Mode Caly' : '🔒 Accéder au Mode Parent'}
-                </button>
-              </div>
-
-              {childMode ? (
-                <div>
-                  <h1 style={{ color: '#4a148c', textAlign: 'center' }}>Espace Parent ⚙️</h1>
-                  <div className="card">
-                    <p style={{ color: '#333', fontSize: '18px' }}>Score de Caly :</p>
-                    <div style={{ fontSize: '45px', fontWeight: 'bold', color: '#ff69b4', margin: '5px 0' }}>⭐ {stars}</div>
-                    <p style={{ color: '#333' }}>Niveau actuel : {level}</p>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '10px', marginBottom: '25px' }}>
-                    <button onClick={handleBonus} className="btn-parent" style={{ background: '#e1bee7', color: '#4a148c' }}>✨ Donner le Bonus (+15 ⭐)</button>
-                    <button onClick={handlePenalty} className="btn-parent" style={{ background: '#ffcdd2', color: '#b71c1c' }}>⚠️ Retrait Bêtise (-5 ⭐)</button>
-                  </div>
-
-                  <div className="card" style={{ textAlign: 'left' }}>
-                    <h3 style={{ color: '#333' }}>⏳ Tâches à vérifier :</h3>
-                    {tasks.filter(t => t.pending).length === 0 ? (
-                      <p style={{ color: '#888', fontStyle: 'italic' }}>Aucune tâche en attente.</p>
-                    ) : (
-                      tasks.filter(t => t.pending).map(task => (
-                        <div key={task.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '5px' }}>
-                          <span>{task.icon} {task.name} (+{task.points}⭐)</span>
-                          <div>
-                            <button onClick={() => acceptTask(task.id, task.points)} style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer', marginRight: '5px', fontWeight: 'bold' }}>Accepter</button>
-                            <button onClick={() => rejectTask(task.id)} style={{ background: '#f44336', color: '#fff', border: 'none', padding: '5px 10px', borderRadius: '5px', cursor: 'pointer', fontWeight: 'bold' }}>Refuser</button>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  <div className="card" style={{ textAlign: 'left' }}>
-                    <h3 style={{ color: '#333' }}>💸 Caisse enregistreuse (Achat Boutique) :</h3>
-                    {rewards.map(r => (
-                      <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid #f9f9f9', color: '#333' }}>
-                        <span style={{ color: stars >= r.cost ? '#333' : '#aaa' }}>{r.name} <strong>({r.cost} ⭐)</strong></span>
-                        <button onClick={() => buyReward(r.cost, r.name)} disabled={stars < r.cost} style={{ padding: '6px 12px', background: stars >= r.cost ? '#9c27b0' : '#e0e0e0', color: '#fff', border: 'none', borderRadius: '5px', cursor: stars >= r.cost ? 'pointer' : 'default', fontWeight: 'bold' }}>Acheter 🛒</button>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="card" style={{ textAlign: 'left' }}>
-                    <h3 style={{ color: '#333' }}>📊 Historique de la semaine :</h3>
-                    <div style={{ maxHeight: '150px', overflowY: 'auto', background: '#f5f5f5', padding: '10px', borderRadius: '8px' }}>
-                      {historyLog.length === 0 ? <p style={{ color: '#888', fontStyle: 'italic', fontSize: '13px' }}>Aucun historique.</p> : historyLog.map((log, i) => <p key={i} style={{ color: '#555', margin: '5px 0', fontSize: '13px', borderBottom: '1px dashed #eee' }}>{log}</p>)}
-                    </div>
-                  </div>
-
-                  <div style={{ textAlign: 'center' }}>
-                    <button onClick={resetWeek} style={{ padding: '10px', background: '#333', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>🔄 Remise à zéro semaine</button>
-                  </div>
-                </div>
-              ) : (
-                <div>
-                  <div className="card">
-                    <div style={{ fontSize: '40px', marginBottom: '10px' }}>👩🏻‍🦰 👑 🏰 🐱 🩷</div>
-                    <h1 style={{ color: '#333', margin: '0 0 5px 0' }}>Princesse Caly ✨</h1>
-                    <p style={{ color: '#888', margin: '0 0 15px 0', fontSize: '18px' }}>Niveau {level}</p>
-                    {stars >= 20 && <div style={{ fontSize: '50px', margin: '10px 0' }}>🎁✨</div>}
-                    <div style={{ color: '#ff69b4', fontSize: '32px', fontWeight: 'bold' }}>⭐ {stars} étoiles</div>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '15px', marginBottom: '15px', flexWrap: 'wrap', justifyContent: 'center' }}>
-                    {categoriesList.map(cat => (
-                      <button key={cat.id} onClick={() => { setCurrentCategory(cat.id); speak(cat.voice); }} style={{ background: currentCategory === cat.id ? '#ff69b4' : '#fff', color: currentCategory === cat.id ? '#fff' : '#333', padding: '8px 14px', borderRadius: '15px', cursor: 'pointer', border: 'none', fontWeight: 'bold', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-                        {cat.label}
-                      </button>
-                    ))}
-                  </div>
-
-                  {filteredTasks.map(task => (
-                    <div key={task.id} className="task-card">
-                      <div style={{ textAlign: 'left', color: '#333', flexGrow: 1, cursor: 'pointer' }} onClick={() => speak(task.name)}>
-                        <h3 style={{ margin: '0', fontSize: '18px', color: '#333', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span>{task.icon}</span> 
-                          <span>{task.name}</span>
-                          <span style={{ fontSize: '14px', color: '#ff69b4' }}>🔊</span>
-                        </h3>
-                        <p style={{ margin: '5px 0 0 0', color: '#888', fontSize: '14px' }}>+{task.points} {task.points > 1 ? 'étoiles' : 'étoile'}</p>
-                        
-                        {/* Affichage du Minuteur si disponible pour la tâche */}
-                        {task.hasTimer && !task.done && !task.pending && (
-                          <div>
-                            <button className="btn-timer" onClick={(e) => handleTimerClick(task.id, e)} style={{ background: activeTimers[task.id] ? '#f44336' : '#9c27b0' }}>
-                              {activeTimers[task.id] ? `🛑 Arrêter (${formatTime(activeTimers[task.id])})` : '⏱️ Lancer 2 min'}
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                      <button onClick={() => requestTaskValidation(task.id)} disabled={task.done || task.pending} className="btn-valider" style={{ background: task.done ? '#4caf50' : task.pending ? '#ff9800' : '#ff69b4' }}>
-                        {task.done ? '✓ Fait' : task.pending ? 'Attente maman ⏳' : 'Valider 🎉'}
-                      </button>
-                    </div>
-                  ))}
-
-                  <div className="card" style={{ background: '#fffde6', border: '1px solid #ffe4b5', textAlign: 'left' }}>
-                    <h3 style={{ margin: '0 0 10px 0', fontSize: '22px', color: '#333' }}>🛍️ Boutique magique</h3>
-                    {rewards.map(r => (
-                      <p key={r.id} style={{ margin: '8px 0', fontSize: '18px', color: stars >= r.cost ? '#2e7d32' : '#333' }}>
-                        {stars >= r.cost ? '✅ ' : '🔒 '} <strong>{r.cost} ⭐</strong> = {r.name}
-                      </p>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
+ 
+    <div id="root"></div>
+ 
+    <script type="text/babel">
+        const defaultTasks = [
+          // --- catégorie: 'matin' ---
+          { id: 1, name: 'Brosser mes dents',
+icon: '🪥', points: 1, done: false, pending:
+false, category: 'matin', hasTimer: true },
+          { id: 2, name: 'Faire mon puff
+orange', icon: '💨', points: 1, done: false, pending:
+false, category: 'matin' },
+          { id: 26, name: 'Se coiffer', icon: '🪮', points: 1, done: false, pending: false,
+category: 'matin' },
+          { id: 6, name: 'Dormir dans mon lit',
+icon: '🛏️', points: 3, done: false, pending:
+false, category: 'matin' },
+          { id: 30, name: 'Mettre mes
+vêtements', icon: '👗', points: 1, done: false, pending:
+false, category: 'matin' },
+ 
+          // --- catégorie: 'ecole' ---
+          { id: 7, name: 'Préparer mon sac à
+diner', icon: '🎒', points: 1, done: false, pending:
+false, category: 'ecole' },
+          { id: 8, name: 'Vider mon sac à
+diner', icon: '🍱', points: 1, done: false, pending:
+false, category: 'ecole' },
+          { id: 28, name: 'Préparer mon
+journal de classe et ma farde', icon: '📖', points: 1, done: false, pending: false, category:
+'ecole' },
+          { id: 29,
+name: 'Faire les devoirs', icon: '📝',
+points: 5, done: false, pending: false, category: 'ecole' },
+ 
+          // ---
+catégorie: 'soir' ---
+          { id: 3, name: 'Brosser mes dents',
+icon: '🪥', points: 1, done: false, pending:
+false, category: 'soir', hasTimer: true },
+          { id: 4, name: 'Prendre mon sirop',
+icon: '💜', points: 1, done: false, pending:
+false, category: 'soir' },
+          { id: 5, name: 'Prendre ma douche',
+icon: '🚿', points: 1, done: false, pending:
+false, category: 'soir' },
+          { id: 27, name: 'Se démêler les
+cheveux', icon: '🧜‍♀️', points: 1, done: false, pending:
+false, category: 'soir' },
+          { id: 31, name: 'Préparer mes
+vêtements pour le lendemain', icon: '👚',
+points: 1, done: false, pending: false, category: 'soir' },
+ 
+          // ---
+catégorie: 'maison' ---
+          { id: 9,
+name: 'Ranger mes chaussures', icon: '👟',
+points: 1, done: false, pending: false, category: 'maison' },
+          { id: 10,
+name: 'Ranger mes jeux', icon: '🧸',
+points: 2, done: false, pending: false, category: 'maison' },
+          { id: 14,
+name: 'Mettre la table', icon: '🍽️',
+points: 1, done: false, pending: false, category: 'maison' },
+          { id: 15,
+name: 'Débarrasser la table', icon: '🥣',
+points: 2, done: false, pending: false, category: 'maison' },
+          { id: 16,
+name: 'Vider le lave-vaisselle', icon: '🍽️', points: 3, done: false, pending: false, category:
+'maison' },
+          { id: 17,
+name: 'Mettre mes vêtements dans le bac à linge', icon: '👕', points: 1, done: false, pending:
+false, category: 'maison' },
+          { id: 18,
+name: 'Faire tourner une machine à lessiver', icon: '🧼', points: 2, done: false, pending:
+false, category: 'maison' },
+          { id: 19,
+name: 'Faire sécher la machine', icon: '🌀', points: 2, done: false, pending: false, category:
+'maison' },
+          { id: 20, name: 'Ranger mon linge
+propre', icon: '🧺', points: 2, done: false, pending:
+false, category: 'maison' },
+          { id: 23, name: "Passer
+l'aspirateur", icon: '🧹', points: 4, done: false, pending:
+false, category: 'maison' },
+          { id: 35, name: 'Faire tourner le
+lave-vaisselle', icon: '🧼', points: 1, done: false, pending:
+false, category: 'maison' },
+          { id: 36, name: 'Aider à faire les
+courses', icon: '🛒', points: 1, done: false, pending:
+false, category: 'maison' },
+          { id: 37, name: 'Ranger les courses',
+icon: '🛒', points: 2, done: false, pending:
+false, category: 'maison' },
+          { id: 38, name: 'Vider les
+poubelles de la maison', icon: '🗑️',
+points: 1, done: false, pending: false, category: 'maison' },
+          { id: 39, name: 'Aider maman', icon:
+'❤️', points: 2, done: false, pending:
+false, category: 'maison' },
+          { id: 40, name: 'Boire 2 gourdes',
+icon: '🥛', points: 2, done: false, pending:
+false, category: 'maison' },
+          { id: 41, name: 'Aider Mimy', icon: '✨', points: 2, done: false, pending: false,
+category: 'maison' },
+          { id: 42, name: 'Aider Baloo', icon:
+'🐾', points: 2, done: false, pending:
+false, category: 'maison' },
+ 
+          // --- catégorie: 'animaux'
+---
+          { id: 21,
+name: "Mettre de l'eau aux chats", icon: '🐱', points: 1, done: false, pending:
+false, category: 'animaux' },
+          { id: 22,
+name: 'Donner à manger aux poules (samedi/dimanche)', icon: '🐔', points: 2, done: false, pending:
+false, category: 'animaux' },
+          { id: 32,
+name: 'Nettoyer la litière des chats', icon: '🐱', points: 2, done: false, pending:
+false, category: 'animaux' },
+          { id: 43,
+name: 'Faire rentrer Caty avant de partir', icon: '🏡', points: 1, done: false, pending:
+false, category: 'animaux' },
+ 
+          // ---
+catégorie: 'nettoyage' ---
+          { id: 11,
+name: 'Changer le lit (1x/semaine)', icon: '🛏️', points: 5, done: false, pending: false, category:
+'nettoyage' },
+          { id: 12,
+name: "Passer l'aspirateur dans ma chambre", icon: '🧹', points: 3, done: false, pending:
+false, category: 'nettoyage' },
+          { id: 13,
+name: 'Faire les poussières dans ma chambre', icon: '🧽', points: 3, done: false, pending:
+false, category: 'nettoyage' },
+          { id: 24,
+name: 'Laver mes cheveux (le dimanche)', icon: '🧴', points: 3, done: false, pending:
+false, category: 'nettoyage' },
+          { id: 25,
+name: 'Aider maman à nettoyer les vitres', icon: '🪟', points: 6, done: false, pending:
+false, category: 'nettoyage' }
+        ];
+ 
+        // TARIFS
+AUGMENTÉS ET ÉQUITABLES
+        const rewards
+= [
+          { id: 'r1',
+cost: 20, name: '20 min de Tablette ou Switch 🎮' },
+          { id: 'r2',
+cost: 30, name: 'Jeu du parent (15 minutes) 🎲' },
+          { id: 'r3',
+cost: 40, name: 'Choisir un repas sain 🍏' },
+          { id: 'r4', cost: 60, name: 'Atelier
+cuisine 👩‍🍳' },
+          { id: 'r5', cost: 80, name:
+'Activité en tête-à-tête 🤍'
+},
+          { id: 'r6', cost: 100, name:
+'Choisir le film du week-end 🎬' },
+          { id: 'r7', cost: 250, name:
+'Une bonne Glace 🍦'
+},
+          { id: 'r8',
+cost: 400, name: 'Sortie au cinéma 🍿'
+},
+          { id: 'r9',
+cost: 500, name: 'Argent de poche (5 euros) 💶' },
+        ];
+ 
+        const
+categoriesList = [
+          { id: 'all',
+label: 'Tout', icon: '🌈',
+color: '#ffffff', voice: 'Toutes les missions' },
+          { id:
+'matin', label: 'Matin', icon: '☀️', color: '#fff9c4', voice:
+'Missions du matin' },
+          { id:
+'ecole', label: 'École', icon: '🎒',
+color: '#ffccbc', voice: "Missions de l'école" },
+          { id:
+'soir', label: 'Soir', icon: '🌙',
+color: '#e1bee7', voice: 'Missions du soir' },
+          { id:
+'maison', label: 'Maison', icon: '🏡',
+color: '#c8e6c9', voice: 'Missions de la maison' },
+          { id:
+'animaux', label: 'Animaux', icon: '🐱',
+color: '#ffe0b2', voice: "S'occuper des animaux" },
+          { id:
+'nettoyage', label: 'Nettoyage', icon: '🧹', color: '#b3e5fc', voice: 'Grand nettoyage de la
+semaine' },
+        ];
+ 
+        function App() {
+          const [tasks, setTasks] =
+React.useState(() => {
+            const saved =
+localStorage.getItem('caly_tasks');
+            return saved ? JSON.parse(saved) :
+defaultTasks;
+          });
+          const [stars, setStars] =
+React.useState(() => {
+            const saved =
+localStorage.getItem('caly_stars');
+            return saved ? parseInt(saved, 10)
+: 0;
+          });
+          const [level, setLevel] =
+React.useState(() => {
+            const saved =
+localStorage.getItem('caly_level');
+            return saved ? parseInt(saved, 10)
+: 1;
+          });
+          const [parentPassword,
+setParentPassword] = React.useState(() => {
+            const saved =
+localStorage.getItem('caly_parent_pin');
+            return saved ? saved : '1234';
+          });
+          const [historyLog, setHistoryLog] =
+React.useState(() => {
+            const saved =
+localStorage.getItem('caly_history_log');
+            return saved ? JSON.parse(saved) :
+[];
+          });
+          const [childMode, setChildMode] =
+React.useState(false); 
+          const [currentCategory,
+setCurrentCategory] = React.useState('all');
+          const [activeTimers, setActiveTimers]
+= React.useState({});
+ 
+          // --- IDÉE 2 REMISE À ZÉRO
+SANS TOUCHER À LA CAGNOTTE ---
+          React.useEffect(() => {
+            const now = new Date();
+            const todayStr =
+now.toDateString();
+            const lastSavedDate =
+localStorage.getItem('caly_last_date');
+            const currentDay = now.getDay(); //
+0 = Dimanche, 1 = Lundi
+ 
+            if (lastSavedDate &&
+lastSavedDate !== todayStr) {
+              setTasks(prev => prev.map(t
+=> {
+                // Les tâches
+quotidiennes se réinitialisent toutes les nuits
+                if (t.category !== 'nettoyage') {
+                  return { ...t, done: false,
+pending: false };
+                }
+                // Si
+on passe au Lundi (jour 1), on nettoie aussi automatiquement le Grand Nettoyage
+                if (currentDay === 1) {
+                  return { ...t, done: false,
+pending: false };
+                }
+                return t;
+              }));
+            }
+           localStorage.setItem('caly_last_date', todayStr);
+          }, []);
+ 
+          React.useEffect(() => {
+localStorage.setItem('caly_tasks', JSON.stringify(tasks)); }, [tasks]);
+          React.useEffect(() => {
+localStorage.setItem('caly_stars', stars.toString()); }, [stars]);
+          React.useEffect(() => {
+localStorage.setItem('caly_level', level.toString()); }, [level]);
+          React.useEffect(() => {
+localStorage.setItem('caly_parent_pin', parentPassword); }, [parentPassword]);
+          React.useEffect(() => {
+localStorage.setItem('caly_history_log', JSON.stringify(historyLog)); },
+[historyLog]);
+ 
+          React.useEffect(() => {
+            const interval = setInterval(()
+=> {
+              setActiveTimers(prev => {
+                const next = { ...prev };
+                Object.keys(next).forEach(id
+=> {
+                  if (next[id] > 1) {
+                    next[id] -= 1;
+                  } else {
+                    delete next[id];
+                    triggerTimerEnd();
+                  }
+                });
+                return next;
+              });
+            }, 1000);
+            return () =>
+clearInterval(interval);
+          }, []);
+ 
+          const triggerTimerEnd = () => {
+            try {
+              const audioCtx = new
+(window.AudioContext || window.webkitAudioContext)();
+              const oscillator =
+audioCtx.createOscillator();
+              const gainNode =
+audioCtx.createGain();
+              oscillator.connect(gainNode);
+             gainNode.connect(audioCtx.destination);
+              oscillator.type = 'sine';
+             oscillator.frequency.setValueAtTime(880, audioCtx.currentTime);
+              gainNode.gain.setValueAtTime(0.5,
+audioCtx.currentTime);
+              oscillator.start();
+             oscillator.stop(audioCtx.currentTime + 0.3);
+            } catch (e) { console.log(e); }
+            setTimeout(() => {
+speak('Bravo ma princesse, tu as fini de brosser tes dents !'); }, 500);
+          };
+ 
+          const handleTimerClick = (id, e)
+=> {
+            e.stopPropagation();
+            if (activeTimers[id]) {
+              setActiveTimers(prev => {
+const next = { ...prev }; delete next[id]; return next; });
+            } else {
+              setActiveTimers(prev => ({
+...prev, [id]: 120 }));
+              speak('C’est parti pour 2
+minutes de brossage !');
+            }
+          };
+ 
+          const formatTime = (seconds) => {
+            const m = Math.floor(seconds / 60);
+            const s = seconds % 60;
+            return
+`${m}:${s.toString().padStart(2, '0')}`;
+          };
+ 
+          const speak = (text) => {
+            window.speechSynthesis.cancel();
+            const msg = new
+SpeechSynthesisUtterance(text);
+            msg.lang = 'fr-FR';
+            window.speechSynthesis.speak(msg);
+          };
+ 
+          const toggleModeSecure = () => {
+            if (!childMode) {
+              const input =
+window.prompt("Entrez le code secret de Maman :");
+              if (input === parentPassword)
+setChildMode(true);
+              else if (input !== null)
+alert("Code incorrect ! 🤫");
+            } else {
+              setChildMode(false);
+            }
+          };
+ 
+          const requestTaskValidation = (id)
+=> {
+            setTasks(tasks.map(t => t.id ===
+id ? { ...t, pending: true } : t));
+           speak('Demande envoyée à maman !');
+          };
+ 
+          const acceptTask = (id, points) =>
+{
+            const task = tasks.find(t =>
+t.id === id);
+            if (!task) return;
+            setTasks(tasks.map(t => t.id ===
+id ? { ...t, done: true, pending: false } : f));
+            const newStars = stars + points;
+            setStars(newStars);
+ 
+            const now = new Date();
+            const logMessage = `${task.icon}
+${task.name} - Validé à ${String(now.getHours()).padStart(2,
+'0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            setHistoryLog([logMessage,
+...historyLog]);
+            speak('Bravo ma princesse !');
+ 
+            const targetLevel =
+Math.floor(newStars / 60) + 1;
+            if (targetLevel > level)
+setLevel(targetLevel);
+          };
+ 
+          const rejectTask = (id) => {
+            setTasks(tasks.map(t => t.id ===
+id ? { ...t, done: false, pending: false } : t));
+            speak('Mission à refaire.');
+          };
+ 
+          const handleBonus = () => {
+            const newStars = stars + 15;
+            setStars(newStars);
+            setHistoryLog([`✨ BONUS PARENTAL (+15 ⭐)`, ...historyLog]);
+            speak('Super bonus pour ma
+princesse !');
+            const targetLevel =
+Math.floor(newStars / 60) + 1;
+            if (targetLevel > level)
+setLevel(targetLevel);
+          };
+ 
+          const handlePenalty = () => {
+            const newStars = Math.max(0, stars
+- 5);
+            setStars(newStars);
+            setHistoryLog([`⚠️ RETRAIT BÊTISE (-5 ⭐)`, ...historyLog]);
+            speak('Attention aux bêtises
+!');
+          };
+ 
+          const buyReward = (cost, rewardName)
+=> {
+            if (stars >= cost) {
+              setStars(stars - cost);
+              setHistoryLog([`🛍️ RÉCOMPENSE ACHETÉE : ${rewardName} (-${cost} ⭐)`, ...historyLog]);
+              speak(`Félicitations pour
+ta récompense !`);
+            }
+          };
+ 
+          const resetWeek = () => {
+            if
+(window.confirm("Recommencer la semaine ?")) {
+              setTasks(defaultTasks.map(t =>
+({ ...t, done: false, pending: false })));
+              setHistoryLog([]);
+            }
+          };
+ 
+          const filteredTasks = tasks.filter(t
+=> currentCategory === 'all' || t.category === currentCategory);
+ 
+          return (
+            <div style={{ maxWidth: '600px',
+margin: '0 auto' }}>
+              <div style={{ textAlign:
+'center', marginBottom: '25px' }}>
+                <button
+onClick={toggleModeSecure} className="btn-mode">
+                  {childMode ? '👑 Retour au Monde de
+Caly' : '🔒
+Configuration Parentale'}
+               </button>
+             </div>
+ 
+             {childMode ? (
+                /*
+================= CONFIGURATION PARENT ================= */
+               <div>
+                 <h1 style={{ color: '#3f51b5', textAlign: 'center' }}>Espace Maman⚙️</h1>
+                 <div className="card" style={{ textAlign: 'center' }}>
+                   <p style={{ color: '#333', fontSize: '18px', margin: '0' }}>Score
+actuel de Caly :</p>
+                   <div style={{ fontSize: '45px', fontWeight: 'bold', color: '#3f51b5',
+margin: '5px 0' }}>⭐
+{stars}</div>
+                    <p style={{ color: '#666',
+margin: '0' }}>Niveau : {level}</p>
+                  </div>
+ 
+                  <div style={{ display:
+'flex', gap: '10px', marginBottom: '25px' }}>
+                    <button
+onClick={handleBonus} className="btn-parent" style={{ background:
+'#7e57c2' }}>✨ Donner un Bonus (+15 ⭐)</button>
+                    <button
+onClick={handlePenalty} className="btn-parent" style={{ background:
+'#ef5350' }}>⚠️ Retrait Bêtise (-5 ⭐)</button>
+                  </div>
+ 
+                  <div
+className="card">
+                    <h3 style={{ color:
+'#333', marginTop: '0' }}>⏳ Missions en attente de
+bisou-validation :</h3>
+                    {tasks.filter(t =>
+t.pending).length === 0 ? (
+                     <p style={{ color: '#888', fontStyle: 'italic', margin: '0'
+}}>Caly n'a pas encore envoyé de mission à valider.</p>
+                    ) : (
+                      tasks.filter(t =>
+t.pending).map(task => (
+                        <div key={task.id}
+style={{ display: 'flex', justifyContent: 'space-between', alignItems:
+'center', marginBottom: '12px', color: '#333', borderBottom: '1px solid #eee',
+paddingBottom: '8px' }}>
+                         <span>{task.icon} {task.name} (+{task.points}⭐)</span>
+                          <div>
+                            <button
+onClick={() => acceptTask(task.id, task.points)} style={{ background:
+'#4caf50', color: '#fff', border: 'none', padding: '6px 12px', borderRadius:
+'6px', cursor: 'pointer', marginRight: '5px', fontWeight: 'bold'
+}}>Valider</button>
+                            <button
+onClick={() => rejectTask(task.id)} style={{ background: '#f44336', color:
+'#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor:
+'pointer', fontWeight: 'bold' }}>Refuser</button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+ 
+                  <div
+className="card">
+                    <h3 style={{ color:
+'#333', marginTop: '0' }}>🛍️ Boutique magique :</h3>
+                    {rewards.map(r => (
+                      <div key={r.id}
+style={{ display: 'flex', justifyContent: 'space-between', alignItems:
+'center', padding: '10px 0', borderBottom: '1px solid #f9f9f9', color: '#333'
+}}>
+                        <span style={{
+color: stars >= r.cost ? '#333' : '#aaa' }}>{r.name}
+<strong>({r.cost} ⭐)</strong></span>
+                        <button onClick={()
+=> buyReward(r.cost, r.name)} disabled={stars < r.cost} style={{ padding:
+'6px 14px', background: stars >= r.cost ? '#3f51b5' : '#e0e0e0', color:
+'#fff', border: 'none', borderRadius: '8px', cursor: stars >= r.cost ?
+'pointer' : 'default', fontWeight: 'bold' }}>Débloquer 🛒</button>
+                      </div>
+                    ))}
+                  </div>
+ 
+                  <div
+className="card">
+                    <h3 style={{ color:
+'#333', marginTop: '0' }}>📊 Historique de la semaine
+:</h3>
+                    <div style={{ maxHeight:
+'150px', overflowY: 'auto', background: '#fafafa', padding: '12px',
+borderRadius: '10px', border: '1px solid #eee' }}>
+                      {historyLog.length === 0
+? <p style={{ color: '#888', fontStyle: 'italic', fontSize: '13px', margin:
+'0' }}>Rien dans l'historique pour le moment.</p> :
+historyLog.map((log, i) => <p key={i} style={{ color: '#555', margin:
+'5px 0', fontSize: '13px', borderBottom: '1px dashed #eee', paddingBottom:
+'4px' }}>{log}</p>)}
+                    </div>
+                 </div>
+ 
+                 <div style={{ textAlign: 'center' }}>
+                   <button onClick={resetWeek} style={{ padding: '12px 20px',
+background: '#333', color: '#fff', border: 'none', borderRadius: '10px',
+cursor: 'pointer', fontWeight: 'bold' }}>🔄 Recommencer la semaine</button>
+                 </div>
+               </div>
+              ) : (
+                /*
+================= MONDE DE CALY (INTERFACE ULTRA DE LA MAQUETTE)
+================= */
+                <div>
+                  <div
+className="royal-header">
+                    <div
+className="royal-cat-container">
+                      <div
+className="royal-cat-badge">🧜‍♀️</div>
+                    </div>
+                    <h1
+className="princess-title" onClick={() => speak('Bonjour Caly chat
+! Passe une magnifique journée !')}>Caly chat</h1>
+                    <p style={{ color:
+'#3f51b5', margin: '0', fontSize: '15px', fontWeight: 'bold', letterSpacing:
+'0.5px' }}>✨ ROYAUME DE NIVEAU {level} ✨</p>
+                    
+                    {stars >= 20
+&& (
+                     <div style={{ fontSize: '55px', margin: '15px 0 5px 0', animation:
+'floatSirene 3s infinite', cursor: 'pointer' }} onClick={() => speak('Ton
+coffre à cadeaux magique t’attend dans la boutique avec maman !')}>
+                       🎁✨
+                      </div>
+                    )}
+                    
+                    <div>
+                      <div
+className="star-medallion">
+                        <span>💖</span> {stars} Étoiles
+                      </div>
+                    </div>
+                 </div>
+ 
+                  {/*
+Boutons de catégories sous forme de badges ronds pastel */}
+                  <div
+className="category-scroll">
+                    {categoriesList.map(cat
+=> (
+                      <div 
+                        key={cat.id} 
+                        onClick={() => {
+setCurrentCategory(cat.id); speak(cat.voice); }}
+                       className={`category-item ${currentCategory === cat.id ? 'active' :
+''}`}
+                      >
+                        <div 
+                         className="btn-category-round"
+                          style={{ 
+                            background:
+cat.color,
+                            border:
+currentCategory === cat.id ? '4px solid #3f51b5' : '3px solid #ffffff',
+                            transform:
+currentCategory === cat.id ? 'scale(1.1)' : 'none'
+                          }}
+                        >
+                          {cat.icon}
+                        </div>
+                        <span
+className="category-label">{cat.label}</span>
+                      </div>
+                   ))}
+                 </div>
+ 
+                  {/*
+Liste des cartes illustrées */}
+                  {filteredTasks.map(task => (
+                    <div key={task.id}
+className="task-card">
+                      <div
+className="task-illustration-box">
+                        {task.icon}
+                      </div>
+                      
+                      <div style={{
+textAlign: 'left', color: '#333', flexGrow: 1, paddingLeft: '15px', cursor:
+'pointer' }} onClick={() => speak(task.name)}>
+                        <h3 style={{ margin:
+'0', fontSize: '16px', color: '#2c3e50', display: 'flex', alignItems: 'center',
+gap: '6px', fontWeight: '700' }}>
+                         <span>{task.name}</span>
+                          <span style={{
+fontSize: '13px', color: '#a6c1ee' }}>🔊</span>
+                        </h3>
+                        <p style={{ margin:
+'4px 0 0 0', color: '#3f51b5', fontSize: '13px', fontWeight: 'bold'
+}}>+{task.points} {task.points > 1 ? 'étoiles' :
+'étoile'}</p>
+                       
+                       {task.hasTimer && !task.done && !task.pending &&
+(
+                         <div>
+                           <button
+className="btn-timer" onClick={(e) => handleTimerClick(task.id,
+e)} style={{ background: activeTimers[task.id] ? '#ef5350' : '#7e57c2' }}>
+                             {activeTimers[task.id] ? `🛑
+${formatTime(activeTimers[task.id])}` : '⏱️ 2 min'}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      <button 
+                        onClick={() =>
+requestTaskValidation(task.id)} 
+                        disabled={task.done ||
+task.pending} 
+                       className="btn-valider" 
+                        style={{ 
+                          background: task.done
+? '#4caf50' : task.pending ? '#ffa726' : 'linear-gradient(135deg, #4b6cb7 0%,
+#182848 100%)',
+                          cursor: (task.done ||
+task.pending) ? 'default' : 'pointer'
+                        }}
+                      >
+                        {task.done ? '✓ Fait' : task.pending ? 'Vérif ⏳' : 'Valider 🎉'}
+                     </button>
+                   </div>
+                  ))}
+ 
+                  {/*
+Catalogue Magique */}
+                  <div className="card"
+style={{ background: '#fffdeb', border: '2px solid #ffd700', borderRadius:
+'24px', textAlign: 'left' }}>
+                    <h3 style={{ margin: '0
+0 12px 0', fontSize: '20px', color: '#5d4037', fontFamily: 'Georgia, serif'
+}}>👑 Boutique magique</h3>
+                    {rewards.map(r => (
+                      <p key={r.id} style={{
+margin: '8px 0', fontSize: '16px', color: stars >= r.cost ? '#2e7d32' :
+'#555', fontWeight: stars >= r.cost ? 'bold' : 'normal' }}>
+                        {stars >= r.cost ? '⭐ ' : '🔒 '}
+<strong>{r.cost} ⭐</strong> = {r.name}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        }
+ 
+        const root =
+ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
 </body>
 </html>
