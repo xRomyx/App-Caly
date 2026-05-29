@@ -16,6 +16,7 @@
             min-height: 100vh; 
         }
         
+        /* Bouton Parent discret et élégant */
         .btn-mode { 
             padding: 10px 22px; 
             font-size: 14px; 
@@ -34,6 +35,7 @@
             background: #ffffff;
         }
 
+        /* Grand Panneau Central Style Glassmorphism Maquette */
         .royal-header {
             background: rgba(255, 255, 255, 0.75);
             backdrop-filter: blur(15px);
@@ -46,6 +48,7 @@
             position: relative;
         }
 
+        /* Conteneur du Macaron central */
         .royal-cat-container {
             display: flex;
             justify-content: center;
@@ -53,6 +56,7 @@
             margin-bottom: 20px;
         }
         
+        /* Sphère Miroir Magique 3D */
         .royal-cat-badge {
             width: 140px;
             height: 140px;
@@ -67,6 +71,7 @@
             position: relative;
         }
 
+        /* Coeur Violet à la base de la sphère */
         .badge-heart-decor {
             position: absolute;
             bottom: -12px;
@@ -104,6 +109,7 @@
             letter-spacing: -0.5px;
         }
 
+        /* Médaillon de Score Pilule comme l'image */
         .star-medallion {
             background: linear-gradient(90deg, #ff7675 0%, #6c5ce7 100%);
             color: white;
@@ -119,6 +125,7 @@
             border: 2px solid rgba(255, 255, 255, 0.4);
         }
 
+        /* Les boutons de catégories en Badges ronds épurés */
         .category-scroll {
             display: flex;
             gap: 20px;
@@ -160,6 +167,7 @@
             font-weight: 800;
         }
 
+        /* Liste des Tâches Volumétriques Premium */
         .task-card { 
             background: #ffffff; 
             border-radius: 28px; 
@@ -177,6 +185,7 @@
             box-shadow: 0 12px 30px rgba(0,0,0,0.05);
         }
 
+        /* Boîtes d'illustrations stylisées à gauche */
         .task-illustration-box {
             width: 60px;
             height: 60px;
@@ -188,6 +197,7 @@
             box-shadow: inset 0 2px 5px rgba(255,255,255,0.5);
         }
 
+        /* Bouton Valider Style Maquette */
         .btn-valider { 
             padding: 14px 28px; 
             font-size: 15px; 
@@ -229,6 +239,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
+        // VRAIS GRAPHISMES VECTORIELS (SVG) DIRECTEMENT INTÉGRÉS POUR REMPLACER LES ÉMOJIS PLATS
         const iconsSVG = {
           sirene: <svg width="75" height="75" viewBox="0 0 64 64" fill="none"><path d="M32 4C24 4 18 10 18 18C18 28 32 42 32 42C32 42 46 28 46 18C46 10 40 4 32 4Z" fill="#ff9a9e"/><circle cx="32" cy="16" r="8" fill="#ffe0bd"/><path d="M22 40C22 50 32 60 32 60C32 60 42 50 42 40H22Z" fill="#4facfe"/><path d="M28 54L20 60V50L28 54ZM36 54L44 60V50L36 54Z" fill="#00f2fe"/><path d="M26 14C26 14 28 11 32 11C36 11 38 14 38 14" stroke="#6c5ce7" stroke-width="2" stroke-linecap="round"/></svg>,
           brosse: <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="#ff7675" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 2l4 4-14 14H2v-4L16 2z"/></svg>,
@@ -244,20 +255,27 @@
         };
 
         const defaultTasks = [
+          // --- catégorie: 'matin' ---
           { id: 1, name: 'Brosser mes dents', icon: iconsSVG.brosse, bgBox: '#ffeaa7', points: 1, done: false, pending: false, category: 'matin', hasTimer: true },
           { id: 2, name: 'Faire mon puff orange', icon: iconsSVG.puff, bgBox: '#ffe0b2', points: 1, done: false, pending: false, category: 'matin' },
           { id: 26, name: 'Se coiffer', icon: iconsSVG.coiffer, bgBox: '#f8c291', points: 1, done: false, pending: false, category: 'matin' },
           { id: 6, name: 'Dormir dans mon lit', icon: iconsSVG.lit, bgBox: '#dff9fb', points: 3, done: false, pending: false, category: 'matin' },
           { id: 30, name: 'Mettre mes vêtements', icon: iconsSVG.habits, bgBox: '#e8f8f5', points: 1, done: false, pending: false, category: 'matin' },
+
+          // --- catégorie: 'ecole' ---
           { id: 7, name: 'Préparer mon sac à diner', icon: iconsSVG.sac, bgBox: '#ffccbc', points: 1, done: false, pending: false, category: 'ecole' },
           { id: 8, name: 'Vider mon sac à diner', icon: iconsSVG.sac, bgBox: '#ffccbc', points: 1, done: false, pending: false, category: 'ecole' },
           { id: 28, name: 'Préparer mon journal de classe et ma farde', icon: iconsSVG.sac, bgBox: '#ffe0b2', points: 1, done: false, pending: false, category: 'ecole' },
           { id: 29, name: 'Faire les devoirs', icon: iconsSVG.coiffer, bgBox: '#f5f5f5', points: 5, done: false, pending: false, category: 'ecole' },
+
+          // --- catégorie: 'soir' ---
           { id: 3, name: 'Brosser mes dents', icon: iconsSVG.brosse, bgBox: '#ffeaa7', points: 1, done: false, pending: false, category: 'soir', hasTimer: true },
           { id: 4, name: 'Prendre mon sirop', icon: iconsSVG.puff, bgBox: '#e1bee7', points: 1, done: false, pending: false, category: 'soir' },
           { id: 5, name: 'Prendre ma douche', icon: iconsSVG.brosse, bgBox: '#e3fafc', points: 1, done: false, pending: false, category: 'soir' },
           { id: 27, name: 'Se démêler les cheveux', icon: iconsSVG.coiffer, bgBox: '#fdf0ff', points: 1, done: false, pending: false, category: 'soir' },
           { id: 31, name: 'Préparer mes vêtements pour le lendemain', icon: iconsSVG.habits, bgBox: '#e8f8f5', points: 1, done: false, pending: false, category: 'soir' },
+
+          // --- catégorie: 'maison' ---
           { id: 9, name: 'Ranger mes chaussures', icon: iconsSVG.habits, bgBox: '#f5f5f5', points: 1, done: false, pending: false, category: 'maison' },
           { id: 10, name: 'Ranger mes jeux', icon: iconsSVG.sac, bgBox: '#fff9c4', points: 2, done: false, pending: false, category: 'maison' },
           { id: 14, name: 'Mettre la table', icon: iconsSVG.assiettes, bgBox: '#ffffff', points: 1, done: false, pending: false, category: 'maison' },
@@ -276,9 +294,14 @@
           { id: 40, name: 'Boire 2 gourdes', icon: iconsSVG.assiettes, bgBox: '#e3fafc', points: 2, done: false, pending: false, category: 'maison' },
           { id: 41, name: 'Aider Mimy', icon: iconsSVG.puff, bgBox: '#fff9c4', points: 2, done: false, pending: false, category: 'maison' },
           { id: 42, name: 'Aider Baloo', icon: iconsSVG.animaux, bgBox: '#ffe0b2', points: 2, done: false, pending: false, category: 'maison' },
+
+          // --- catégorie: 'animaux' ---
           { id: 21, name: "Mettre de l'eau aux chats", icon: iconsSVG.animaux, bgBox: '#ffe0b2', points: 1, done: false, pending: false, category: 'animaux' },
           { id: 22, name: 'Donner à manger aux poules (samedi/dimanche)', icon: iconsSVG.animaux, bgBox: '#fff9c4', points: 2, done: false, pending: false, category: 'animaux' },
           { id: 32, name: 'Nettoyer la litière des chats', icon: iconsSVG.animaux, bgBox: '#ffe0b2', points: 2, done: false, pending: false, category: 'animaux' },
+          { id: 43, name: 'Faire rentrer Caty avant de partir', icon: iconsSVG.lit, bgBox: '#dff9fb', points: 1, done: false, pending: false, category: 'animaux' },
+
+          // --- catégorie: 'nettoyage' ---
           { id: 11, name: 'Changer le lit (1x/semaine)', icon: iconsSVG.lit, bgBox: '#dff9fb', points: 5, done: false, pending: false, category: 'nettoyage' },
           { id: 12, name: "Passer l'aspirateur dans ma chambre", icon: iconsSVG.menage, bgBox: '#fafafa', points: 3, done: false, pending: false, category: 'nettoyage' },
           { id: 13, name: 'Faire les poussières dans ma chambre', icon: iconsSVG.menage, bgBox: '#fafafa', points: 3, done: false, pending: false, category: 'nettoyage' },
@@ -313,9 +336,10 @@
             const saved = localStorage.getItem('caly_tasks');
             if (saved) {
               const parsed = JSON.parse(saved);
+              // Rapprochement des icônes SVG perdues au format JSON
               return defaultTasks.map(dt => {
                 const existing = parsed.find(pt => pt.id === dt.id);
-                return existing ? { ...dt, done: existing.done, pending: existing.pending } : dt;
+                return existing ? { ...existing, icon: dt.icon, bgBox: dt.bgBox } : dt;
               });
             }
             return defaultTasks;
@@ -340,6 +364,7 @@
           const [currentCategory, setCurrentCategory] = React.useState('all');
           const [activeTimers, setActiveTimers] = React.useState({});
 
+          // Remise à zéro hebdomadaire et quotidienne automatique (Idée 2)
           React.useEffect(() => {
             const now = new Date();
             const todayStr = now.toDateString();
@@ -361,10 +386,10 @@
           }, []);
 
           React.useEffect(() => {
-            const cleanStorageTasks = tasks.map(t => ({ id: t.id, done: t.done, pending: t.pending }));
-            localStorage.setItem('caly_tasks', JSON.stringify(cleanStorageTasks));
+            // Nettoyage temporaire des SVG pour le localStorage
+            const cleanTasks = tasks.map(t => ({ ...t, icon: null }));
+            localStorage.setItem('caly_tasks', JSON.stringify(cleanTasks));
           }, [tasks]);
-          
           React.useEffect(() => { localStorage.setItem('caly_stars', stars.toString()); }, [stars]);
           React.useEffect(() => { localStorage.setItem('caly_level', level.toString()); }, [level]);
           React.useEffect(() => { localStorage.setItem('caly_parent_pin', parentPassword); }, [parentPassword]);
@@ -537,7 +562,7 @@
                   </div>
 
                   <div className="card">
-                    <h3 style={{ color: '#333', marginTop: '0' }}>🛍️ Boutique magique (Mode Maman) :</h3>
+                    <h3 style={{ color: '#333', marginTop: '0' }}>🛍️ Boutique magique :</h3>
                     {rewards.map(r => (
                       <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f9f9f9', color: '#333' }}>
                         <span style={{ color: stars >= r.cost ? '#333' : '#aaa' }}>{r.name} <strong>({r.cost} ⭐)</strong></span>
@@ -566,6 +591,7 @@
                     </div>
                   </div>
 
+                  {/* Boutons de catégories sous forme de badges ronds */}
                   <div className="category-scroll">
                     {categoriesList.map(cat => (
                       <div 
@@ -587,6 +613,7 @@
                     ))}
                   </div>
 
+                  {/* Liste des cartes illustrées en vectoriel */}
                   {filteredTasks.map(task => (
                     <div key={task.id} className="task-card">
                       <div className="task-illustration-box" style={{ backgroundColor: task.bgBox }}>
@@ -621,16 +648,6 @@
                       </button>
                     </div>
                   ))}
-
-                  {/* AJOUT : La Boutique Magique visible par l'enfant */}
-                  <div className="card" style={{ background: '#fffdeb', border: '2px solid #ffd700', borderRadius: '24px', textAlign: 'left' }}>
-                    <h3 style={{ margin: '0 0 12px 0', fontSize: '20px', color: '#5d4037', fontFamily: 'Georgia, serif' }}>🛍️ Boutique magique</h3>
-                    {rewards.map(r => (
-                      <p key={r.id} style={{ margin: '8px 0', fontSize: '16px', color: stars >= r.cost ? '#2e7d32' : '#555', fontWeight: stars >= r.cost ? 'bold' : 'normal' }}>
-                        {stars >= r.cost ? '⭐ ' : '🔒 '} <strong>{r.cost} ⭐</strong> = {r.name}
-                      </p>
-                    ))}
-                  </div>
                 </div>
               )}
             </div>
