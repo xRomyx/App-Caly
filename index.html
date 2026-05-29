@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caly chat ✨</title>
+    <title>Caly ✨</title>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -172,6 +172,73 @@
 
         .btn-parent { padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 1; color: #fff; }
         .card { background: #fff; border-radius: 24px; padding: 25px; box-shadow: 0 6px 20px rgba(0,0,0,0.03); margin-bottom: 25px; }
+
+        .hero-card {
+    background: linear-gradient(135deg, #fff7fb, #ffe4f1);
+    border-radius: 35px;
+    padding: 30px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border: 3px solid rgba(255,255,255,0.8);
+
+    box-shadow:
+        0 10px 25px rgba(255,105,180,0.15),
+        inset 0 0 20px rgba(255,255,255,0.6);
+}
+
+.hero-title {
+    font-size: 52px;
+    margin: 0;
+    font-weight: 900;
+    color: #7b1fa2;
+    letter-spacing: 1px;
+    text-shadow: 0 3px 8px rgba(255,105,180,0.25);
+    font-family: cursive;
+}
+
+.hero-level {
+    color: #a64ac9;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 8px;
+}
+
+.hero-stars {
+    color: #ff4fa3;
+    font-size: 38px;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.sparkle {
+    position: absolute;
+    animation: float 3s infinite ease-in-out;
+    opacity: 0.9;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+
+.progress-bar {
+    width: 100%;
+    height: 16px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(to right, #ff69b4, #d946ef);
+    transition: width 0.4s ease;
+}
+        
     </style>
 </head>
 <body>
@@ -226,7 +293,7 @@
           { id: 32, name: 'Nettoyer la litière des chats et se laver les mains après', icon: '🐱', points: 2, done: false, pending: false, category: 'animaux' },
           { id: 33, name: 'Réapprovisionner le distributeur de croquettes', icon: '🧆', points: 1, done: false, pending: false, category: 'animaux' },
           { id: 34, name: 'Aider à laver les chats', icon: '🧼', points: 2, done: false, pending: false, category: 'animaux' },
-          { id: 43, name: 'Faire rentrer Caty avant de partir de la maison', icon: '🏡', points: 1, done: false, pending: false, category: 'animaux' },
+          { id: 43, name: 'Faire rentrer les chats avant de partir de la maison', icon: '🏡', points: 1, done: false, pending: false, category: 'animaux' },
 
           // --- catégorie: 'nettoyage' ---
           { id: 11, name: 'Changer le lit (1x/semaine)', icon: '🛏️', points: 5, done: false, pending: false, category: 'nettoyage' },
@@ -243,9 +310,9 @@
           { id: 'r4', cost: 60, name: 'Atelier cuisine 👩‍🍳' },
           { id: 'r5', cost: 80, name: 'Activité en tête-à-tête 🤍' },
           { id: 'r6', cost: 100, name: 'Choisir le film du week-end 🎬' },
-          { id: 'r7', cost: 150, name: 'Une bonne Glace 🍦' },
-          { id: 'r8', cost: 200, name: 'Sortie au cinéma 🍿' },
-          { id: 'r9', cost: 250, name: 'Argent de poche (5 euros) 💶' },
+          { id: 'r7', cost: 250, name: 'Une bonne Glace 🍦' },
+          { id: 'r8', cost: 400, name: 'Sortie au cinéma 🍿' },
+          { id: 'r9', cost: 500, name: 'Argent de poche (5 euros) 💶' },
         ];
 
         const categoriesList = [
@@ -507,7 +574,7 @@
                     <div className="royal-cat-container">
                       <div className="royal-cat-badge">🧜‍♀️</div>
                     </div>
-                    <h1 className="princess-title" onClick={() => speak('Bonjour Caly chat ! Passe une magnifique journée !')}>Caly chat</h1>
+                    <h1 className="princess-title" onClick={() => speak('Bonjour Caly ! Passe une magnifique journée !')}>Caly </h1>
                     <p style={{ color: '#c2185b', margin: '0', fontSize: '16px', fontWeight: 'bold' }}>✨ MONDE DE NIVEAU {level} ✨</p>
                     
                     {stars >= 20 && (
