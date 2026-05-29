@@ -570,25 +570,61 @@
               ) : (
                 /* ================= MONDE DE CALY (INTERFACE ENFANT) ================= */
                 <div>
-                  <div className="royal-header">
-                    <div className="royal-cat-container">
-                      <div className="royal-cat-badge">🧜‍♀️</div>
-                    </div>
-                    <h1 className="princess-title" onClick={() => speak('Bonjour Caly ! Passe une magnifique journée !')}>Caly </h1>
-                    <p style={{ color: '#c2185b', margin: '0', fontSize: '16px', fontWeight: 'bold' }}>✨ MONDE DE NIVEAU {level} ✨</p>
-                    
-                    {stars >= 20 && (
-                      <div style={{ fontSize: '55px', margin: '15px 0 5px 0', animation: 'floatSirene 2s infinite', cursor: 'pointer' }} onClick={() => speak('Ton coffre à cadeaux magique t’attend dans la boutique avec maman !')}>
-                        🎁✨
-                      </div>
-                    )}
-                    
-                    <div>
-                      <div className="star-medallion">
-                        <span>💖</span> {stars} Étoiles
-                      </div>
-                    </div>
-                  </div>
+               <div className="hero-card">
+
+    <div className="sparkle" style={{ top: '15px', left: '20px', fontSize: '22px' }}>✨</div>
+    <div className="sparkle" style={{ top: '20px', right: '25px', fontSize: '20px' }}>💖</div>
+    <div className="sparkle" style={{ bottom: '25px', left: '30px', fontSize: '18px' }}>⭐</div>
+    <div className="sparkle" style={{ bottom: '20px', right: '35px', fontSize: '22px' }}>🦄</div>
+
+    <div style={{ fontSize: '55px', marginBottom: '10px' }}>
+        👑 🐱 ✨
+    </div>
+
+    <h1 className="hero-title" onClick={() => speak('Bonjour Caly !')}>
+        Princesse Caly
+    </h1>
+
+    <div className="hero-level">
+        ✨ Niveau {level} ✨
+    </div>
+
+    {stars >= 20 && (
+        <div 
+            style={{ 
+                fontSize: '55px', 
+                marginTop: '12px',
+                cursor: 'pointer'
+            }}
+            onClick={() => speak('Ton coffre magique t’attend !')}
+        >
+            🎁✨
+        </div>
+    )}
+
+    <div className="hero-stars">
+        ⭐ {stars} étoiles
+    </div>
+
+    <div className="progress-bar">
+        <div
+            className="progress-fill"
+            style={{
+                width: `${(stars % 60) / 60 * 100}%`
+            }}
+        />
+    </div>
+
+    <div style={{
+        marginTop: '8px',
+        color: '#a64ac9',
+        fontSize: '14px',
+        fontWeight: 'bold'
+    }}>
+        Progression vers le niveau suivant
+    </div>
+
+</div>
 
                   <div className="category-scroll">
                     {categoriesList.map(cat => (
