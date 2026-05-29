@@ -174,7 +174,16 @@
         .card { background: #fff; border-radius: 24px; padding: 25px; box-shadow: 0 6px 20px rgba(0,0,0,0.03); margin-bottom: 25px; }
 
         .hero-card {
-    background: linear-gradient(135deg, #fff7fb, #ffe4f1);
+   background: linear-gradient(
+    135deg,
+    #ffb6d9 0%,
+    #ffcce6 25%,
+    #ffdff0 50%,
+    #ffe8f5 75%,
+    #fff5fb 100%
+);
+background-size: 300% 300%;
+animation: gradientMove 8s ease infinite;
     border-radius: 35px;
     padding: 30px 20px;
     text-align: center;
@@ -221,6 +230,20 @@
     0% { transform: translateY(0px); }
     50% { transform: translateY(-8px); }
     100% { transform: translateY(0px); }
+}
+
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .progress-bar {
@@ -582,7 +605,7 @@
     </div>
 
     <h1 className="hero-title" onClick={() => speak('Bonjour Caly !')}>
-        Princesse Caly
+        Caly
     </h1>
 
     <div className="hero-level">
