@@ -16,6 +16,7 @@
             min-height: 100vh; 
         }
         
+        /* Style Espace Parent */
         .btn-mode { 
             padding: 12px 25px; 
             font-size: 15px; 
@@ -33,6 +34,7 @@
             box-shadow: 0 6px 20px rgba(255, 182, 193, 0.6);
         }
 
+        /* Grand Badge Princesse Royal */
         .royal-header {
             background: linear-gradient(135deg, #ffffff 0%, #fff0f5 100%);
             border-radius: 30px;
@@ -51,6 +53,7 @@
             background: linear-gradient(90deg, #ffd700, #ffa500, #ffd700);
         }
 
+        /* Macaron Sirène Flottant */
         .royal-cat-container {
             display: flex;
             justify-content: center;
@@ -86,6 +89,7 @@
             font-family: 'Georgia', serif;
         }
 
+        /* Médaillon de Score Magique */
         .star-medallion {
             background: linear-gradient(135deg, #ff69b4 0%, #da70d6 100%);
             color: white;
@@ -101,49 +105,64 @@
             border: 2px solid #ffffff;
         }
 
-        /* ===== GOMETTES RONDES ===== */
-        .category-scroll {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            justify-content: center;
+        /* Onglets de Catégories Girly */
+.category-scroll {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    padding-bottom: 15px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.btn-category {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    width: 70px;
+}
+.btn-category .cat-circle {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    border: 3px solid #e0d0e8;
+    background: #fff;
+    transition: all 0.2s ease;
+}
+.btn-category.active .cat-circle {
+    border: 3px solid #6c4abf;
+}
+.btn-category .cat-label {
+    font-size: 12px;
+    font-weight: bold;
+    color: #444;
+    text-align: center;
+}
         }
         .btn-category {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            background: none;
-            border: none;
+            padding: 10px 18px;
+            border-radius: 20px;
             cursor: pointer;
-            padding: 0;
-            width: 70px;
-        }
-        .btn-category .cat-circle {
-            width: 58px;
-            height: 58px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 26px;
-            border: 3px solid #e0d0e8;
+            border: none;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
             transition: all 0.2s ease;
         }
-        .btn-category.active .cat-circle {
-            border: 3px solid #6c4abf;
+        .btn-category:hover {
+            transform: scale(1.05);
         }
-        .btn-category .cat-label {
-            font-size: 12px;
-            font-weight: bold;
-            color: #444;
-            text-align: center;
-        }
-        /* ========================== */
 
+        /* Cartes de Tâches Scintillantes */
         .task-card { 
             background: #ffffff; 
             border-radius: 20px; 
@@ -188,75 +207,93 @@
         .card { background: #fff; border-radius: 24px; padding: 25px; box-shadow: 0 6px 20px rgba(0,0,0,0.03); margin-bottom: 25px; }
 
         .hero-card {
-            background: linear-gradient(135deg, #ffb6d9 0%, #ffcce6 25%, #ffdff0 50%, #ffe8f5 75%, #fff5fb 100%);
-            background-size: 300% 300%;
-            animation: gradientMove 8s ease infinite;
-            border-radius: 35px;
-            padding: 30px 20px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            border: 3px solid rgba(255,255,255,0.8);
-            box-shadow: 0 10px 25px rgba(255,105,180,0.15), inset 0 0 20px rgba(255,255,255,0.6);
-        }
+   background: linear-gradient(
+    135deg,
+    #ffb6d9 0%,
+    #ffcce6 25%,
+    #ffdff0 50%,
+    #ffe8f5 75%,
+    #fff5fb 100%
+);
+background-size: 300% 300%;
+animation: gradientMove 8s ease infinite;
+    border-radius: 35px;
+    padding: 30px 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    border: 3px solid rgba(255,255,255,0.8);
 
-        .hero-title {
-            font-size: 52px;
-            margin: 0;
-            font-weight: 900;
-            color: #7b1fa2;
-            letter-spacing: 1px;
-            text-shadow: 0 3px 8px rgba(255,105,180,0.25);
-            font-family: cursive;
-        }
+    box-shadow:
+        0 10px 25px rgba(255,105,180,0.15),
+        inset 0 0 20px rgba(255,255,255,0.6);
+}
 
-        .hero-level {
-            color: #a64ac9;
-            font-size: 20px;
-            font-weight: bold;
-            margin-top: 8px;
-        }
+.hero-title {
+    font-size: 52px;
+    margin: 0;
+    font-weight: 900;
+    color: #7b1fa2;
+    letter-spacing: 1px;
+    text-shadow: 0 3px 8px rgba(255,105,180,0.25);
+    font-family: cursive;
+}
 
-        .hero-stars {
-            color: #ff4fa3;
-            font-size: 38px;
-            font-weight: bold;
-            margin-top: 15px;
-        }
+.hero-level {
+    color: #a64ac9;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 8px;
+}
 
-        .sparkle {
-            position: absolute;
-            animation: float 3s infinite ease-in-out;
-            opacity: 0.9;
-        }
+.hero-stars {
+    color: #ff4fa3;
+    font-size: 38px;
+    font-weight: bold;
+    margin-top: 15px;
+}
 
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-8px); }
-            100% { transform: translateY(0px); }
-        }
+.sparkle {
+    position: absolute;
+    animation: float 3s infinite ease-in-out;
+    opacity: 0.9;
+}
 
-        @keyframes gradientMove {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
 
-        .progress-bar {
-            width: 100%;
-            height: 16px;
-            background: rgba(255,255,255,0.7);
-            border-radius: 20px;
-            overflow: hidden;
-            margin-top: 20px;
-        }
+@keyframes gradientMove {
+    0% {
+        background-position: 0% 50%;
+    }
 
-        .progress-fill {
-            height: 100%;
-            border-radius: 20px;
-            background: linear-gradient(to right, #ff69b4, #d946ef);
-            transition: width 0.4s ease;
-        }
+    50% {
+        background-position: 100% 50%;
+    }
+
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+.progress-bar {
+    width: 100%;
+    height: 16px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 20px;
+    background: linear-gradient(to right, #ff69b4, #d946ef);
+    transition: width 0.4s ease;
+}
         
     </style>
 </head>
@@ -266,20 +303,27 @@
 
     <script type="text/babel">
         const defaultTasks = [
+          // --- catégorie: 'matin' ---
           { id: 1, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'matin', hasTimer: true },
           { id: 2, name: 'Faire mon puff orange', icon: '💨', points: 1, done: false, pending: false, category: 'matin' },
           { id: 26, name: 'Se coiffer', icon: '🪮', points: 1, done: false, pending: false, category: 'matin' },
           { id: 6, name: 'Dormir dans mon lit', icon: '🛏️', points: 3, done: false, pending: false, category: 'matin' },
           { id: 30, name: 'Mettre mes vêtements', icon: '👗', points: 1, done: false, pending: false, category: 'matin' },
+
+          // --- catégorie: 'ecole' ---
           { id: 7, name: 'Préparer mon sac à diner', icon: '🎒', points: 1, done: false, pending: false, category: 'ecole' },
           { id: 8, name: 'Vider mon sac à diner', icon: '🍱', points: 1, done: false, pending: false, category: 'ecole' },
           { id: 28, name: 'Préparer mon journal de classe et ma farde pour faire les devoirs', icon: '📖', points: 1, done: false, pending: false, category: 'ecole' },
           { id: 29, name: 'Faire les devoirs', icon: '📝', points: 5, done: false, pending: false, category: 'ecole' },
+
+          // --- catégorie: 'soir' ---
           { id: 3, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'soir', hasTimer: true },
           { id: 4, name: 'Prendre mon sirop', icon: '💜', points: 1, done: false, pending: false, category: 'soir' },
           { id: 5, name: 'Prendre ma douche', icon: '🚿', points: 1, done: false, pending: false, category: 'soir' },
           { id: 27, name: 'Se démêler les cheveux', icon: '🧜‍♀️', points: 1, done: false, pending: false, category: 'soir' },
           { id: 31, name: 'Préparer mes vêtements pour le lendemain', icon: '👚', points: 1, done: false, pending: false, category: 'soir' },
+
+          // --- catégorie: 'maison' ---
           { id: 9, name: 'Ranger mes chaussures', icon: '👟', points: 1, done: false, pending: false, category: 'maison' },
           { id: 10, name: 'Ranger mes jeux', icon: '🧸', points: 2, done: false, pending: false, category: 'maison' },
           { id: 14, name: 'Mettre la table', icon: '🍽️', points: 1, done: false, pending: false, category: 'maison' },
@@ -298,12 +342,16 @@
           { id: 40, name: 'Boire 2 gourdes', icon: '🥛', points: 2, done: false, pending: false, category: 'maison' },
           { id: 41, name: 'Aider Mimy', icon: '✨', points: 2, done: false, pending: false, category: 'maison' },
           { id: 42, name: 'Aider Baloo', icon: '🐾', points: 2, done: false, pending: false, category: 'maison' },
+
+          // --- catégorie: 'animaux' ---
           { id: 21, name: "Mettre de l'eau aux chats", icon: '🐱', points: 1, done: false, pending: false, category: 'animaux' },
           { id: 22, name: 'Donner à manger aux poules (le samedi et le dimanche)', icon: '🐔', points: 2, done: false, pending: false, category: 'animaux' },
           { id: 32, name: 'Nettoyer la litière des chats et se laver les mains après', icon: '🐱', points: 2, done: false, pending: false, category: 'animaux' },
           { id: 33, name: 'Réapprovisionner le distributeur de croquettes', icon: '🧆', points: 1, done: false, pending: false, category: 'animaux' },
           { id: 34, name: 'Aider à laver les chats', icon: '🧼', points: 2, done: false, pending: false, category: 'animaux' },
           { id: 43, name: 'Faire rentrer les chats avant de partir de la maison', icon: '🏡', points: 1, done: false, pending: false, category: 'animaux' },
+
+          // --- catégorie: 'nettoyage' ---
           { id: 11, name: 'Changer le lit (1x/semaine)', icon: '🛏️', points: 5, done: false, pending: false, category: 'nettoyage' },
           { id: 12, name: "Passer l'aspirateur dans ma chambre", icon: '🧹', points: 3, done: false, pending: false, category: 'nettoyage' },
           { id: 13, name: 'Faire les poussières dans ma chambre', icon: '🧽', points: 3, done: false, pending: false, category: 'nettoyage' },
@@ -428,7 +476,7 @@
               setActiveTimers(prev => { const next = { ...prev }; delete next[id]; return next; });
             } else {
               setActiveTimers(prev => ({ ...prev, [id]: 120 }));
-              speak('C'est parti pour 2 minutes de brossage !');
+              speak('C’est parti pour 2 minutes de brossage !');
             }
           };
 
@@ -466,10 +514,12 @@
             setTasks(tasks.map(t => t.id === id ? { ...t, done: true, pending: false } : t));
             const newStars = stars + points;
             setStars(newStars);
+
             const now = new Date();
             const logMessage = `${task.icon} ${task.name} - Validé à ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
             setHistoryLog([logMessage, ...historyLog]);
             speak('Bravo ma princesse !');
+
             const targetLevel = Math.floor(newStars / 60) + 1;
             if (targetLevel > level) setLevel(targetLevel);
           };
@@ -510,20 +560,6 @@
             }
           };
 
-          // Couleurs de fond pour chaque cercle de catégorie
-          const getCatColor = (id) => {
-            const colors = {
-              all: '#fce4ec',
-              matin: '#fff9c4',
-              ecole: '#fce4ec',
-              soir: '#e8eaf6',
-              maison: '#e8f5e9',
-              animaux: '#fff3e0',
-              nettoyage: '#e3f2fd',
-            };
-            return colors[id] || '#fff';
-          };
-
           const filteredTasks = tasks.filter(t => currentCategory === 'all' || t.category === currentCategory);
 
           return (
@@ -535,6 +571,7 @@
               </div>
 
               {childMode ? (
+                /* ================= CONFIGURATION PARENT ================= */
                 <div>
                   <h1 style={{ color: '#4a148c', textAlign: 'center' }}>Espace Maman ⚙️</h1>
                   <div className="card" style={{ textAlign: 'center' }}>
@@ -587,39 +624,77 @@
                   </div>
                 </div>
               ) : (
+                /* ================= MONDE DE CALY (INTERFACE ENFANT) ================= */
                 <div>
-                  <div className="hero-card">
-                    <div className="sparkle" style={{ top: '15px', left: '20px', fontSize: '22px' }}>✨</div>
-                    <div className="sparkle" style={{ top: '20px', right: '25px', fontSize: '20px' }}>💖</div>
-                    <div className="sparkle" style={{ bottom: '25px', left: '30px', fontSize: '18px' }}>⭐</div>
-                    <div className="sparkle" style={{ bottom: '20px', right: '35px', fontSize: '22px' }}>🦄</div>
-                    <div style={{ fontSize: '55px', marginBottom: '10px' }}>👑 🐱 ✨</div>
-                    <h1 className="hero-title" onClick={() => speak('Bonjour Caly !')}>Caly</h1>
-                    <div className="hero-level">✨ Niveau {level} ✨</div>
-                    {stars >= 20 && (
-                      <div style={{ fontSize: '55px', marginTop: '12px', cursor: 'pointer' }} onClick={() => speak('Ton coffre magique t'attend !')}>🎁✨</div>
-                    )}
-                    <div className="hero-stars">⭐ {stars} étoiles</div>
-                    <div className="progress-bar">
-                      <div className="progress-fill" style={{ width: `${(stars % 60) / 60 * 100}%` }} />
-                    </div>
-                    <div style={{ marginTop: '8px', color: '#a64ac9', fontSize: '14px', fontWeight: 'bold' }}>
-                      Progression vers le niveau suivant
-                    </div>
-                  </div>
+               <div className="hero-card">
 
-                  {/* ===== GOMETTES RONDES ===== */}
+    <div className="sparkle" style={{ top: '15px', left: '20px', fontSize: '22px' }}>✨</div>
+    <div className="sparkle" style={{ top: '20px', right: '25px', fontSize: '20px' }}>💖</div>
+    <div className="sparkle" style={{ bottom: '25px', left: '30px', fontSize: '18px' }}>⭐</div>
+    <div className="sparkle" style={{ bottom: '20px', right: '35px', fontSize: '22px' }}>🦄</div>
+
+    <div style={{ fontSize: '55px', marginBottom: '10px' }}>
+        👑 🐱 ✨
+    </div>
+
+    <h1 className="hero-title" onClick={() => speak('Bonjour Caly !')}>
+        Caly
+    </h1>
+
+    <div className="hero-level">
+        ✨ Niveau {level} ✨
+    </div>
+
+    {stars >= 20 && (
+        <div 
+            style={{ 
+                fontSize: '55px', 
+                marginTop: '12px',
+                cursor: 'pointer'
+            }}
+            onClick={() => speak('Ton coffre magique t’attend !')}
+        >
+            🎁✨
+        </div>
+    )}
+
+    <div className="hero-stars">
+        ⭐ {stars} étoiles
+    </div>
+
+    <div className="progress-bar">
+        <div
+            className="progress-fill"
+            style={{
+                width: `${(stars % 60) / 60 * 100}%`
+            }}
+        />
+    </div>
+
+    <div style={{
+        marginTop: '8px',
+        color: '#a64ac9',
+        fontSize: '14px',
+        fontWeight: 'bold'
+    }}>
+        Progression vers le niveau suivant
+    </div>
+
+</div>
+
                   <div className="category-scroll">
                     {categoriesList.map(cat => (
-                      <button
-                        key={cat.id}
-                        onClick={() => { setCurrentCategory(cat.id); speak(cat.voice); }}
-                        className={`btn-category ${currentCategory === cat.id ? 'active' : ''}`}
+                      <button 
+                        key={cat.id} 
+                        onClick={() => { setCurrentCategory(cat.id); speak(cat.voice); }} 
+                        className="btn-category"
+                        style={{ 
+                          background: currentCategory === cat.id ? 'linear-gradient(135deg, #e91e63 0%, #ff69b4 100%)' : '#ffffff', 
+                          color: currentCategory === cat.id ? '#ffffff' : '#444444',
+                          border: currentCategory === cat.id ? 'none' : '1px solid #ffccd8'
+                        }}
                       >
-                        <div className="cat-circle" style={{ background: getCatColor(cat.id) }}>
-                          {cat.label.split(' ')[0]}
-                        </div>
-                        <span className="cat-label">{cat.label.split(' ').slice(1).join(' ')}</span>
+                        {cat.label}
                       </button>
                     ))}
                   </div>
@@ -633,6 +708,7 @@
                           <span style={{ fontSize: '14px', color: '#ff69b4' }}>🔊</span>
                         </h3>
                         <p style={{ margin: '4px 0 0 0', color: '#e91e63', fontSize: '13px', fontWeight: 'bold' }}>+{task.points} {task.points > 1 ? 'étoiles' : 'étoile'}</p>
+                        
                         {task.hasTimer && !task.done && !task.pending && (
                           <div>
                             <button className="btn-timer" onClick={(e) => handleTimerClick(task.id, e)} style={{ background: activeTimers[task.id] ? '#ef5350' : '#ba68c8' }}>
