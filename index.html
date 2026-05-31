@@ -115,39 +115,6 @@
     flex-wrap: wrap;
     justify-content: center;
 }
-.btn-category {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    width: 70px;
-}
-.btn-category .cat-circle {
-    width: 58px;
-    height: 58px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 28px;
-    border: 3px solid #e0d0e8;
-    background: #fff;
-    transition: all 0.2s ease;
-}
-.btn-category.active .cat-circle {
-    border: 3px solid #6c4abf;
-}
-.btn-category .cat-label {
-    font-size: 12px;
-    font-weight: bold;
-    color: #444;
-    text-align: center;
-}
-        }
         .btn-category {
             padding: 10px 18px;
             border-radius: 20px;
@@ -205,6 +172,20 @@
 
         .btn-parent { padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 1; color: #fff; }
         .card { background: #fff; border-radius: 24px; padding: 25px; box-shadow: 0 6px 20px rgba(0,0,0,0.03); margin-bottom: 25px; }
+
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .hero-title { font-size: 38px; }
+            .hero-stars { font-size: 28px; }
+            .hero-level { font-size: 16px; }
+            .hero-card { padding: 20px 12px; border-radius: 25px; }
+            .btn-valider { padding: 10px 14px; font-size: 13px; }
+            .task-card { padding: 14px 14px; }
+            .btn-category { padding: 8px 12px; font-size: 13px; }
+            .card { padding: 18px; }
+            .princess-title { font-size: 26px; }
+            .star-medallion { font-size: 20px; padding: 10px 20px; }
+        }
 
         .hero-card {
    background: linear-gradient(
@@ -402,11 +383,15 @@ animation: gradientMove 8s ease infinite;
             const saved = localStorage.getItem('caly_history_log');
             return saved ? JSON.parse(saved) : [];
           });
+          const [rewardLog, setRewardLog] = React.useState(() => {
+            const saved = localStorage.getItem('caly_reward_log');
+            return saved ? JSON.parse(saved) : [];
+          });
           const [childMode, setChildMode] = React.useState(false); 
           const [currentCategory, setCurrentCategory] = React.useState('all');
           const [activeTimers, setActiveTimers] = React.useState({});
 
-          React.useEffect(() => {
+          const checkDailyReset = React.useCallback(() => {
             const todayStr = new Date().toDateString();
             const lastSavedDate = localStorage.getItem('caly_last_date');
             if (lastSavedDate && lastSavedDate !== todayStr) {
@@ -414,6 +399,12 @@ animation: gradientMove 8s ease infinite;
             }
             localStorage.setItem('caly_last_date', todayStr);
           }, []);
+
+          React.useEffect(() => {
+            checkDailyReset();
+            const interval = setInterval(checkDailyReset, 60000);
+            return () => clearInterval(interval);
+          }, [checkDailyReset]);
 
           React.useEffect(() => {
             const saved = localStorage.getItem('caly_tasks');
@@ -435,6 +426,11 @@ animation: gradientMove 8s ease infinite;
           React.useEffect(() => { localStorage.setItem('caly_level', level.toString()); }, [level]);
           React.useEffect(() => { localStorage.setItem('caly_parent_pin', parentPassword); }, [parentPassword]);
           React.useEffect(() => { localStorage.setItem('caly_history_log', JSON.stringify(historyLog)); }, [historyLog]);
+          React.useEffect(() => { localStorage.setItem('caly_reward_log', JSON.stringify(rewardLog)); }, [rewardLog]);
+
+          const addToHistory = (entry) => {
+            setHistoryLog(prev => [entry, ...prev].slice(0, 100));
+          };
 
           React.useEffect(() => {
             const interval = setInterval(() => {
@@ -496,8 +492,10 @@ animation: gradientMove 8s ease infinite;
           const toggleModeSecure = () => {
             if (!childMode) {
               const input = window.prompt("Entrez le code secret de Maman :");
+              if (input === null) return;
+              if (!/^\d+$/.test(input)) { alert("Le code doit contenir uniquement des chiffres !"); return; }
               if (input === parentPassword) setChildMode(true);
-              else if (input !== null) alert("Code incorrect ! 🤫");
+              else alert("Code incorrect ! 🤫");
             } else {
               setChildMode(false);
             }
@@ -517,7 +515,7 @@ animation: gradientMove 8s ease infinite;
 
             const now = new Date();
             const logMessage = `${task.icon} ${task.name} - Validé à ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-            setHistoryLog([logMessage, ...historyLog]);
+            addToHistory(logMessage);
             speak('Bravo ma princesse !');
 
             const targetLevel = Math.floor(newStars / 60) + 1;
@@ -532,7 +530,7 @@ animation: gradientMove 8s ease infinite;
           const handleBonus = () => {
             const newStars = stars + 15;
             setStars(newStars);
-            setHistoryLog([`✨ BONUS PARENTAL (+15 ⭐)`, ...historyLog]);
+            addToHistory(`✨ BONUS PARENTAL (+15 ⭐)`);
             speak('Super bonus pour ma princesse !');
             const targetLevel = Math.floor(newStars / 60) + 1;
             if (targetLevel > level) setLevel(targetLevel);
@@ -541,14 +539,14 @@ animation: gradientMove 8s ease infinite;
           const handlePenalty = () => {
             const newStars = Math.max(0, stars - 5);
             setStars(newStars);
-            setHistoryLog([`⚠️ RETRAIT BÊTISE (-5 ⭐)`, ...historyLog]);
+            addToHistory(`⚠️ RETRAIT BÊTISE (-5 ⭐)`);
             speak('Attention aux bêtises !');
           };
 
           const buyReward = (cost, rewardName) => {
             if (stars >= cost) {
               setStars(stars - cost);
-              setHistoryLog([`🛍️ RÉCOMPENSE ACHETÉE : ${rewardName} (-${cost} ⭐)`, ...historyLog]);
+              setRewardLog(prev => [`🛍️ ${new Date().toLocaleDateString('fr-FR')} — ${rewardName} (-${cost} ⭐)`, ...prev]);
               speak(`Félicitations pour ta récompense !`);
             }
           };
@@ -557,6 +555,7 @@ animation: gradientMove 8s ease infinite;
             if (window.confirm("Recommencer la semaine ?")) {
               setTasks(defaultTasks.map(t => ({ ...t, done: false, pending: false })));
               setHistoryLog([]);
+              // rewardLog intentionnellement conservé
             }
           };
 
@@ -616,6 +615,13 @@ animation: gradientMove 8s ease infinite;
                     <h3 style={{ color: '#333', marginTop: '0' }}>📊 Historique de la semaine :</h3>
                     <div style={{ maxHeight: '150px', overflowY: 'auto', background: '#fafafa', padding: '12px', borderRadius: '10px', border: '1px solid #eee' }}>
                       {historyLog.length === 0 ? <p style={{ color: '#888', fontStyle: 'italic', fontSize: '13px', margin: '0' }}>Rien dans l'historique pour le moment.</p> : historyLog.map((log, i) => <p key={i} style={{ color: '#555', margin: '5px 0', fontSize: '13px', borderBottom: '1px dashed #eee', paddingBottom: '4px' }}>{log}</p>)}
+                    </div>
+                  </div>
+
+                  <div className="card">
+                    <h3 style={{ color: '#333', marginTop: '0' }}>🛍️ Toutes les récompenses achetées :</h3>
+                    <div style={{ maxHeight: '200px', overflowY: 'auto', background: '#fafafa', padding: '12px', borderRadius: '10px', border: '1px solid #eee' }}>
+                      {rewardLog.length === 0 ? <p style={{ color: '#888', fontStyle: 'italic', fontSize: '13px', margin: '0' }}>Aucune récompense achetée pour l'instant.</p> : rewardLog.map((log, i) => <p key={i} style={{ color: '#7b1fa2', margin: '5px 0', fontSize: '13px', borderBottom: '1px dashed #eee', paddingBottom: '4px' }}>{log}</p>)}
                     </div>
                   </div>
 
