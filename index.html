@@ -463,6 +463,7 @@ animation: gradientMove 8s ease infinite;
           const [parentPassword, setParentPassword] = React.useState('1234');
           const [historyLog, setHistoryLog] = React.useState([]);
           const [rewardLog, setRewardLog] = React.useState([]);
+          const [pendingRewards, setPendingRewards] = React.useState([]);
           const [childMode, setChildMode] = React.useState(false);
           const isRemoteRef = React.useRef(false);
           const [currentCategory, setCurrentCategory] = React.useState('all');
@@ -483,6 +484,7 @@ animation: gradientMove 8s ease infinite;
                 setParentPassword(data.parentPassword ?? '1234');
                 setHistoryLog(data.historyLog ?? []);
                 setRewardLog(data.rewardLog ?? []);
+                setPendingRewards(data.pendingRewards ?? []);
                 const savedTasks = data.tasks ?? [];
                 setTasks(defaultTasks.map(dt => {
                   const saved = savedTasks.find(t => t && t.id === dt.id);
@@ -519,8 +521,9 @@ animation: gradientMove 8s ease infinite;
               parentPassword,
               historyLog,
               rewardLog,
+              pendingRewards,
             });
-          }, [tasks, stars, level, parentPassword, historyLog, rewardLog, loading]);
+          }, [tasks, stars, level, parentPassword, historyLog, rewardLog, pendingRewards, loading]);
 
           const checkDailyReset = React.useCallback(() => {
             const now = new Date();
@@ -659,12 +662,22 @@ animation: gradientMove 8s ease infinite;
             speak('Attention aux bêtises !');
           };
 
-          const buyReward = (cost, rewardName) => {
-            if (stars >= cost) {
-              setStars(stars - cost);
-              setRewardLog(prev => [`🛍️ ${new Date().toLocaleDateString('fr-FR')} — ${rewardName} (-${cost} ⭐)`, ...prev]);
-              speak(`Félicitations pour ta récompense !`);
-            }
+          const requestReward = (reward) => {
+            if (stars < reward.cost) return;
+            setPendingRewards(prev => [...prev, { id: reward.id, name: reward.name, cost: reward.cost }]);
+            speak("Demande envoyée ! Tu auras " + (stars - reward.cost) + " étoiles si c'est accordé.");
+          };
+
+          const acceptReward = (reward) => {
+            setPendingRewards(prev => prev.filter(r => r.id !== reward.id));
+            setStars(prev => Math.max(0, prev - reward.cost));
+            setRewardLog(prev => [`🛍️ ${new Date().toLocaleDateString('fr-FR')} — ${reward.name} (-${reward.cost} ⭐)`, ...prev]);
+            speak("Récompense accordée !");
+          };
+
+          const rejectReward = (rewardId) => {
+            setPendingRewards(prev => prev.filter(r => r.id !== rewardId));
+            speak("Demande refusée.");
           };
 
           const resetWeek = () => {
@@ -673,6 +686,10 @@ animation: gradientMove 8s ease infinite;
               setHistoryLog([]);
               // rewardLog intentionnellement conservé
             }
+          };
+
+          const recalcLevel = () => {
+            setLevel(Math.floor(stars / 60) + 1);
           };
 
           const handleCelebration = () => {
@@ -710,6 +727,11 @@ animation: gradientMove 8s ease infinite;
 
           return (
             <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+              {DB_PATH === 'calyApp-test' && (
+                <div style={{ background: '#ff9800', color: '#fff', padding: '10px 16px', borderRadius: '12px', textAlign: 'center', marginBottom: '15px', fontWeight: 'bold', fontSize: '15px' }}>
+                  🧪 VERSION TEST — les données de Caly ne sont pas affectées
+                </div>
+              )}
               {celebrationActive && (
                 <div className="celebration-overlay">
                   {celebrationStars.map(s => (
@@ -722,10 +744,15 @@ animation: gradientMove 8s ease infinite;
                   ))}
                 </div>
               )}
-              <div style={{ textAlign: 'center', marginBottom: '25px' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginBottom: '25px', flexWrap: 'wrap' }}>
                 <button onClick={toggleModeSecure} className="btn-mode">
                   {childMode ? '👑 Retour au Monde de Caly' : '🔒 Configuration Parentale'}
                 </button>
+                {childMode && (DB_PATH === 'calyApp-test' ? (
+                  <button onClick={() => window.location.href = window.location.pathname} className="btn-mode" style={{ background: '#e8f5e9', borderColor: '#4caf50', color: '#2e7d32' }}>✅ Vraie version</button>
+                ) : (
+                  <button onClick={() => window.location.href = window.location.pathname + '?test'} className="btn-mode" style={{ background: '#fff3e0', borderColor: '#ff9800', color: '#e65100' }}>🧪 App test</button>
+                ))}
               </div>
 
               {childMode ? (
@@ -736,6 +763,11 @@ animation: gradientMove 8s ease infinite;
                     <p style={{ color: '#333', fontSize: '18px', margin: '0' }}>Score actuel de Caly :</p>
                     <div style={{ fontSize: '45px', fontWeight: 'bold', color: '#e91e63', margin: '5px 0' }}>⭐ {stars}</div>
                     <p style={{ color: '#666', margin: '0' }}>Niveau : {level}</p>
+                    {Math.floor(stars / 60) + 1 !== level && (
+                      <button onClick={recalcLevel} style={{ marginTop: '10px', padding: '7px 16px', background: '#ff9800', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}>
+                        🔧 Corriger le niveau (devrait être {Math.floor(stars / 60) + 1})
+                      </button>
+                    )}
                   </div>
 
                   <div style={{ display: 'flex', gap: '10px', marginBottom: '25px' }}>
@@ -761,13 +793,20 @@ animation: gradientMove 8s ease infinite;
                   </div>
 
                   <div className="card">
-                    <h3 style={{ color: '#333', marginTop: '0' }}>🛍️ Boutique magique (Acheter un cadeau) :</h3>
-                    {rewards.map(r => (
-                      <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f9f9f9', color: '#333' }}>
-                        <span style={{ color: stars >= r.cost ? '#333' : '#aaa' }}>{r.name} <strong>({r.cost} ⭐)</strong></span>
-                        <button onClick={() => buyReward(r.cost, r.name)} disabled={stars < r.cost} style={{ padding: '6px 14px', background: stars >= r.cost ? '#e91e63' : '#e0e0e0', color: '#fff', border: 'none', borderRadius: '8px', cursor: stars >= r.cost ? 'pointer' : 'default', fontWeight: 'bold' }}>Débloquer 🛒</button>
-                      </div>
-                    ))}
+                    <h3 style={{ color: '#333', marginTop: '0' }}>🛍️ Récompenses demandées par Caly :</h3>
+                    {pendingRewards.length === 0 ? (
+                      <p style={{ color: '#888', fontStyle: 'italic', margin: '0' }}>Caly n'a pas encore demandé de récompense.</p>
+                    ) : (
+                      pendingRewards.map(r => (
+                        <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
+                          <span>{r.name} <strong>(-{r.cost} ⭐)</strong></span>
+                          <div>
+                            <button onClick={() => acceptReward(r)} style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', marginRight: '5px', fontWeight: 'bold' }}>Valider</button>
+                            <button onClick={() => rejectReward(r.id)} style={{ background: '#f44336', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Refuser</button>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
 
                   <div className="card">
@@ -886,11 +925,36 @@ animation: gradientMove 8s ease infinite;
 
                   <div className="card" style={{ background: '#fffdeb', border: '2px solid #ffd700', borderRadius: '24px', textAlign: 'left' }}>
                     <h3 style={{ margin: '0 0 12px 0', fontSize: '20px', color: '#5d4037', fontFamily: 'Georgia, serif' }}>👑 Boutique magique</h3>
-                    {rewards.map(r => (
-                      <p key={r.id} style={{ margin: '8px 0', fontSize: '16px', color: stars >= r.cost ? '#2e7d32' : '#555', fontWeight: stars >= r.cost ? 'bold' : 'normal' }}>
-                        {stars >= r.cost ? '⭐ ' : '🔒 '} <strong>{r.cost} ⭐</strong> = {r.name}
-                      </p>
-                    ))}
+                    {rewards.map(r => {
+                      const canAfford = stars >= r.cost;
+                      const remaining = stars - r.cost;
+                      const isPending = pendingRewards.some(p => p.id === r.id);
+                      return (
+                        <div key={r.id} style={{ padding: '10px 0', borderBottom: '1px solid #ffefc0', cursor: 'pointer' }}
+                          onClick={() => {
+                            if (isPending) speak("Ta demande est déjà envoyée, attends que maman la valide !");
+                            else if (canAfford) speak("Il te restera " + remaining + " étoile" + (remaining > 1 ? "s" : "") + " après cet achat.");
+                            else speak("Il te faut encore " + (r.cost - stars) + " étoile" + ((r.cost - stars) > 1 ? "s" : "") + " pour ça.");
+                          }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ flex: 1 }}>
+                              <div style={{ fontSize: '15px', color: canAfford ? '#2e7d32' : '#888', fontWeight: canAfford ? 'bold' : 'normal' }}>
+                                {canAfford ? '⭐' : '🔒'} {r.name}
+                              </div>
+                              <div style={{ fontSize: '12px', marginTop: '3px', color: '#888' }}>
+                                {stars} ⭐ &nbsp;(-{r.cost} = <strong style={{ color: canAfford ? '#2e7d32' : '#e53935' }}>{remaining} étoile{remaining > 1 ? 's' : ''} restante{remaining > 1 ? 's' : ''}</strong>)
+                              </div>
+                            </div>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); if (canAfford && !isPending) requestReward(r); }}
+                              disabled={!canAfford || isPending}
+                              style={{ padding: '8px 12px', background: isPending ? '#ffa726' : canAfford ? 'linear-gradient(135deg, #ff4081, #e91e63)' : '#e0e0e0', color: '#fff', border: 'none', borderRadius: '10px', cursor: canAfford && !isPending ? 'pointer' : 'default', fontWeight: 'bold', fontSize: '13px', whiteSpace: 'nowrap' }}>
+                              {isPending ? '⏳ En attente' : canAfford ? 'Demander 🛍️' : 'Pas assez 🔒'}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               )}
