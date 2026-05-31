@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -116,17 +116,41 @@
     justify-content: center;
 }
         .btn-category {
-            padding: 10px 18px;
-            border-radius: 20px;
-            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            background: none;
             border: none;
-            font-weight: bold;
-            font-size: 14px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
-            transition: all 0.2s ease;
+            cursor: pointer;
+            padding: 4px;
+            width: 75px;
+            transition: transform 0.2s ease;
         }
-        .btn-category:hover {
-            transform: scale(1.05);
+        .btn-category:hover { transform: scale(1.08); }
+        .cat-circle {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 28px;
+            border: 3px solid #ffccd8;
+            background: #fff;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 10px rgba(255,182,193,0.3);
+        }
+        .cat-circle.active {
+            border-color: #e91e63;
+            background: linear-gradient(135deg, #e91e63 0%, #ff69b4 100%);
+        }
+        .cat-label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #555;
+            text-align: center;
+            line-height: 1.2;
         }
 
         /* Cartes de Tâches Scintillantes */
@@ -275,7 +299,47 @@ animation: gradientMove 8s ease infinite;
     background: linear-gradient(to right, #ff69b4, #d946ef);
     transition: width 0.4s ease;
 }
-        
+
+.btn-celebrate {
+    margin-top: 16px;
+    padding: 14px 28px;
+    border-radius: 50px;
+    border: none;
+    background: linear-gradient(135deg, #ffd700, #ff69b4, #ffd700);
+    background-size: 200% 200%;
+    animation: shimmer 1.5s ease infinite;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 6px 20px rgba(255,215,0,0.5);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+@keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.celebration-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+}
+.falling-star {
+    position: absolute;
+    top: -60px;
+    animation: fallDown linear forwards;
+    user-select: none;
+}
+@keyframes fallDown {
+    0%   { transform: translateY(0) rotate(0deg); opacity: 1; }
+    80%  { opacity: 1; }
+    100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
     </style>
 </head>
 <body>
@@ -288,7 +352,7 @@ animation: gradientMove 8s ease infinite;
           { id: 1, name: 'Brosser mes dents', icon: '🪥', points: 1, done: false, pending: false, category: 'matin', hasTimer: true },
           { id: 2, name: 'Faire mon puff orange', icon: '💨', points: 1, done: false, pending: false, category: 'matin' },
           { id: 26, name: 'Se coiffer', icon: '🪮', points: 1, done: false, pending: false, category: 'matin' },
-          { id: 6, name: 'Dormir dans mon lit', icon: '🛏️', points: 3, done: false, pending: false, category: 'matin' },
+          { id: 6, name: 'Dormir dans mon lit', icon: '🛏️', points: 6, done: false, pending: false, category: 'matin' },
           { id: 30, name: 'Mettre mes vêtements', icon: '👗', points: 1, done: false, pending: false, category: 'matin' },
 
           // --- catégorie: 'ecole' ---
@@ -352,14 +416,27 @@ animation: gradientMove 8s ease infinite;
           { id: 'r9', cost: 500, name: 'Argent de poche (5 euros) 💶' },
         ];
 
+        const levelData = [
+          { level: 1, title: 'Petite Aventurière', avatar: '🌸', bg: 'linear-gradient(135deg, #ffb6d9 0%, #ffdff0 50%, #fff5fb 100%)' },
+          { level: 2, title: 'Fée des Étoiles',    avatar: '⭐',  bg: 'linear-gradient(135deg, #d8b4fe 0%, #f0e6ff 50%, #fdf4ff 100%)' },
+          { level: 3, title: 'Licorne Junior',      avatar: '🦄',  bg: 'linear-gradient(135deg, #c084fc 0%, #e9d5ff 50%, #f5f3ff 100%)' },
+          { level: 4, title: 'Axolotl Magique',     avatar: '🌊',  bg: 'linear-gradient(135deg, #67e8f9 0%, #a5f3fc 50%, #ecfeff 100%)' },
+          { level: 5, title: 'Princesse Licorne',   avatar: '🦄✨', bg: 'linear-gradient(135deg, #fde68a 0%, #fca5a5 50%, #fdf4ff 100%)' },
+          { level: 6, title: 'Reine des Axolotls',  avatar: '👑',  bg: 'linear-gradient(135deg, #fbbf24 0%, #a78bfa 50%, #f0fdf4 100%)' },
+        ];
+        function getLevelData(lvl) {
+          if (lvl >= 1 && lvl <= levelData.length) return levelData[lvl - 1];
+          return { level: lvl, title: 'Légende Arc-en-ciel', avatar: '🌈', bg: 'linear-gradient(135deg, #f97316 0%, #a855f7 33%, #06b6d4 66%, #84cc16 100%)' };
+        }
+
         const categoriesList = [
-          { id: 'all', label: '🌈 Tout', voice: 'Toutes les missions' },
-          { id: 'matin', label: '☀️ Matin', voice: 'Missions du matin' },
-          { id: 'ecole', label: '🎒 École', voice: "Missions de l'école" },
-          { id: 'soir', label: '🌙 Soir', voice: 'Missions du soir' },
-          { id: 'maison', label: '🏡 Maison', voice: 'Missions de la maison' },
-          { id: 'animaux', label: '🐱 Animaux', voice: "S'occuper des animaux" },
-          { id: 'nettoyage', label: '🧹 Grand Nettoyage', voice: 'Grand nettoyage de la semaine' },
+          { id: 'all', icon: '🌈', label: 'Tout', voice: 'Toutes les missions' },
+          { id: 'matin', icon: '☀️', label: 'Matin', voice: 'Missions du matin' },
+          { id: 'ecole', icon: '🎒', label: 'École', voice: "Missions de l'école" },
+          { id: 'soir', icon: '🌙', label: 'Soir', voice: 'Missions du soir' },
+          { id: 'maison', icon: '🏡', label: 'Maison', voice: 'Missions de la maison' },
+          { id: 'animaux', icon: '🐱', label: 'Animaux', voice: "S'occuper des animaux" },
+          { id: 'nettoyage', icon: '🧹', label: 'Grand Nettoyage', voice: 'Grand nettoyage de la semaine' },
         ];
 
         function App() {
@@ -387,15 +464,23 @@ animation: gradientMove 8s ease infinite;
             const saved = localStorage.getItem('caly_reward_log');
             return saved ? JSON.parse(saved) : [];
           });
-          const [childMode, setChildMode] = React.useState(false); 
+          const [childMode, setChildMode] = React.useState(false);
           const [currentCategory, setCurrentCategory] = React.useState('all');
           const [activeTimers, setActiveTimers] = React.useState({});
+          const [showCelebration, setShowCelebration] = React.useState(false);
+          const [celebrationActive, setCelebrationActive] = React.useState(false);
+          const [celebrationStars, setCelebrationStars] = React.useState([]);
 
           const checkDailyReset = React.useCallback(() => {
-            const todayStr = new Date().toDateString();
+            const now = new Date();
+            const todayStr = now.toDateString();
             const lastSavedDate = localStorage.getItem('caly_last_date');
             if (lastSavedDate && lastSavedDate !== todayStr) {
-              setTasks(prev => prev.map(t => t.category !== 'nettoyage' ? { ...t, done: false, pending: false } : t));
+              const isMonday = now.getDay() === 1;
+              setTasks(prev => prev.map(t => {
+                if (t.category === 'nettoyage') return isMonday ? { ...t, done: false, pending: false } : t;
+                return { ...t, done: false, pending: false };
+              }));
             }
             localStorage.setItem('caly_last_date', todayStr);
           }, []);
@@ -472,7 +557,7 @@ animation: gradientMove 8s ease infinite;
               setActiveTimers(prev => { const next = { ...prev }; delete next[id]; return next; });
             } else {
               setActiveTimers(prev => ({ ...prev, [id]: 120 }));
-              speak('C’est parti pour 2 minutes de brossage !');
+              speak("C'est parti pour 2 minutes de brossage !");
             }
           };
 
@@ -519,7 +604,7 @@ animation: gradientMove 8s ease infinite;
             speak('Bravo ma princesse !');
 
             const targetLevel = Math.floor(newStars / 60) + 1;
-            if (targetLevel > level) setLevel(targetLevel);
+            if (targetLevel > level) { setLevel(targetLevel); setShowCelebration(true); }
           };
 
           const rejectTask = (id) => {
@@ -533,7 +618,7 @@ animation: gradientMove 8s ease infinite;
             addToHistory(`✨ BONUS PARENTAL (+15 ⭐)`);
             speak('Super bonus pour ma princesse !');
             const targetLevel = Math.floor(newStars / 60) + 1;
-            if (targetLevel > level) setLevel(targetLevel);
+            if (targetLevel > level) { setLevel(targetLevel); setShowCelebration(true); }
           };
 
           const handlePenalty = () => {
@@ -559,10 +644,44 @@ animation: gradientMove 8s ease infinite;
             }
           };
 
+          const handleCelebration = () => {
+            const particles = Array.from({ length: 35 }, (_, i) => ({
+              id: i,
+              left: Math.floor(Math.random() * 100),
+              size: 16 + Math.floor(Math.random() * 22),
+              duration: (1.8 + Math.random() * 2.5).toFixed(1),
+              delay: (Math.random() * 1).toFixed(2),
+              emoji: ['⭐','🌟','✨','💫','🦄','🌊','🌸','💖'][Math.floor(Math.random() * 8)],
+            }));
+            setCelebrationStars(particles);
+            setShowCelebration(false);
+            setCelebrationActive(true);
+            window.speechSynthesis.cancel();
+            const msg = new SpeechSynthesisUtterance(
+              "Bravo ! Tu passes au niveau " + level + ", tu es maintenant une " + currentLevelData.title + " ! Tu peux être fière de toi !"
+            );
+            msg.lang = 'fr-FR';
+            msg.onend = () => setCelebrationActive(false);
+            window.speechSynthesis.speak(msg);
+          };
+
+          const currentLevelData = getLevelData(level);
           const filteredTasks = tasks.filter(t => currentCategory === 'all' || t.category === currentCategory);
 
           return (
             <div style={{ maxWidth: '600px', margin: '0 auto' }}>
+              {celebrationActive && (
+                <div className="celebration-overlay">
+                  {celebrationStars.map(s => (
+                    <div key={s.id} className="falling-star" style={{
+                      left: `${s.left}%`,
+                      fontSize: `${s.size}px`,
+                      animationDuration: `${s.duration}s`,
+                      animationDelay: `${s.delay}s`,
+                    }}>{s.emoji}</div>
+                  ))}
+                </div>
+              )}
               <div style={{ textAlign: 'center', marginBottom: '25px' }}>
                 <button onClick={toggleModeSecure} className="btn-mode">
                   {childMode ? '👑 Retour au Monde de Caly' : '🔒 Configuration Parentale'}
@@ -632,15 +751,15 @@ animation: gradientMove 8s ease infinite;
               ) : (
                 /* ================= MONDE DE CALY (INTERFACE ENFANT) ================= */
                 <div>
-               <div className="hero-card">
+               <div className="hero-card" style={{ background: currentLevelData.bg, backgroundSize: '300% 300%' }}>
 
     <div className="sparkle" style={{ top: '15px', left: '20px', fontSize: '22px' }}>✨</div>
     <div className="sparkle" style={{ top: '20px', right: '25px', fontSize: '20px' }}>💖</div>
     <div className="sparkle" style={{ bottom: '25px', left: '30px', fontSize: '18px' }}>⭐</div>
     <div className="sparkle" style={{ bottom: '20px', right: '35px', fontSize: '22px' }}>🦄</div>
 
-    <div style={{ fontSize: '55px', marginBottom: '10px' }}>
-        👑 🐱 ✨
+    <div style={{ fontSize: '60px', marginBottom: '6px' }}>
+        {currentLevelData.avatar}
     </div>
 
     <h1 className="hero-title" onClick={() => speak('Bonjour Caly !')}>
@@ -648,18 +767,18 @@ animation: gradientMove 8s ease infinite;
     </h1>
 
     <div className="hero-level">
-        ✨ Niveau {level} ✨
+        ✨ {currentLevelData.title} — Niveau {level} ✨
     </div>
 
-    {stars >= 20 && (
-        <div 
-            style={{ 
-                fontSize: '55px', 
-                marginTop: '12px',
-                cursor: 'pointer'
-            }}
-            onClick={() => speak('Ton coffre magique t’attend !')}
-        >
+    {showCelebration && (
+        <button className="btn-celebrate" onClick={handleCelebration}>
+            🎉 J'ai un nouveau niveau !
+        </button>
+    )}
+
+    {stars >= 20 && !showCelebration && (
+        <div style={{ fontSize: '55px', marginTop: '12px', cursor: 'pointer' }}
+            onClick={() => speak("Ton coffre magique t'attend !")}>
             🎁✨
         </div>
     )}
@@ -669,20 +788,10 @@ animation: gradientMove 8s ease infinite;
     </div>
 
     <div className="progress-bar">
-        <div
-            className="progress-fill"
-            style={{
-                width: `${(stars % 60) / 60 * 100}%`
-            }}
-        />
+        <div className="progress-fill" style={{ width: `${(stars % 60) / 60 * 100}%` }} />
     </div>
 
-    <div style={{
-        marginTop: '8px',
-        color: '#a64ac9',
-        fontSize: '14px',
-        fontWeight: 'bold'
-    }}>
+    <div style={{ marginTop: '8px', color: '#a64ac9', fontSize: '14px', fontWeight: 'bold' }}>
         Progression vers le niveau suivant
     </div>
 
@@ -690,17 +799,15 @@ animation: gradientMove 8s ease infinite;
 
                   <div className="category-scroll">
                     {categoriesList.map(cat => (
-                      <button 
-                        key={cat.id} 
-                        onClick={() => { setCurrentCategory(cat.id); speak(cat.voice); }} 
+                      <button
+                        key={cat.id}
+                        onClick={() => { setCurrentCategory(cat.id); speak(cat.voice); }}
                         className="btn-category"
-                        style={{ 
-                          background: currentCategory === cat.id ? 'linear-gradient(135deg, #e91e63 0%, #ff69b4 100%)' : '#ffffff', 
-                          color: currentCategory === cat.id ? '#ffffff' : '#444444',
-                          border: currentCategory === cat.id ? 'none' : '1px solid #ffccd8'
-                        }}
                       >
-                        {cat.label}
+                        <div className={`cat-circle${currentCategory === cat.id ? ' active' : ''}`}>
+                          {cat.icon}
+                        </div>
+                        <span className="cat-label">{cat.label}</span>
                       </button>
                     ))}
                   </div>
