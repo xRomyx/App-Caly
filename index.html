@@ -7,6 +7,22 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script>
+      const firebaseConfig = {
+        apiKey: "AIzaSyBvRCxPT2W7djJcHSR9kweBnaNXYQtdZqo",
+        authDomain: "app-caly.firebaseapp.com",
+        databaseURL: "https://app-caly-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "app-caly",
+        storageBucket: "app-caly.firebasestorage.app",
+        messagingSenderId: "870451326147",
+        appId: "1:870451326147:web:465cff6467b66efeda4676"
+      };
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+      const DB_PATH = new URLSearchParams(window.location.search).has('test') ? 'calyApp-test' : 'calyApp';
+    </script>
     <style>
         body { 
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
@@ -440,36 +456,71 @@ animation: gradientMove 8s ease infinite;
         ];
 
         function App() {
-          const [tasks, setTasks] = React.useState(() => {
-            const saved = localStorage.getItem('caly_tasks');
-            return saved ? JSON.parse(saved) : defaultTasks;
-          });
-          const [stars, setStars] = React.useState(() => {
-            const saved = localStorage.getItem('caly_stars');
-            return saved ? parseInt(saved, 10) : 0;
-          });
-          const [level, setLevel] = React.useState(() => {
-            const saved = localStorage.getItem('caly_level');
-            return saved ? parseInt(saved, 10) : 1;
-          });
-          const [parentPassword, setParentPassword] = React.useState(() => {
-            const saved = localStorage.getItem('caly_parent_pin');
-            return saved ? saved : '1234';
-          });
-          const [historyLog, setHistoryLog] = React.useState(() => {
-            const saved = localStorage.getItem('caly_history_log');
-            return saved ? JSON.parse(saved) : [];
-          });
-          const [rewardLog, setRewardLog] = React.useState(() => {
-            const saved = localStorage.getItem('caly_reward_log');
-            return saved ? JSON.parse(saved) : [];
-          });
+          const [loading, setLoading] = React.useState(true);
+          const [tasks, setTasks] = React.useState(defaultTasks);
+          const [stars, setStars] = React.useState(0);
+          const [level, setLevel] = React.useState(1);
+          const [parentPassword, setParentPassword] = React.useState('1234');
+          const [historyLog, setHistoryLog] = React.useState([]);
+          const [rewardLog, setRewardLog] = React.useState([]);
           const [childMode, setChildMode] = React.useState(false);
+          const isRemoteRef = React.useRef(false);
           const [currentCategory, setCurrentCategory] = React.useState('all');
           const [activeTimers, setActiveTimers] = React.useState({});
           const [showCelebration, setShowCelebration] = React.useState(false);
           const [celebrationActive, setCelebrationActive] = React.useState(false);
           const [celebrationStars, setCelebrationStars] = React.useState([]);
+
+          // Écoute Firebase en temps réel (sync entre les deux téléphones)
+          React.useEffect(() => {
+            const ref = db.ref(DB_PATH);
+            ref.on('value', (snapshot) => {
+              const data = snapshot.val();
+              isRemoteRef.current = true;
+              if (data) {
+                setStars(data.stars ?? 0);
+                setLevel(data.level ?? 1);
+                setParentPassword(data.parentPassword ?? '1234');
+                setHistoryLog(data.historyLog ?? []);
+                setRewardLog(data.rewardLog ?? []);
+                const savedTasks = data.tasks ?? [];
+                setTasks(defaultTasks.map(dt => {
+                  const saved = savedTasks.find(t => t && t.id === dt.id);
+                  return saved ? { ...dt, done: saved.done, pending: saved.pending } : dt;
+                }));
+              } else {
+                // Première ouverture : migration depuis localStorage ou valeurs par défaut
+                const localTasks = localStorage.getItem('caly_tasks');
+                const migratedTasks = localTasks ? JSON.parse(localTasks) : [];
+                isRemoteRef.current = false;
+                setStars(parseInt(localStorage.getItem('caly_stars') || '0', 10));
+                setLevel(parseInt(localStorage.getItem('caly_level') || '1', 10));
+                setParentPassword(localStorage.getItem('caly_parent_pin') || '1234');
+                setHistoryLog(JSON.parse(localStorage.getItem('caly_history_log') || '[]'));
+                setRewardLog(JSON.parse(localStorage.getItem('caly_reward_log') || '[]'));
+                setTasks(defaultTasks.map(dt => {
+                  const saved = migratedTasks.find(t => t && t.id === dt.id);
+                  return saved ? { ...dt, done: saved.done, pending: saved.pending } : dt;
+                }));
+              }
+              setLoading(false);
+            });
+            return () => ref.off();
+          }, []);
+
+          // Sauvegarde vers Firebase quand les données changent (sauf màj distante)
+          React.useEffect(() => {
+            if (isRemoteRef.current) { isRemoteRef.current = false; return; }
+            if (loading) return;
+            db.ref(DB_PATH).set({
+              tasks: tasks.map(t => ({ id: t.id, done: t.done, pending: t.pending })),
+              stars,
+              level,
+              parentPassword,
+              historyLog,
+              rewardLog,
+            });
+          }, [tasks, stars, level, parentPassword, historyLog, rewardLog, loading]);
 
           const checkDailyReset = React.useCallback(() => {
             const now = new Date();
@@ -486,32 +537,12 @@ animation: gradientMove 8s ease infinite;
           }, []);
 
           React.useEffect(() => {
-            checkDailyReset();
-            const interval = setInterval(checkDailyReset, 60000);
-            return () => clearInterval(interval);
-          }, [checkDailyReset]);
-
-          React.useEffect(() => {
-            const saved = localStorage.getItem('caly_tasks');
-            if (saved) {
-              const parsed = JSON.parse(saved);
-              const updated = defaultTasks.map(dt => {
-                const existing = parsed.find(pt => pt.id === dt.id);
-                if (existing) {
-                  return { ...dt, done: existing.done, pending: existing.pending };
-                }
-                return dt;
-              });
-              setTasks(updated);
+            if (!loading) {
+              checkDailyReset();
+              const interval = setInterval(checkDailyReset, 60000);
+              return () => clearInterval(interval);
             }
-          }, []);
-
-          React.useEffect(() => { localStorage.setItem('caly_tasks', JSON.stringify(tasks)); }, [tasks]);
-          React.useEffect(() => { localStorage.setItem('caly_stars', stars.toString()); }, [stars]);
-          React.useEffect(() => { localStorage.setItem('caly_level', level.toString()); }, [level]);
-          React.useEffect(() => { localStorage.setItem('caly_parent_pin', parentPassword); }, [parentPassword]);
-          React.useEffect(() => { localStorage.setItem('caly_history_log', JSON.stringify(historyLog)); }, [historyLog]);
-          React.useEffect(() => { localStorage.setItem('caly_reward_log', JSON.stringify(rewardLog)); }, [rewardLog]);
+          }, [checkDailyReset, loading]);
 
           const addToHistory = (entry) => {
             setHistoryLog(prev => [entry, ...prev].slice(0, 100));
@@ -667,6 +698,15 @@ animation: gradientMove 8s ease infinite;
 
           const currentLevelData = getLevelData(level);
           const filteredTasks = tasks.filter(t => currentCategory === 'all' || t.category === currentCategory);
+
+          if (loading) {
+            return (
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', flexDirection: 'column', gap: '20px' }}>
+                <div style={{ fontSize: '60px', animation: 'floatSirene 1.5s ease-in-out infinite' }}>✨</div>
+                <div style={{ fontSize: '22px', color: '#d81b60', fontWeight: 'bold', fontFamily: 'Georgia, serif' }}>Chargement du monde de Caly...</div>
+              </div>
+            );
+          }
 
           return (
             <div style={{ maxWidth: '600px', margin: '0 auto' }}>
