@@ -181,6 +181,15 @@
       80%  { opacity: 1; }
       100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
     }
+    .btn-next {
+      display: none; width: 100%; padding: 18px;
+      border-radius: 50px; border: none;
+      background: linear-gradient(135deg, #a855f7, #6366f1);
+      color: #fff; font-size: 22px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 4px 20px rgba(168,85,247,0.4);
+      animation: bumpIn 0.3s ease;
+    }
+    @keyframes bumpIn { 0%{transform:scale(0.8);opacity:0} 100%{transform:scale(1);opacity:1} }
 
     /* ── Écran résultat ── */
     .result-card {
@@ -255,6 +264,7 @@
       <button class="btn-answer" id="btn0" onclick="checkAnswer(0)"></button>
       <button class="btn-answer" id="btn1" onclick="checkAnswer(1)"></button>
       <button class="btn-answer" id="btn2" onclick="checkAnswer(2)"></button>
+      <button class="btn-next" id="btnNext" onclick="nextQuestion()">Suivant →</button>
     </div>
   </div>
 
@@ -411,15 +421,10 @@ function checkAnswer(btnIndex) {
     }
   }
 
-  // Passer à la suivante après délai
-  setTimeout(() => {
-    currentQ++;
-    if (currentQ < TOTAL_Q) {
-      showQuestion();
-    } else {
-      showResult();
-    }
-  }, isOk ? 1200 : 2000);
+  // Afficher le bouton Suivant
+  const btnNext = document.getElementById('btnNext');
+  btnNext.style.display = 'block';
+  btnNext.style.animation = 'none'; void btnNext.offsetWidth; btnNext.style.animation = '';
 }
 
 // ══════════════════════════════════════
@@ -465,6 +470,13 @@ async function showResult() {
     });
     await db.ref(DB_PATH + '/pendingGameStars').set(arr);
   } catch (e) { console.error(e); }
+}
+
+function nextQuestion() {
+  document.getElementById('btnNext').style.display = 'none';
+  currentQ++;
+  if (currentQ < TOTAL_Q) showQuestion();
+  else showResult();
 }
 
 function goMenu() {

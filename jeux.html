@@ -200,15 +200,15 @@
         <div class="game-name">Le mot mystère</div>
         <div class="game-stars">max 3 ⭐</div>
       </a>
-      <a href="jeu-16.html" class="game-card coming-soon">
-        <div class="badge-soon">Bientôt</div>
+      <a href="jeu-16.html" class="game-card">
+        <div class="badge-new">Nouveau !</div>
         <div class="game-icon">🔤</div>
         <div class="game-name">L'alphabet enchanté</div>
         <div class="game-stars">max 3 ⭐</div>
       </a>
-      <a href="jeu-17.html" class="game-card coming-soon">
-        <div class="badge-soon">Bientôt</div>
-        <div class="game-icon">🔊</div>
+      <a href="jeu-17.html" class="game-card">
+        <div class="badge-new">Nouveau !</div>
+        <div class="game-icon">🪄</div>
         <div class="game-name">La baguette du son</div>
         <div class="game-stars">max 4 ⭐</div>
       </a>
@@ -385,6 +385,13 @@
     if (isTest) {
       document.getElementById('testBanner').innerHTML =
         '<div class="test-banner">🧪 VERSION TEST</div>';
+    }
+
+    // Propager ?test aux liens des jeux
+    if (isTest) {
+      document.querySelectorAll('a.game-card:not(.coming-soon)').forEach(a => {
+        a.href = a.getAttribute('href') + '?test';
+      });
     }
 
     // Charger les étoiles depuis Firebase
