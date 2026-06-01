@@ -218,6 +218,21 @@
         .btn-parent { padding: 12px; border: none; border-radius: 12px; cursor: pointer; font-weight: bold; flex: 1; color: #fff; }
         .card { background: #fff; border-radius: 24px; padding: 25px; box-shadow: 0 6px 20px rgba(0,0,0,0.03); margin-bottom: 25px; }
 
+        /* ── Mode sombre (espace parent uniquement) ───────────────────── */
+        body.dark-mode {
+          background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%) !important;
+        }
+        body.dark-mode .card {
+          background: #1a1a2e !important;
+          border: 1px solid #2a2a4a !important;
+          box-shadow: 0 6px 20px rgba(0,0,0,0.4) !important;
+        }
+        body.dark-mode .btn-mode {
+          background: #1e1e36 !important;
+          color: #d8b4fe !important;
+          border-color: #4a4a7a !important;
+        }
+
         @media (max-width: 480px) {
             body { padding: 10px; }
             .hero-title { font-size: 38px; }
@@ -473,6 +488,7 @@ animation: gradientMove 8s ease infinite;
           const [pendingGameStars, setPendingGameStars] = React.useState([]);
           const [grantedReward, setGrantedReward] = React.useState(null);
           const [voiceEnabled, setVoiceEnabled] = React.useState(true);
+          const [darkMode, setDarkMode] = React.useState(false);
           const [childMode, setChildMode] = React.useState(false);
           const isRemoteRef = React.useRef(false);
           const [currentCategory, setCurrentCategory] = React.useState('all');
@@ -499,6 +515,7 @@ animation: gradientMove 8s ease infinite;
                 setPendingGameStars(gsArr);
                 setGrantedReward(data.grantedReward ?? null);
                 setVoiceEnabled(data.voiceEnabled ?? true);
+                setDarkMode(data.darkMode ?? false);
                 const savedTasks = data.tasks ?? [];
                 setTasks(defaultTasks.map(dt => {
                   const saved = savedTasks.find(t => t && t.id === dt.id);
@@ -539,8 +556,14 @@ animation: gradientMove 8s ease infinite;
               pendingGameStars,
               grantedReward,
               voiceEnabled,
+              darkMode,
             });
-          }, [tasks, stars, level, parentPassword, historyLog, rewardLog, pendingRewards, pendingGameStars, grantedReward, voiceEnabled, loading]);
+          }, [tasks, stars, level, parentPassword, historyLog, rewardLog, pendingRewards, pendingGameStars, grantedReward, voiceEnabled, darkMode, loading]);
+
+          // Dark mode : classe CSS sur <body> uniquement en mode parent
+          React.useEffect(() => {
+            document.body.classList.toggle('dark-mode', childMode && darkMode);
+          }, [darkMode, childMode]);
 
           const checkDailyReset = React.useCallback(() => {
             const now = new Date();
@@ -759,6 +782,20 @@ animation: gradientMove 8s ease infinite;
           const currentLevelData = getLevelData(level);
           const filteredTasks = tasks.filter(t => currentCategory === 'all' || t.category === currentCategory);
 
+          // Palette inline pour le mode parent selon dark/light
+          const ps = {
+            h1:          darkMode ? '#d8b4fe' : '#4a148c',
+            h3:          darkMode ? '#e0e0e0' : '#333',
+            text:        darkMode ? '#e0e0e0' : '#333',
+            textSec:     darkMode ? '#aaa'    : '#666',
+            textMuted:   darkMode ? '#888'    : '#555',
+            textEmpty:   darkMode ? '#888'    : '#888',
+            divider:     darkMode ? '#2a2a4a' : '#eee',
+            inlineBg:    darkMode ? '#252535' : '#fafafa',
+            inlineBorder:darkMode ? '1px solid #2a2a4a' : '1px solid #eee',
+            histPurple:  darkMode ? '#c084fc' : '#7b1fa2',
+          };
+
           if (loading) {
             return (
               <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', flexDirection: 'column', gap: '20px' }}>
@@ -819,11 +856,11 @@ animation: gradientMove 8s ease infinite;
               {childMode ? (
                 /* ================= CONFIGURATION PARENT ================= */
                 <div>
-                  <h1 style={{ color: '#4a148c', textAlign: 'center' }}>Espace Maman ⚙️</h1>
+                  <h1 style={{ color: ps.h1, textAlign: 'center' }}>Espace Maman ⚙️</h1>
                   <div className="card" style={{ textAlign: 'center' }}>
-                    <p style={{ color: '#333', fontSize: '18px', margin: '0' }}>Score actuel de Caly :</p>
+                    <p style={{ color: ps.text, fontSize: '18px', margin: '0' }}>Score actuel de Caly :</p>
                     <div style={{ fontSize: '45px', fontWeight: 'bold', color: '#e91e63', margin: '5px 0' }}>⭐ {stars}</div>
-                    <p style={{ color: '#666', margin: '0' }}>Niveau : {level}</p>
+                    <p style={{ color: ps.textSec, margin: '0' }}>Niveau : {level}</p>
                     {Math.floor(stars / 60) + 1 !== level && (
                       <button onClick={recalcLevel} style={{ marginTop: '10px', padding: '7px 16px', background: '#ff9800', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}>
                         🔧 Corriger le niveau (devrait être {Math.floor(stars / 60) + 1})
@@ -836,19 +873,22 @@ animation: gradientMove 8s ease infinite;
                     <button onClick={handleBonus} className="btn-parent" style={{ background: '#ba68c8' }}>✨ Grand Bonus (+15 ⭐)</button>
                     <button onClick={handlePenalty} className="btn-parent" style={{ background: '#ef5350' }}>⚠️ Bêtise (-5 ⭐)</button>
                   </div>
-                  <div style={{ marginBottom: '25px' }}>
-                    <button onClick={() => setVoiceEnabled(v => !v)} className="btn-parent" style={{ background: voiceEnabled ? '#4caf50' : '#9e9e9e', width: '100%' }}>
-                      {voiceEnabled ? '🔊 Vocal activé — appuie pour désactiver' : '🔇 Vocal désactivé — appuie pour activer'}
+                  <div style={{ display: 'flex', gap: '10px', marginBottom: '25px' }}>
+                    <button onClick={() => setVoiceEnabled(v => !v)} className="btn-parent" style={{ background: voiceEnabled ? '#4caf50' : '#9e9e9e' }}>
+                      {voiceEnabled ? '🔊 Vocal activé' : '🔇 Vocal désactivé'}
+                    </button>
+                    <button onClick={() => setDarkMode(d => !d)} className="btn-parent" style={{ background: darkMode ? '#3730a3' : '#64748b' }}>
+                      {darkMode ? '🌙 Mode sombre' : '☀️ Mode clair'}
                     </button>
                   </div>
 
                   <div className="card">
-                    <h3 style={{ color: '#333', marginTop: '0' }}>🎮 Jeux en attente de validation :</h3>
+                    <h3 style={{ color: ps.h3, marginTop: '0' }}>🎮 Jeux en attente de validation :</h3>
                     {pendingGameStars.length === 0 ? (
-                      <p style={{ color: '#888', fontStyle: 'italic', margin: '0' }}>Aucun jeu en attente de validation.</p>
+                      <p style={{ color: ps.textEmpty, fontStyle: 'italic', margin: '0' }}>Aucun jeu en attente de validation.</p>
                     ) : (
                       pendingGameStars.map(item => (
-                        <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
+                        <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', color: ps.text, borderBottom: '1px solid ' + ps.divider, paddingBottom: '8px' }}>
                           <span>🎮 {item.game} <strong>(+{item.stars} ⭐)</strong> — {item.playedAt}</span>
                           <div>
                             <button onClick={() => acceptGameReward(item)} style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', marginRight: '5px', fontWeight: 'bold' }}>Valider</button>
@@ -860,12 +900,12 @@ animation: gradientMove 8s ease infinite;
                   </div>
 
                   <div className="card">
-                    <h3 style={{ color: '#333', marginTop: '0' }}>⏳ Missions en attente de bisou-validation :</h3>
+                    <h3 style={{ color: ps.h3, marginTop: '0' }}>⏳ Missions en attente de bisou-validation :</h3>
                     {tasks.filter(t => t.pending).length === 0 ? (
-                      <p style={{ color: '#888', fontStyle: 'italic', margin: '0' }}>Caly n'a pas encore envoyé de mission à valider.</p>
+                      <p style={{ color: ps.textEmpty, fontStyle: 'italic', margin: '0' }}>Caly n'a pas encore envoyé de mission à valider.</p>
                     ) : (
                       tasks.filter(t => t.pending).map(task => (
-                        <div key={task.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
+                        <div key={task.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', color: ps.text, borderBottom: '1px solid ' + ps.divider, paddingBottom: '8px' }}>
                           <span>{task.icon} {task.name} (+{task.points}⭐)</span>
                           <div>
                             <button onClick={() => acceptTask(task.id, task.points)} style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', marginRight: '5px', fontWeight: 'bold' }}>Valider</button>
@@ -877,12 +917,12 @@ animation: gradientMove 8s ease infinite;
                   </div>
 
                   <div className="card">
-                    <h3 style={{ color: '#333', marginTop: '0' }}>🛍️ Récompenses demandées par Caly :</h3>
+                    <h3 style={{ color: ps.h3, marginTop: '0' }}>🛍️ Récompenses demandées par Caly :</h3>
                     {pendingRewards.length === 0 ? (
-                      <p style={{ color: '#888', fontStyle: 'italic', margin: '0' }}>Caly n'a pas encore demandé de récompense.</p>
+                      <p style={{ color: ps.textEmpty, fontStyle: 'italic', margin: '0' }}>Caly n'a pas encore demandé de récompense.</p>
                     ) : (
                       pendingRewards.map(r => (
-                        <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
+                        <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', color: ps.text, borderBottom: '1px solid ' + ps.divider, paddingBottom: '8px' }}>
                           <span>{r.name} <strong>(-{r.cost} ⭐)</strong></span>
                           <div>
                             <button onClick={() => acceptReward(r)} style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', marginRight: '5px', fontWeight: 'bold' }}>Valider</button>
@@ -894,16 +934,16 @@ animation: gradientMove 8s ease infinite;
                   </div>
 
                   <div className="card">
-                    <h3 style={{ color: '#333', marginTop: '0' }}>📊 Historique de la semaine :</h3>
-                    <div style={{ maxHeight: '150px', overflowY: 'auto', background: '#fafafa', padding: '12px', borderRadius: '10px', border: '1px solid #eee' }}>
-                      {historyLog.length === 0 ? <p style={{ color: '#888', fontStyle: 'italic', fontSize: '13px', margin: '0' }}>Rien dans l'historique pour le moment.</p> : historyLog.map((log, i) => <p key={i} style={{ color: '#555', margin: '5px 0', fontSize: '13px', borderBottom: '1px dashed #eee', paddingBottom: '4px' }}>{log}</p>)}
+                    <h3 style={{ color: ps.h3, marginTop: '0' }}>📊 Historique de la semaine :</h3>
+                    <div style={{ maxHeight: '150px', overflowY: 'auto', background: ps.inlineBg, padding: '12px', borderRadius: '10px', border: ps.inlineBorder }}>
+                      {historyLog.length === 0 ? <p style={{ color: '#888', fontStyle: 'italic', fontSize: '13px', margin: '0' }}>Rien dans l'historique pour le moment.</p> : historyLog.map((log, i) => <p key={i} style={{ color: ps.textMuted, margin: '5px 0', fontSize: '13px', borderBottom: '1px dashed ' + ps.divider, paddingBottom: '4px' }}>{log}</p>)}
                     </div>
                   </div>
 
                   <div className="card">
-                    <h3 style={{ color: '#333', marginTop: '0' }}>🛍️ Toutes les récompenses achetées :</h3>
-                    <div style={{ maxHeight: '200px', overflowY: 'auto', background: '#fafafa', padding: '12px', borderRadius: '10px', border: '1px solid #eee' }}>
-                      {rewardLog.length === 0 ? <p style={{ color: '#888', fontStyle: 'italic', fontSize: '13px', margin: '0' }}>Aucune récompense achetée pour l'instant.</p> : rewardLog.map((log, i) => <p key={i} style={{ color: '#7b1fa2', margin: '5px 0', fontSize: '13px', borderBottom: '1px dashed #eee', paddingBottom: '4px' }}>{log}</p>)}
+                    <h3 style={{ color: ps.h3, marginTop: '0' }}>🛍️ Toutes les récompenses achetées :</h3>
+                    <div style={{ maxHeight: '200px', overflowY: 'auto', background: ps.inlineBg, padding: '12px', borderRadius: '10px', border: ps.inlineBorder }}>
+                      {rewardLog.length === 0 ? <p style={{ color: '#888', fontStyle: 'italic', fontSize: '13px', margin: '0' }}>Aucune récompense achetée pour l'instant.</p> : rewardLog.map((log, i) => <p key={i} style={{ color: ps.histPurple, margin: '5px 0', fontSize: '13px', borderBottom: '1px dashed ' + ps.divider, paddingBottom: '4px' }}>{log}</p>)}
                     </div>
                   </div>
 
