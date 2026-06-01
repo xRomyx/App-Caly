@@ -955,9 +955,9 @@ animation: gradientMove 8s ease infinite;
                         return (
                           <div key={r.id} style={{ padding: '10px 0', borderBottom: '1px solid #ffefc0', cursor: 'pointer' }}
                             onClick={() => {
-                              if (isPending) speak("Ta demande est déjà envoyée, attends que maman la valide !");
-                              else if (canAfford) speak("Il te restera " + remaining + " étoile" + (remaining > 1 ? "s" : "") + " après cet achat.");
-                              else speak("Il te faut encore " + (r.cost - stars) + " étoile" + ((r.cost - stars) > 1 ? "s" : "") + " pour ça.");
+                              if (isPending) speak("Ta demande pour " + r.name + " est déjà envoyée, attends que maman la valide !");
+                              else if (canAfford) speak(r.name + " ! Il te restera " + remaining + " étoile" + (remaining > 1 ? "s" : "") + " après cet achat.");
+                              else speak(r.name + " coûte " + r.cost + " étoiles. Il te faut encore " + (r.cost - stars) + " étoile" + ((r.cost - stars) > 1 ? "s" : "") + " pour ça.");
                             }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
                               <div style={{ flex: 1 }}>
