@@ -470,6 +470,7 @@ animation: gradientMove 8s ease infinite;
           const [historyLog, setHistoryLog] = React.useState([]);
           const [rewardLog, setRewardLog] = React.useState([]);
           const [pendingRewards, setPendingRewards] = React.useState([]);
+          const [pendingGameStars, setPendingGameStars] = React.useState([]);
           const [grantedReward, setGrantedReward] = React.useState(null);
           const [voiceEnabled, setVoiceEnabled] = React.useState(true);
           const [childMode, setChildMode] = React.useState(false);
@@ -493,6 +494,7 @@ animation: gradientMove 8s ease infinite;
                 setHistoryLog(data.historyLog ?? []);
                 setRewardLog(data.rewardLog ?? []);
                 setPendingRewards(data.pendingRewards ?? []);
+                setPendingGameStars(data.pendingGameStars ?? []);
                 setGrantedReward(data.grantedReward ?? null);
                 setVoiceEnabled(data.voiceEnabled ?? true);
                 const savedTasks = data.tasks ?? [];
@@ -532,10 +534,11 @@ animation: gradientMove 8s ease infinite;
               historyLog,
               rewardLog,
               pendingRewards,
+              pendingGameStars,
               grantedReward,
               voiceEnabled,
             });
-          }, [tasks, stars, level, parentPassword, historyLog, rewardLog, pendingRewards, grantedReward, voiceEnabled, loading]);
+          }, [tasks, stars, level, parentPassword, historyLog, rewardLog, pendingRewards, pendingGameStars, grantedReward, voiceEnabled, loading]);
 
           const checkDailyReset = React.useCallback(() => {
             const now = new Date();
@@ -712,6 +715,20 @@ animation: gradientMove 8s ease infinite;
             setLevel(Math.floor(stars / 60) + 1);
           };
 
+          const acceptGameReward = (item) => {
+            setPendingGameStars(prev => prev.filter(g => g.id !== item.id));
+            const newStars = stars + item.stars;
+            setStars(newStars);
+            addToHistory(`🎮 ${item.game} — +${item.stars} ⭐`);
+            speak("Bravo pour ton jeu !");
+            const targetLevel = Math.floor(newStars / 60) + 1;
+            if (targetLevel > level) { setLevel(targetLevel); setShowCelebration(true); }
+          };
+
+          const rejectGameReward = (id) => {
+            setPendingGameStars(prev => prev.filter(g => g.id !== id));
+          };
+
           const handleCelebration = () => {
             const particles = Array.from({ length: 35 }, (_, i) => ({
               id: i,
@@ -824,6 +841,23 @@ animation: gradientMove 8s ease infinite;
                   </div>
 
                   <div className="card">
+                    <h3 style={{ color: '#333', marginTop: '0' }}>🎮 Jeux en attente de validation :</h3>
+                    {pendingGameStars.length === 0 ? (
+                      <p style={{ color: '#888', fontStyle: 'italic', margin: '0' }}>Aucun jeu en attente de validation.</p>
+                    ) : (
+                      pendingGameStars.map(item => (
+                        <div key={item.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px', color: '#333', borderBottom: '1px solid #eee', paddingBottom: '8px' }}>
+                          <span>🎮 {item.game} <strong>(+{item.stars} ⭐)</strong> — {item.playedAt}</span>
+                          <div>
+                            <button onClick={() => acceptGameReward(item)} style={{ background: '#4caf50', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', marginRight: '5px', fontWeight: 'bold' }}>Valider</button>
+                            <button onClick={() => rejectGameReward(item.id)} style={{ background: '#f44336', color: '#fff', border: 'none', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 'bold' }}>Refuser</button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  <div className="card">
                     <h3 style={{ color: '#333', marginTop: '0' }}>⏳ Missions en attente de bisou-validation :</h3>
                     {tasks.filter(t => t.pending).length === 0 ? (
                       <p style={{ color: '#888', fontStyle: 'italic', margin: '0' }}>Caly n'a pas encore envoyé de mission à valider.</p>
@@ -923,6 +957,13 @@ animation: gradientMove 8s ease infinite;
     </div>
 
 </div>
+
+                  <div style={{ textAlign: 'center', marginBottom: '20px' }}>
+                    <button onClick={() => window.location.href = 'jeux.html' + (DB_PATH === 'calyApp-test' ? '?test' : '')}
+                      style={{ padding: '14px 35px', borderRadius: '50px', border: 'none', background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)', color: '#fff', fontSize: '18px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 6px 20px rgba(168,85,247,0.4)', letterSpacing: '0.5px' }}>
+                      🎮 Mes Jeux
+                    </button>
+                  </div>
 
                   <div className="category-scroll">
                     {categoriesList.map(cat => (
