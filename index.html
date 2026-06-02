@@ -498,6 +498,8 @@ animation: gradientMove 8s ease infinite;
           const [celebrationActive, setCelebrationActive] = React.useState(false);
           const [histTab, setHistTab] = React.useState('all');
           const [celebrationStars, setCelebrationStars] = React.useState([]);
+          const [vacationMode, setVacationMode] = React.useState(false);
+          const [weeklyGames, setWeeklyGames] = React.useState(null);
 
           // Écoute Firebase en temps réel (sync entre les deux téléphones)
           React.useEffect(() => {
@@ -544,6 +546,15 @@ animation: gradientMove 8s ease infinite;
               setLoading(false);
             });
             return () => ref.off();
+          }, []);
+
+          // Listeners séparés : vacationMode + weeklyGames (lecture seule côté index)
+          React.useEffect(() => {
+            const refVac = db.ref(DB_PATH + '/vacationMode');
+            const refWG  = db.ref(DB_PATH + '/weeklyGames');
+            refVac.on('value', snap => setVacationMode(snap.val() === true));
+            refWG.on('value',  snap => setWeeklyGames(snap.val() || null));
+            return () => { refVac.off(); refWG.off(); };
           }, []);
 
           // Sauvegarde vers Firebase quand les données changent (sauf màj distante)
@@ -691,6 +702,21 @@ animation: gradientMove 8s ease infinite;
           const rejectTask = (id) => {
             setTasks(tasks.map(t => t.id === id ? { ...t, done: false, pending: false } : t));
             speak('Mission à refaire.');
+          };
+
+          const toggleVacationMode = async () => {
+            await db.ref(DB_PATH + '/vacationMode').set(!vacationMode);
+          };
+
+          const toggleGameUnlock = async (gameId) => {
+            const wg = weeklyGames || {};
+            const toArr = v => v ? (Array.isArray(v) ? v : Object.values(v)).filter(Boolean) : [];
+            const unlocked = toArr(wg.parentUnlocked);
+            const isUnlocked = unlocked.includes(gameId);
+            const newUnlocked = isUnlocked
+              ? unlocked.filter(g => g !== gameId)
+              : [...unlocked, gameId];
+            await db.ref(DB_PATH + '/weeklyGames/parentUnlocked').set(newUnlocked);
           };
 
           const handleBonus = () => {
@@ -887,6 +913,76 @@ animation: gradientMove 8s ease infinite;
                       {darkMode ? '🌙 Mode sombre' : '☀️ Mode clair'}
                     </button>
                   </div>
+
+                  {/* ── Gestion des Jeux ── */}
+                  {(() => {
+                    const GAME_META = {
+                      'jeu-1':  {n:"L'horloge enchantée",    i:'⏰'},
+                      'jeu-2':  {n:"Compte les étoiles",     i:'🌠'},
+                      'jeu-3':  {n:"Le marché enchanté",     i:'🛒'},
+                      'jeu-4':  {n:"Nourris le dragon",      i:'🐉'},
+                      'jeu-5':  {n:"La course des nombres",  i:'🏇'},
+                      'jeu-6':  {n:"Bonne nuit les chiffres",i:'🌙'},
+                      'jeu-7':  {n:"La suite magique",       i:'🪄'},
+                      'jeu-8':  {n:"La carte au trésor",     i:'🗺️'},
+                      'jeu-9':  {n:"L'intrus enchanté",      i:'🔮'},
+                      'jeu-10': {n:"Le cirque des contraires",i:'🤡'},
+                      'jeu-11': {n:"Mémo des fées",          i:'🧚'},
+                      'jeu-12': {n:"Qu'est-ce qui a changé ?",i:'🔍'},
+                      'jeu-13': {n:"Compte et retiens",      i:'🔢'},
+                      'jeu-14': {n:"Le chapeau du magicien", i:'🎩'},
+                      'jeu-15': {n:"Le mot mystère",         i:'🖼️'},
+                      'jeu-16': {n:"L'alphabet enchanté",    i:'🔤'},
+                      'jeu-17': {n:"La baguette du son",     i:'🪄'},
+                      'jeu-18': {n:"Colorie le bon mot",     i:'🌈'},
+                      'jeu-19': {n:"Les grandes énigmes",    i:'🔮'},
+                      'jeu-20': {n:"Le château des mots",    i:'🏰'},
+                      'jeu-21': {n:"La chenille des syllabes",i:'🐛'},
+                      'jeu-22': {n:"L'île des rimes",        i:'🦜'},
+                      'jeu-23': {n:"Copie du parchemin",     i:'📜'},
+                      'jeu-24': {n:"Assemble le mot",        i:'💎'},
+                      'jeu-25': {n:"La lettre manquante",    i:'🐱'},
+                    };
+                    const toArr = v => v ? (Array.isArray(v) ? v : Object.values(v)).filter(Boolean) : [];
+                    const wg = weeklyGames || {};
+                    const played = toArr(wg.played);
+                    const unlocked = toArr(wg.parentUnlocked);
+                    const lockedGames = Object.keys(GAME_META).filter(id => played.includes(id));
+                    return React.createElement('div', { className:'card', style:{marginBottom:'16px'} },
+                      React.createElement('h3', { style:{color:ps.h3,marginTop:'0',marginBottom:'14px'} }, '🎮 Gestion des Jeux'),
+
+                      // Toggle vacances
+                      React.createElement('div', { style:{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'10px 14px',borderRadius:'12px',background:vacationMode?'linear-gradient(135deg,#ff6b35,#ffd700)':'rgba(99,102,241,0.08)',border:'2px solid '+(vacationMode?'#ffd700':'rgba(99,102,241,0.2)'),marginBottom:'14px',cursor:'pointer'}, onClick:toggleVacationMode },
+                        React.createElement('div', null,
+                          React.createElement('div', {style:{fontWeight:'900',fontSize:'15px',color:vacationMode?'#fff':ps.text}}, vacationMode ? '🏖️ Mode Vacances activé' : '🏖️ Mode Vacances'),
+                          React.createElement('div', {style:{fontSize:'11px',color:vacationMode?'rgba(255,255,255,0.85)':ps.textEmpty,marginTop:'2px'}}, vacationMode ? 'Tous les jeux sont disponibles sans limite' : 'Activer pour désactiver toutes les limites')
+                        ),
+                        React.createElement('div', {style:{width:'44px',height:'24px',borderRadius:'12px',background:vacationMode?'rgba(255,255,255,0.3)':'rgba(0,0,0,0.15)',position:'relative',flexShrink:0}},
+                          React.createElement('div', {style:{position:'absolute',top:'3px',left:vacationMode?'23px':'3px',width:'18px',height:'18px',borderRadius:'50%',background:'#fff',transition:'left 0.2s'}})
+                        )
+                      ),
+
+                      // Liste des jeux bloqués à débloquer
+                      React.createElement('div', {style:{fontSize:'12px',fontWeight:'700',color:ps.textEmpty,marginBottom:'8px',textTransform:'uppercase',letterSpacing:'0.5px'}},
+                        lockedGames.length > 0 ? '🔒 Jeux bloqués cette semaine' : '✅ Aucun jeu bloqué pour l\'instant'
+                      ),
+                      lockedGames.length > 0 && React.createElement('div', {style:{display:'flex',flexDirection:'column',gap:'6px',maxHeight:'200px',overflowY:'auto'}},
+                        lockedGames.map(id => {
+                          const meta = GAME_META[id];
+                          const isOn = unlocked.includes(id);
+                          return React.createElement('div', {key:id, style:{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'8px 12px',borderRadius:'10px',background:isOn?'rgba(255,215,0,0.08)':'rgba(0,0,0,0.04)',border:'1px solid '+(isOn?'rgba(255,215,0,0.3)':'rgba(0,0,0,0.06)'),cursor:'pointer'}, onClick:()=>toggleGameUnlock(id)},
+                            React.createElement('span', {style:{fontSize:'13px',color:ps.text}}, meta.i + ' ' + meta.n),
+                            React.createElement('div', {style:{display:'flex',alignItems:'center',gap:'6px'}},
+                              isOn && React.createElement('span', {style:{fontSize:'10px',color:'#d97706',fontWeight:'700'}}, 'Débloqué'),
+                              React.createElement('div', {style:{width:'36px',height:'20px',borderRadius:'10px',background:isOn?'#f59e0b':'rgba(0,0,0,0.1)',position:'relative',flexShrink:0}},
+                                React.createElement('div', {style:{position:'absolute',top:'2px',left:isOn?'18px':'2px',width:'16px',height:'16px',borderRadius:'50%',background:'#fff',transition:'left 0.2s',boxShadow:'0 1px 3px rgba(0,0,0,0.2)'}})
+                              )
+                            )
+                          );
+                        })
+                      )
+                    );
+                  })()}
 
                   <div className="card">
                     <h3 style={{ color: ps.h3, marginTop: '0' }}>🎮 Jeux en attente de validation :</h3>

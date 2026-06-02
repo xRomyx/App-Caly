@@ -498,7 +498,7 @@
 
     function goBack() {
       if (countdownTimer) clearTimeout(countdownTimer);
-      window.location.href = 'jeux.html' + (isTest ? '?test' : '');
+      window.location.href = 'jeux.html?played=jeu-12' + (isTest ? '&test' : '');
     }
 
     startGame();
