@@ -474,6 +474,7 @@ animation: gradientMove 8s ease infinite;
           { id: 'animaux', icon: '🐱', label: 'Animaux', voice: "S'occuper des animaux" },
           { id: 'nettoyage', icon: '🧹', label: 'Grand Nettoyage', voice: 'Grand nettoyage de la semaine' },
           { id: 'boutique', icon: '🛍️', label: 'Boutique', voice: '' },
+          { id: 'jeux', icon: '🎮', label: 'Mes Jeux', voice: 'Direction les jeux !' },
         ];
 
         function App() {
@@ -1005,18 +1006,16 @@ animation: gradientMove 8s ease infinite;
 
 </div>
 
-                  <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-                    <button onClick={() => window.location.href = 'jeux.html' + (DB_PATH === 'calyApp-test' ? '?test' : '')}
-                      style={{ padding: '14px 35px', borderRadius: '50px', border: 'none', background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)', color: '#fff', fontSize: '18px', fontWeight: '900', cursor: 'pointer', boxShadow: '0 6px 20px rgba(168,85,247,0.4)', letterSpacing: '0.5px' }}>
-                      🎮 Mes Jeux
-                    </button>
-                  </div>
-
                   <div className="category-scroll">
                     {categoriesList.map(cat => (
                       <button
                         key={cat.id}
                         onClick={() => {
+                          if (cat.id === 'jeux') {
+                            speak('Direction les jeux !');
+                            setTimeout(() => window.location.href = 'jeux.html' + (DB_PATH === 'calyApp-test' ? '?test' : ''), 600);
+                            return;
+                          }
                           setCurrentCategory(cat.id);
                           if (cat.id === 'boutique') speak('Boutique magique ! Tu as ' + stars + ' étoile' + (stars > 1 ? 's' : '') + ' !');
                           else speak(cat.voice);
@@ -1025,7 +1024,13 @@ animation: gradientMove 8s ease infinite;
                       >
                         <div
                           className={`cat-circle${currentCategory === cat.id ? ' active' : ''}`}
-                          style={cat.id === 'boutique' && currentCategory === cat.id ? { background: 'linear-gradient(135deg, #ffd700 0%, #ffa500 100%)', borderColor: '#ffd700' } : {}}
+                          style={
+                            cat.id === 'boutique' && currentCategory === cat.id
+                              ? { background: 'linear-gradient(135deg, #ffd700 0%, #ffa500 100%)', borderColor: '#ffd700' }
+                              : cat.id === 'jeux'
+                              ? { background: 'linear-gradient(135deg, #a855f7 0%, #6366f1 100%)', borderColor: '#a855f7', color: '#fff' }
+                              : {}
+                          }
                         >
                           {cat.icon}
                         </div>
