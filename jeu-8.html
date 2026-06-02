@@ -360,6 +360,11 @@
 
       const endRow = row, endCol = col;
 
+      // Si le chemin revient au point de départ, l'île ne serait pas cliquable → régénérer
+      if (endRow === sRow && endCol === sCol) {
+        return generateQuestion();
+      }
+
       // Cellules du chemin (hors départ)
       const pathCells = new Set();
       let pr = sRow, pc = sCol;
