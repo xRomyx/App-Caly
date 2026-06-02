@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Le chapeau du magicien 🎩</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvRCxPT2W7djJcHSR9kweBnaNXYQtdZqo",
+      authDomain: "app-caly.firebaseapp.com",
+      databaseURL: "https://app-caly-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "app-caly",
+      storageBucket: "app-caly.firebasestorage.app",
+      messagingSenderId: "870451326147",
+      appId: "1:870451326147:web:465cff6467b66efeda4676"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const DB_PATH = new URLSearchParams(window.location.search).has('test') ? 'calyApp-test' : 'calyApp';
+    const isTest = DB_PATH === 'calyApp-test';
+  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #080820 0%, #14143a 50%, #080820 100%);
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 20px 16px 40px; color: #fff; overflow-x: hidden;
+    }
+    .test-banner {
+      background: #ff9800; color: #fff; padding: 6px 14px;
+      border-radius: 10px; text-align: center; font-weight: bold;
+      margin-bottom: 10px; font-size: 13px; width: 100%; max-width: 480px;
+    }
+    .game-header { text-align: center; margin-bottom: 18px; width: 100%; max-width: 480px; }
+    .game-title {
+      font-size: 26px; font-weight: 900;
+      background: linear-gradient(135deg, #fde68a, #c4b5fd, #f472b6);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 10px;
+    }
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.1);
+      border-radius: 50px; height: 10px; width: 100%; margin-bottom: 6px;
+    }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #c4b5fd, #fde68a);
+      height: 100%; border-radius: 50px; transition: width 0.4s ease;
+    }
+    .progress-text { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+    /* Carte principale */
+    .magic-card {
+      background: rgba(196,181,253,0.06);
+      border: 2px solid rgba(196,181,253,0.2);
+      border-radius: 28px; padding: 22px 18px 20px;
+      width: 100%; max-width: 480px;
+      text-align: center; position: relative; margin-bottom: 20px;
+      min-height: 280px; display: flex; flex-direction: column; align-items: center;
+    }
+    .magic-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #c4b5fd, #fde68a, #f472b6, #fde68a, #c4b5fd);
+      border-radius: 28px 28px 0 0;
+    }
+
+    .phase-label {
+      font-size: 15px; font-weight: bold; margin-bottom: 16px; min-height: 22px;
+      color: #fde68a;
+    }
+
+    /* Zone du chapeau */
+    .hat-zone {
+      position: relative; width: 160px; margin: 0 auto;
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    /* Item qui tombe dans le chapeau */
+    .hat-item {
+      font-size: 72px; display: none;
+      position: relative; z-index: 2;
+      margin-bottom: -10px;
+      filter: drop-shadow(0 0 20px rgba(253,230,138,0.6));
+    }
+    @keyframes appear {
+      0%   { transform: scale(0) rotate(-15deg); opacity: 0; }
+      70%  { transform: scale(1.15) rotate(5deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg);   opacity: 1; }
+    }
+    @keyframes intoHat {
+      0%   { transform: scale(1) translateY(0);   opacity: 1; }
+      100% { transform: scale(0.1) translateY(55px); opacity: 0; }
+    }
+
+    .hat-emoji {
+      font-size: 90px; display: block; line-height: 1;
+      filter: drop-shadow(0 4px 20px rgba(196,181,253,0.5));
+    }
+    .hat-emoji.wiggle { animation: wiggle 0.5s ease; }
+    @keyframes wiggle {
+      0%,100% { transform: rotate(0); }
+      25%      { transform: rotate(-8deg) scale(1.05); }
+      75%      { transform: rotate(8deg) scale(1.05); }
+    }
+
+    /* Dots de progression dans le chapeau */
+    .hat-counter {
+      display: flex; gap: 6px; justify-content: center; margin-top: 8px;
+    }
+    .hat-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(196,181,253,0.3);
+      transition: all 0.3s;
+    }
+    .hat-dot.filled {
+      background: #fde68a;
+      border-color: #f59e0b;
+      box-shadow: 0 0 8px rgba(253,230,138,0.6);
+    }
+
+    /* Phase question */
+    .question-zone {
+      display: none; flex-direction: column; align-items: center;
+      gap: 12px; width: 100%;
+    }
+    .question-label {
+      font-size: 16px; color: #c4b5fd; font-weight: bold;
+    }
+    .hint-emojis {
+      font-size: 14px; color: rgba(255,255,255,0.5);
+      margin-top: 2px;
+    }
+
+    /* Boutons réponses */
+    .answers-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 14px; width: 100%; max-width: 480px; margin-bottom: 20px;
+    }
+    .answer-btn {
+      aspect-ratio: 1; border-radius: 20px;
+      border: 3px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.07);
+      font-size: 52px;
+      cursor: pointer; transition: transform 0.1s;
+      box-shadow: 0 3px 14px rgba(0,0,0,0.3);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .answer-btn:active:not(:disabled) { transform: scale(0.92); }
+    .answer-btn:disabled { cursor: default; }
+    .answer-btn.correct {
+      background: linear-gradient(135deg, #16a34a, #15803d) !important;
+      border-color: #86efac !important; transform: scale(1.08) !important;
+      box-shadow: 0 0 28px rgba(34,197,94,0.85) !important;
+      animation: bumpIn 0.35s ease;
+    }
+    .answer-btn.wrong {
+      background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+      border-color: #fca5a5 !important;
+      box-shadow: 0 0 22px rgba(239,68,68,0.8) !important;
+      animation: shake 0.45s ease;
+    }
+
+    .feedback-zone {
+      min-height: 54px; text-align: center;
+      width: 100%; max-width: 480px; margin-bottom: 10px;
+    }
+    .feedback-msg {
+      font-size: 17px; font-weight: bold;
+      padding: 12px 18px; border-radius: 16px;
+      animation: bumpIn 0.3s ease; line-height: 1.4;
+    }
+    .feedback-msg.correct { background: rgba(34,197,94,0.2);  color: #86efac; }
+    .feedback-msg.wrong   { background: rgba(239,68,68,0.2);  color: #fca5a5; }
+
+    .btn-next {
+      display: none; width: 100%; max-width: 480px;
+      padding: 18px; border-radius: 50px; border: none;
+      background: linear-gradient(135deg, #c4b5fd, #7c3aed);
+      color: #fff; font-size: 22px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 4px 20px rgba(196,181,253,0.4);
+      margin-bottom: 20px;
+    }
+
+    .result-screen { display: none; text-align: center; width: 100%; max-width: 480px; }
+    .result-title {
+      font-size: 34px; font-weight: 900;
+      background: linear-gradient(135deg, #fde68a, #c4b5fd);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 14px;
+    }
+    .stars-earned { font-size: 56px; margin: 14px 0; animation: bumpUp 0.6s ease; min-height: 70px; }
+    .score-detail { font-size: 18px; color: rgba(255,255,255,0.65); margin-bottom: 22px; }
+    .submit-msg   { font-size: 14px; color: rgba(255,255,255,0.5);  margin-bottom: 18px; min-height: 22px; }
+    .btn-retour {
+      width: 100%; padding: 18px; border-radius: 50px; border: none;
+      background: linear-gradient(135deg, #fde68a, #f59e0b);
+      color: #080820; font-size: 20px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 4px 20px rgba(253,230,138,0.4);
+    }
+
+    .confetti-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 100; overflow: hidden; }
+    .confetti-piece { position: absolute; border-radius: 2px; animation: confettiFall linear forwards; }
+    @keyframes confettiFall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+    .star-bg { position: fixed; pointer-events: none; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; z-index: 0; }
+    .star-bg span { position: absolute; animation: twinkle linear infinite; }
+    @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 0.7; transform: scale(1.3); } }
+    .content { position: relative; z-index: 1; width: 100%; display: flex; flex-direction: column; align-items: center; }
+    @keyframes bumpIn { 0% { transform: scale(0.85); opacity: 0; } 70% { transform: scale(1.04); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes bumpUp { 0% { transform: translateY(30px) scale(0.5); opacity: 0; } 60% { transform: translateY(-10px) scale(1.1); } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); } }
+  </style>
+</head>
+<body>
+  <div class="star-bg" id="starBg"></div>
+  <div class="confetti-container" id="confettiContainer"></div>
+
+  <div class="content">
+    <div id="testBanner"></div>
+
+    <div class="game-header">
+      <div class="game-title">🎩 Le chapeau du magicien</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+      </div>
+      <div class="progress-text" id="progressText">Question 1 / 10</div>
+    </div>
+
+    <div class="magic-card" id="magicCard">
+      <div class="phase-label" id="phaseLabel">✨ Regarde bien ce qui entre dans le chapeau !</div>
+
+      <!-- Zone chapeau (phase mémo) -->
+      <div id="hatZoneWrap">
+        <div class="hat-zone">
+          <div class="hat-item" id="hatItem"></div>
+          <span class="hat-emoji" id="hatEmoji">🎩</span>
+        </div>
+        <div class="hat-counter" id="hatCounter">
+          <div class="hat-dot" id="dot0"></div>
+          <div class="hat-dot" id="dot1"></div>
+          <div class="hat-dot" id="dot2"></div>
+          <div class="hat-dot" id="dot3"></div>
+        </div>
+      </div>
+
+      <!-- Zone question (phase réponse) -->
+      <div class="question-zone" id="questionZone">
+        <div class="question-label">🎩 Lequel n'était PAS dans le chapeau ?</div>
+        <div class="hint-emojis" id="hintEmojis"></div>
+      </div>
+    </div>
+
+    <div class="answers-grid" id="answersGrid" style="display:none"></div>
+    <div class="feedback-zone" id="feedbackZone"></div>
+    <button class="btn-next" id="btnNext" onclick="nextQuestion()">Suivant →</button>
+
+    <div class="result-screen" id="resultScreen">
+      <div class="result-title" id="resultTitle"></div>
+      <div class="stars-earned" id="starsEarned"></div>
+      <div class="score-detail" id="scoreDetail"></div>
+      <div class="submit-msg" id="submitMsg"></div>
+      <button class="btn-retour" onclick="goBack()">🎮 Retour aux jeux</button>
+    </div>
+  </div>
+
+  <script>
+    const bg = document.getElementById('starBg');
+    const bgChars = ['✦','✧','·','⭐','✨','🪄','💫'];
+    for (let i = 0; i < 32; i++) {
+      const s = document.createElement('span');
+      s.textContent = bgChars[Math.floor(Math.random()*bgChars.length)];
+      s.style.left     = Math.random()*100 + '%';
+      s.style.top      = Math.random()*100 + '%';
+      s.style.fontSize = (9 + Math.random()*12) + 'px';
+      s.style.animationDuration = (3 + Math.random()*6) + 's';
+      s.style.animationDelay    = (Math.random()*6) + 's';
+      bg.appendChild(s);
+    }
+    if (isTest) document.getElementById('testBanner').innerHTML = '<div class="test-banner">🧪 VERSION TEST</div>';
+
+    const EMOJI_POOL = [
+      '🐱','🐶','🐸','🦊','🐰','🐼','🦁','🐯','🐨','🦄',
+      '🍎','🍊','🍋','🍇','🍓','🍒','🍕','🍔','🍦','🍰',
+      '⭐','🌙','☀️','❄️','🔥','💎','🎈','🎀','🏆','🎯',
+      '🌸','🌺','🌼','🦋','🐝','🚀','✈️','🎸','🎺','🪄',
+      '🏰','⚓','🔮','🎭','🌈','🐠','🦜','🐙','🌵','🍄',
+    ];
+
+    const TOTAL_Q   = 10;
+    const SHOW_MS   = 1100; // durée d'affichage de chaque item
+    const FALL_MS   = 500;  // durée animation chute dans chapeau
+
+    let selectedQ  = [];
+    let currentQ   = 0;
+    let score      = 0;
+    let correctIdx = -1;
+    let answered   = false;
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function speak(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang = 'fr-FR'; utt.rate = 0.88; utt.pitch = 1.1;
+      window.speechSynthesis.speak(utt);
+    }
+
+    function playSound(correct) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (correct) {
+          [523,659,784,1047].forEach((freq, i) => {
+            const osc = ctx.createOscillator(), gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value = freq; osc.type = 'sine';
+            gain.gain.setValueAtTime(0.22, ctx.currentTime + i*0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.1 + 0.25);
+            osc.start(ctx.currentTime + i*0.1); osc.stop(ctx.currentTime + i*0.1 + 0.25);
+          });
+        } else {
+          const osc = ctx.createOscillator(), gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.frequency.value = 200; osc.type = 'sawtooth';
+          gain.gain.setValueAtTime(0.22, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+          osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.45);
+        }
+      } catch(e) {}
+    }
+
+    function launchConfetti() {
+      const container = document.getElementById('confettiContainer');
+      const colors = ['#fde68a','#c4b5fd','#f472b6','#38bdf8','#86efac','#fff'];
+      for (let i = 0; i < 50; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random()*100 + '%';
+        piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+        piece.style.animationDuration = (1.5 + Math.random()*2) + 's';
+        piece.style.animationDelay    = (Math.random()*0.5) + 's';
+        const size = 8 + Math.random()*10;
+        piece.style.width = size+'px'; piece.style.height = size+'px';
+        container.appendChild(piece);
+        setTimeout(() => piece.remove(), 3800);
+      }
+    }
+
+    function generateQuestion() {
+      const pool    = shuffle(EMOJI_POOL);
+      const inHat   = pool.slice(0, 4);   // 4 items dans le chapeau
+      const outsider = pool[4];           // 1 item qui n'entre PAS
+      // Options : 2 items du chapeau + 1 outsider
+      const shownFromHat = shuffle([...inHat]).slice(0, 2);
+      const options = shuffle([...shownFromHat, outsider]);
+      return { inHat, outsider, options };
+    }
+
+    function startGame() {
+      selectedQ = Array.from({ length: TOTAL_Q }, () => generateQuestion());
+      currentQ = 0; score = 0;
+      showQuestion();
+    }
+
+    function showQuestion() {
+      answered = false;
+      document.getElementById('btnNext').style.display       = 'none';
+      document.getElementById('feedbackZone').innerHTML      = '';
+      document.getElementById('resultScreen').style.display  = 'none';
+      document.getElementById('magicCard').style.display     = '';
+      document.getElementById('answersGrid').style.display   = 'none';
+      document.getElementById('hatZoneWrap').style.display   = '';
+      document.getElementById('questionZone').style.display  = 'none';
+      document.getElementById('phaseLabel').textContent      = '✨ Regarde bien ce qui entre dans le chapeau !';
+
+      // Reset dots
+      for (let i = 0; i < 4; i++) {
+        document.getElementById('dot' + i).className = 'hat-dot';
+      }
+
+      document.getElementById('progressBar').style.width  = (currentQ / TOTAL_Q * 100) + '%';
+      document.getElementById('progressText').textContent = 'Question ' + (currentQ + 1) + ' / ' + TOTAL_Q;
+
+      speak('Regarde bien ce qui entre dans le chapeau !');
+
+      const q = selectedQ[currentQ];
+      playItemsSequence(q.inHat, 0, () => startAnswerPhase(q));
+    }
+
+    function playItemsSequence(items, idx, onDone) {
+      if (idx >= items.length) {
+        // Chapeau wiggle
+        const hat = document.getElementById('hatEmoji');
+        hat.className = 'hat-emoji wiggle';
+        setTimeout(() => { hat.className = 'hat-emoji'; onDone(); }, 600);
+        return;
+      }
+
+      const el = document.getElementById('hatItem');
+      el.style.animation = 'none';
+      el.style.opacity   = '1';
+      el.style.transform = 'scale(1) translateY(0)';
+      el.textContent     = items[idx];
+      el.style.display   = 'block';
+
+      // Animation apparition
+      el.style.animation = 'appear 0.35s ease both';
+
+      setTimeout(() => {
+        // Animation chute dans chapeau
+        el.style.animation = 'intoHat ' + (FALL_MS/1000) + 's ease forwards';
+        // Remplir le dot
+        document.getElementById('dot' + idx).className = 'hat-dot filled';
+        setTimeout(() => {
+          el.style.display = 'none';
+          playItemsSequence(items, idx + 1, onDone);
+        }, FALL_MS);
+      }, SHOW_MS);
+    }
+
+    function startAnswerPhase(q) {
+      document.getElementById('hatZoneWrap').style.display  = 'none';
+      document.getElementById('questionZone').style.display = 'flex';
+      document.getElementById('phaseLabel').textContent     = '🎩 Tu as bien tout vu ?';
+
+      document.getElementById('hintEmojis').textContent = '';
+
+      document.getElementById('answersGrid').style.display = '';
+      correctIdx = q.options.indexOf(q.outsider);
+
+      const grid = document.getElementById('answersGrid');
+      grid.innerHTML = '';
+      q.options.forEach((emoji, idx) => {
+        const btn = document.createElement('button');
+        btn.className   = 'answer-btn';
+        btn.textContent = emoji;
+        btn.onclick     = () => checkAnswer(idx, emoji, q.outsider, q.inHat);
+        grid.appendChild(btn);
+      });
+
+      speak('Lequel n\'était pas dans le chapeau ?');
+    }
+
+    function checkAnswer(idx, chosen, outsider, inHat) {
+      if (answered) return;
+      answered = true;
+
+      const btns = document.querySelectorAll('.answer-btn');
+      btns.forEach(b => { b.disabled = true; b.onclick = null; });
+
+      const isCorrect = (idx === correctIdx);
+      if (isCorrect) {
+        btns[idx].classList.add('correct');
+        score++;
+        playSound(true);
+        launchConfetti();
+        document.getElementById('feedbackZone').innerHTML =
+          '<div class="feedback-msg correct">🎩 Bravo ! ' + outsider + ' n\'était pas dans le chapeau !</div>';
+        speak('Bravo ! ' + outsider + ' n\'était pas dans le chapeau !');
+      } else {
+        btns[idx].classList.add('wrong');
+        btns[correctIdx].classList.add('correct');
+        playSound(false);
+        document.getElementById('feedbackZone').innerHTML =
+          '<div class="feedback-msg wrong">💪 C\'était ' + outsider + ' qui n\'était pas dans le chapeau !</div>';
+        speak('C\'était ' + outsider + ' qui n\'était pas dans le chapeau !');
+      }
+
+      const btnNext = document.getElementById('btnNext');
+      btnNext.style.display   = 'block';
+      btnNext.style.animation = 'none';
+      void btnNext.offsetWidth;
+      btnNext.style.animation = '';
+    }
+
+    function nextQuestion() {
+      document.getElementById('btnNext').style.display = 'none';
+      currentQ++;
+      if (currentQ < TOTAL_Q) showQuestion();
+      else showResult();
+    }
+
+    function getStars(s) {
+      if (s === 10) return 4;
+      if (s >= 8)   return 3;
+      if (s >= 6)   return 2;
+      if (s >= 4)   return 1;
+      return 0;
+    }
+
+    function showResult() {
+      document.getElementById('magicCard').style.display    = 'none';
+      document.getElementById('answersGrid').style.display  = 'none';
+      document.getElementById('feedbackZone').innerHTML     = '';
+      document.getElementById('btnNext').style.display      = 'none';
+      document.getElementById('progressBar').style.width    = '100%';
+
+      const earned = getStars(score);
+      document.getElementById('resultScreen').style.display = 'block';
+
+      const titles = ['Continue !', 'Pas mal !', 'Bien joué !', 'Super !', 'Parfait ! 🎉'];
+      document.getElementById('resultTitle').textContent = '🎩 ' + titles[earned];
+      document.getElementById('starsEarned').textContent = earned > 0 ? '⭐'.repeat(earned) : '😊';
+      document.getElementById('scoreDetail').textContent = score + ' / ' + TOTAL_Q + ' bonnes réponses';
+
+      if (earned > 0) {
+        launchConfetti();
+        speak(titles[earned] + ' Tu as gagné ' + earned + (earned > 1 ? ' étoiles !' : ' étoile !'));
+      } else {
+        speak('Continue à t\'entraîner, tu vas y arriver !');
+      }
+      submitStars(earned);
+    }
+
+    async function submitStars(earned) {
+      if (earned === 0) {
+        document.getElementById('submitMsg').textContent = 'Rejoue pour gagner des étoiles !';
+        return;
+      }
+      try {
+        document.getElementById('submitMsg').textContent = '⏳ Envoi en cours...';
+        const snap = await db.ref(DB_PATH + '/pendingGameStars').get();
+        const val  = snap.val();
+        const arr  = val ? (Array.isArray(val) ? val : Object.values(val)).filter(Boolean) : [];
+        arr.push({
+          id: Date.now().toString(),
+          game: 'Le Chapeau du Magicien',
+          stars: earned,
+          playedAt: new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+        });
+        await db.ref(DB_PATH + '/pendingGameStars').set(arr);
+        document.getElementById('submitMsg').textContent =
+          '✅ ' + earned + (earned > 1 ? ' étoiles' : ' étoile') + ' en attente de validation !';
+      } catch(e) {
+        document.getElementById('submitMsg').textContent = '❌ Erreur d\'envoi. Dis-le à Papa !';
+      }
+    }
+
+    function goBack() {
+      window.location.href = 'jeux.html' + (isTest ? '?test' : '');
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
