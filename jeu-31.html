@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Les chiffres espagnols 🇪🇸</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvRCxPT2W7djJcHSR9kweBnaNXYQtdZqo",
+      authDomain: "app-caly.firebaseapp.com",
+      databaseURL: "https://app-caly-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "app-caly",
+      storageBucket: "app-caly.firebasestorage.app",
+      messagingSenderId: "870451326147",
+      appId: "1:870451326147:web:465cff6467b66efeda4676"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const DB_PATH = new URLSearchParams(window.location.search).has('test') ? 'calyApp-test' : 'calyApp';
+    const isTest = DB_PATH === 'calyApp-test';
+  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #1a0000 0%, #350000 50%, #1a0000 100%);
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 20px 16px 40px; color: #fff; overflow-x: hidden;
+    }
+    .test-banner {
+      background: #ff9800; color: #fff; padding: 6px 14px;
+      border-radius: 10px; text-align: center; font-weight: bold;
+      margin-bottom: 10px; font-size: 13px; width: 100%; max-width: 480px;
+    }
+    .game-header { text-align: center; margin-bottom: 18px; width: 100%; max-width: 480px; }
+    .game-title {
+      font-size: 26px; font-weight: 900;
+      background: linear-gradient(135deg, #ef4444, #fcd34d, #ef4444);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 10px;
+    }
+    .progress-bar-wrap { background: rgba(255,255,255,0.1); border-radius: 50px; height: 10px; width: 100%; margin-bottom: 6px; }
+    .progress-bar-fill { background: linear-gradient(90deg, #ef4444, #fcd34d); height: 100%; border-radius: 50px; transition: width 0.4s ease; }
+    .progress-text { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+    .voice-warning {
+      background: rgba(239,68,68,0.15); border: 2px solid rgba(239,68,68,0.5);
+      border-radius: 16px; padding: 14px 16px;
+      width: 100%; max-width: 480px; margin-bottom: 14px;
+      font-size: 13px; line-height: 1.5; color: #fca5a5; position: relative;
+    }
+    .voice-warning strong { font-size: 15px; display: block; margin-bottom: 6px; }
+    .voice-warning .steps { color: rgba(255,255,255,0.7); font-size: 12px; margin-top: 6px; }
+    .voice-warning .btn-close {
+      position: absolute; top: 8px; right: 10px;
+      background: none; border: none; color: rgba(255,255,255,0.5); font-size: 18px; cursor: pointer; line-height: 1;
+    }
+
+    /* Écran de sélection du niveau */
+    .level-screen { width: 100%; max-width: 480px; }
+    .level-intro {
+      text-align: center; font-size: 20px; font-weight: 700;
+      color: rgba(255,255,255,0.85); margin-bottom: 24px;
+    }
+    .level-cards { display: flex; flex-direction: column; gap: 14px; }
+    .level-card {
+      background: rgba(239,68,68,0.1); border: 2px solid rgba(239,68,68,0.3);
+      border-radius: 22px; padding: 18px 20px;
+      display: flex; align-items: center; gap: 18px;
+      cursor: pointer; transition: all 0.18s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .level-card:active { transform: scale(0.97); background: rgba(239,68,68,0.2); }
+    .level-badge {
+      width: 56px; height: 56px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; font-weight: 900;
+    }
+    .level-card:nth-child(1) .level-badge { background: linear-gradient(135deg, #22c55e, #16a34a); }
+    .level-card:nth-child(2) .level-badge { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .level-card:nth-child(3) .level-badge { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .level-info { text-align: left; }
+    .level-name { font-size: 18px; font-weight: 900; color: #fff; }
+    .level-range { font-size: 22px; font-weight: 900; color: #fcd34d; }
+    .level-desc { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+    /* Jeu */
+    .question-card {
+      background: rgba(239,68,68,0.07); border: 2px solid rgba(239,68,68,0.25);
+      border-radius: 28px; padding: 28px 16px 22px;
+      width: 100%; max-width: 480px; text-align: center; position: relative; margin-bottom: 24px;
+    }
+    .question-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #ef4444, #fcd34d, #ef4444, #fcd34d, #ef4444);
+      border-radius: 28px 28px 0 0;
+    }
+    .level-chip {
+      display: inline-block; background: rgba(252,211,77,0.2);
+      border: 1px solid rgba(252,211,77,0.4); border-radius: 20px;
+      font-size: 12px; color: #fcd34d; padding: 3px 12px; margin-bottom: 12px;
+      font-weight: bold;
+    }
+    .listen-icon { font-size: 64px; margin-bottom: 10px; animation: pulse 2.2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+    .listen-label { font-size: 18px; color: rgba(255,255,255,0.9); font-weight: 700; margin-bottom: 4px; }
+    .listen-sublabel { font-size: 13px; color: rgba(239,68,68,0.8); margin-bottom: 18px; font-style: italic; }
+    .speak-btn {
+      background: rgba(239,68,68,0.15); border: 2px solid rgba(239,68,68,0.4);
+      border-radius: 50px; color: #fca5a5; font-size: 15px;
+      padding: 9px 22px; cursor: pointer; transition: background 0.2s;
+    }
+    .speak-btn:active { background: rgba(239,68,68,0.35); }
+
+    .choices-wrap { width: 100%; max-width: 420px; display: flex; justify-content: center; gap: 14px; margin-bottom: 20px; }
+    .number-btn {
+      flex: 1; aspect-ratio: 1;
+      display: flex; align-items: center; justify-content: center;
+      font-size: clamp(30px, 10vw, 54px); font-weight: 900;
+      border-radius: 22px;
+      background: rgba(239,68,68,0.1); border: 3px solid rgba(239,68,68,0.35);
+      color: #fee2e2; cursor: pointer; transition: transform 0.12s;
+      user-select: none; -webkit-tap-highlight-color: transparent;
+    }
+    .number-btn:active { transform: scale(0.91); }
+    .number-btn.correct {
+      background: linear-gradient(135deg, #16a34a, #15803d) !important;
+      border-color: #86efac !important; box-shadow: 0 0 26px rgba(34,197,94,0.8) !important;
+      animation: bumpIn 0.35s ease;
+    }
+    .number-btn.wrong {
+      background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+      border-color: #fca5a5 !important; animation: shake 0.45s ease;
+    }
+
+    .feedback-zone { min-height: 54px; text-align: center; width: 100%; max-width: 480px; margin-bottom: 10px; }
+    .feedback-msg { font-size: 17px; font-weight: bold; padding: 12px 18px; border-radius: 16px; animation: bumpIn 0.3s ease; line-height: 1.4; }
+    .feedback-msg.correct { background: rgba(34,197,94,0.2); color: #86efac; }
+    .feedback-msg.wrong   { background: rgba(239,68,68,0.2); color: #fca5a5; }
+
+    .btn-next {
+      display: none; width: 100%; max-width: 480px;
+      padding: 18px; border-radius: 50px; border: none;
+      background: linear-gradient(135deg, #ef4444, #b91c1c);
+      color: #fff; font-size: 22px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 4px 20px rgba(239,68,68,0.4); margin-bottom: 20px;
+    }
+
+    .result-screen { display: none; text-align: center; width: 100%; max-width: 480px; }
+    .result-title {
+      font-size: 36px; font-weight: 900;
+      background: linear-gradient(135deg, #ef4444, #fcd34d);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 14px;
+    }
+    .stars-earned { font-size: 56px; margin: 14px 0; animation: bumpUp 0.6s ease; min-height: 70px; }
+    .score-detail { font-size: 18px; color: rgba(255,255,255,0.65); margin-bottom: 22px; }
+    .submit-msg   { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 18px; min-height: 22px; }
+    .btn-replay {
+      width: 100%; padding: 16px; border-radius: 50px; border: none;
+      background: rgba(239,68,68,0.2); border: 2px solid rgba(239,68,68,0.4);
+      color: #fca5a5; font-size: 18px; font-weight: 700;
+      cursor: pointer; margin-bottom: 12px;
+    }
+    .btn-retour {
+      width: 100%; padding: 18px; border-radius: 50px; border: none;
+      background: linear-gradient(135deg, #fde68a, #f59e0b);
+      color: #1a0000; font-size: 20px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 4px 20px rgba(253,230,138,0.4);
+    }
+
+    .confetti-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 100; overflow: hidden; }
+    .confetti-piece { position: absolute; border-radius: 2px; animation: confettiFall linear forwards; }
+    @keyframes confettiFall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+    .star-bg { position: fixed; pointer-events: none; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; z-index: 0; }
+    .star-bg span { position: absolute; font-size: 12px; animation: twinkle linear infinite; }
+    @keyframes twinkle { 0%,100% { opacity: 0.15; transform: scale(0.8); } 50% { opacity: 0.5; transform: scale(1.2); } }
+    .content { position: relative; z-index: 1; width: 100%; display: flex; flex-direction: column; align-items: center; }
+    @keyframes bumpIn { 0% { transform: scale(0.85); opacity: 0; } 70% { transform: scale(1.04); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes bumpUp { 0% { transform: translateY(30px) scale(0.5); opacity: 0; } 60% { transform: translateY(-10px) scale(1.1); } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+    @keyframes shake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); } }
+  </style>
+</head>
+<body>
+  <div class="star-bg" id="starBg"></div>
+  <div class="confetti-container" id="confettiContainer"></div>
+  <div class="content">
+    <div id="testBanner"></div>
+    <div id="voiceWarning" class="voice-warning" style="display:none">
+      <button class="btn-close" onclick="this.parentElement.style.display='none'">✕</button>
+      <strong>🇪🇸 Voix espagnole non installée</strong>
+      Pour jouer en espagnol, installe le pack vocal sur ton téléphone :
+      <div class="steps">
+        Paramètres → Gestion générale → Langue → Synthèse vocale<br>
+        → Google Text-to-Speech → ⚙️ → Installer les données vocales → <strong>Espagnol</strong>
+      </div>
+    </div>
+
+    <div class="game-header">
+      <div class="game-title">🇪🇸 Los números en español</div>
+      <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:0%"></div></div>
+      <div class="progress-text" id="progressText"></div>
+    </div>
+
+    <!-- Sélection du niveau -->
+    <div class="level-screen" id="levelScreen">
+      <div class="level-intro">🎯 Choisis ton niveau</div>
+      <div class="level-cards">
+        <div class="level-card" onclick="startGame(1)">
+          <div class="level-badge">1</div>
+          <div class="level-info">
+            <div class="level-name">Niveau 1</div>
+            <div class="level-range">0 → 5</div>
+            <div class="level-desc">Débutant — 6 questions</div>
+          </div>
+        </div>
+        <div class="level-card" onclick="startGame(2)">
+          <div class="level-badge">2</div>
+          <div class="level-info">
+            <div class="level-name">Niveau 2</div>
+            <div class="level-range">0 → 10</div>
+            <div class="level-desc">Intermédiaire — 10 questions</div>
+          </div>
+        </div>
+        <div class="level-card" onclick="startGame(3)">
+          <div class="level-badge">3</div>
+          <div class="level-info">
+            <div class="level-name">Niveau 3</div>
+            <div class="level-range">0 → 20</div>
+            <div class="level-desc">Expert — 10 questions</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Zone de jeu -->
+    <div class="question-card" id="questionCard" style="display:none">
+      <div class="level-chip" id="levelChip"></div>
+      <div class="listen-icon">👂</div>
+      <div class="listen-label">¿Qué número escuchas?</div>
+      <div class="listen-sublabel">Appuie sur le bon chiffre !</div>
+      <button class="speak-btn" onclick="speakCurrentNumber()">🔊 Réécouter</button>
+    </div>
+    <div class="choices-wrap" id="choicesWrap" style="display:none"></div>
+    <div class="feedback-zone" id="feedbackZone"></div>
+    <button class="btn-next" id="btnNext" onclick="nextQuestion()">Suivant →</button>
+
+    <div class="result-screen" id="resultScreen">
+      <div class="result-title" id="resultTitle"></div>
+      <div class="stars-earned" id="starsEarned"></div>
+      <div class="score-detail" id="scoreDetail"></div>
+      <div class="submit-msg" id="submitMsg"></div>
+      <button class="btn-replay" onclick="backToLevels()">🎯 Changer de niveau</button>
+      <button class="btn-retour" onclick="goBack()">🎮 Retour aux jeux</button>
+    </div>
+  </div>
+
+  <script>
+    const bg = document.getElementById('starBg');
+    for (let i = 0; i < 28; i++) {
+      const s = document.createElement('span');
+      s.textContent = ['✦','✧','·','⋆','★','☆'][Math.floor(Math.random()*6)];
+      s.style.left = Math.random()*100+'%'; s.style.top = Math.random()*100+'%';
+      s.style.animationDuration = (3+Math.random()*5)+'s'; s.style.animationDelay = (Math.random()*5)+'s';
+      bg.appendChild(s);
+    }
+    if (isTest) document.getElementById('testBanner').innerHTML = '<div class="test-banner">🧪 VERSION TEST</div>';
+
+    const LANG = 'es-ES';
+    const LEVELS_CONFIG = {
+      1: { pool: [0,1,2,3,4,5],                              totalQ: 6,  label: 'Niveau 1 — 0 à 5'  },
+      2: { pool: Array.from({length:11}, (_,i) => i),        totalQ: 10, label: 'Niveau 2 — 0 à 10' },
+      3: { pool: Array.from({length:21}, (_,i) => i),        totalQ: 10, label: 'Niveau 3 — 0 à 20' },
+    };
+
+    let questions = [], currentQ = 0, score = 0, answered = false;
+    let currentNumber = 0, currentLevel = 1, currentPool = [], TOTAL_Q = 10;
+    let spanishVoice = null;
+
+    function loadVoices() {
+      const voices = window.speechSynthesis.getVoices();
+      spanishVoice = voices.find(v => v.lang.startsWith('es')) || null;
+      document.getElementById('voiceWarning').style.display = spanishVoice ? 'none' : 'block';
+    }
+    if (window.speechSynthesis.onvoiceschanged !== undefined) window.speechSynthesis.onvoiceschanged = loadVoices;
+    loadVoices();
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+      return a;
+    }
+
+    function speak(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang = LANG; utt.rate = 0.78; utt.pitch = 1.1;
+      if (spanishVoice) utt.voice = spanishVoice;
+      window.speechSynthesis.speak(utt);
+    }
+
+    function speakCurrentNumber() { speak(String(currentNumber)); }
+
+    function playSound(correct) {
+      try {
+        const ctx = new (window.AudioContext||window.webkitAudioContext)();
+        if (correct) {
+          [523,659,784,1047].forEach((freq,i) => {
+            const osc=ctx.createOscillator(), gain=ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value=freq; osc.type='sine';
+            gain.gain.setValueAtTime(0.25,ctx.currentTime+i*0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+i*0.1+0.25);
+            osc.start(ctx.currentTime+i*0.1); osc.stop(ctx.currentTime+i*0.1+0.25);
+          });
+        } else {
+          const osc=ctx.createOscillator(), gain=ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.frequency.value=200; osc.type='sawtooth';
+          gain.gain.setValueAtTime(0.25,ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.45);
+          osc.start(ctx.currentTime); osc.stop(ctx.currentTime+0.45);
+        }
+      } catch(e) {}
+    }
+
+    function launchConfetti() {
+      const container = document.getElementById('confettiContainer');
+      const colors = ['#fde68a','#ef4444','#fcd34d','#34d399','#38bdf8','#fff'];
+      for (let i = 0; i < 45; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random()*100+'%';
+        piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+        piece.style.animationDuration = (1.5+Math.random()*2)+'s';
+        piece.style.animationDelay = (Math.random()*0.5)+'s';
+        const size = 8+Math.random()*10;
+        piece.style.width=size+'px'; piece.style.height=size+'px';
+        container.appendChild(piece);
+        setTimeout(() => piece.remove(), 3800);
+      }
+    }
+
+    function getDistractors(correct) {
+      const nearby = shuffle(currentPool.filter(n => n!==correct && Math.abs(n-correct)<=4));
+      const rest   = shuffle(currentPool.filter(n => n!==correct && Math.abs(n-correct)>4));
+      const all    = [...nearby, ...rest];
+      return [all[0], all[1]];
+    }
+
+    function generateQuestions() {
+      // Niveau 1 (6 nombres) : tous dans l'ordre aléatoire, pas de répétition
+      const pool = shuffle(currentPool).slice(0, TOTAL_Q);
+      return pool.map(num => {
+        const [d1, d2] = getDistractors(num);
+        return { num, choices: shuffle([num, d1, d2]) };
+      });
+    }
+
+    function startGame(level) {
+      currentLevel = level;
+      const cfg = LEVELS_CONFIG[level];
+      currentPool = cfg.pool;
+      TOTAL_Q = cfg.totalQ;
+
+      questions = generateQuestions();
+      currentQ = 0; score = 0;
+
+      document.getElementById('levelScreen').style.display   = 'none';
+      document.getElementById('resultScreen').style.display  = 'none';
+      document.getElementById('feedbackZone').innerHTML      = '';
+      document.getElementById('btnNext').style.display       = 'none';
+      document.getElementById('levelChip').textContent       = cfg.label;
+      document.getElementById('progressBar').style.width     = '0%';
+
+      showQuestion();
+    }
+
+    function showQuestion() {
+      answered = false;
+      document.getElementById('btnNext').style.display      = 'none';
+      document.getElementById('feedbackZone').innerHTML     = '';
+      document.getElementById('questionCard').style.display = '';
+      document.getElementById('choicesWrap').style.display  = 'flex';
+
+      const q = questions[currentQ];
+      currentNumber = q.num;
+
+      const wrap = document.getElementById('choicesWrap');
+      wrap.innerHTML = '';
+      q.choices.forEach(num => {
+        const btn = document.createElement('div');
+        btn.className = 'number-btn'; btn.textContent = num;
+        btn.onclick = () => checkAnswer(btn, num === q.num, q.num);
+        wrap.appendChild(btn);
+      });
+
+      document.getElementById('progressBar').style.width  = (currentQ/TOTAL_Q*100)+'%';
+      document.getElementById('progressText').textContent = 'Question '+(currentQ+1)+' / '+TOTAL_Q;
+      setTimeout(() => speak(String(q.num)), 600);
+    }
+
+    function checkAnswer(clickedBtn, isCorrect, correctNum) {
+      if (answered) return;
+      answered = true;
+      document.querySelectorAll('.number-btn').forEach(b => { b.onclick=null; b.style.cursor='default'; });
+
+      if (isCorrect) {
+        clickedBtn.classList.add('correct');
+        score++; playSound(true); launchConfetti();
+        document.getElementById('feedbackZone').innerHTML =
+          '<div class="feedback-msg correct">⭐ ¡Muy bien! Es el '+correctNum+' !</div>';
+        speak(String(correctNum));
+      } else {
+        clickedBtn.style.animation='none'; clickedBtn.style.borderColor='#f87171';
+        clickedBtn.style.background='rgba(248,113,113,0.25)';
+        void clickedBtn.offsetWidth; clickedBtn.style.animation='shake 0.45s ease';
+        document.querySelectorAll('.number-btn').forEach(b => {
+          if (parseInt(b.textContent)===correctNum) b.classList.add('correct');
+        });
+        playSound(false);
+        document.getElementById('feedbackZone').innerHTML =
+          '<div class="feedback-msg wrong">💪 C\'était le '+correctNum+' ! Réécoute bien.</div>';
+        speak(String(correctNum));
+      }
+      const btnNext = document.getElementById('btnNext');
+      btnNext.style.display='block'; btnNext.style.animation='none';
+      void btnNext.offsetWidth; btnNext.style.animation='';
+    }
+
+    function nextQuestion() {
+      document.getElementById('btnNext').style.display = 'none';
+      currentQ++;
+      if (currentQ < TOTAL_Q) showQuestion(); else showResult();
+    }
+
+    function getStars(s) {
+      if (TOTAL_Q === 6) { return s>=5?2:s>=4?1:0; } // Niveau 1
+      return s>=8?2:s>=5?1:0;
+    }
+
+    function showResult() {
+      document.getElementById('questionCard').style.display='none';
+      document.getElementById('choicesWrap').style.display='none';
+      document.getElementById('feedbackZone').innerHTML='';
+      document.getElementById('btnNext').style.display='none';
+      document.getElementById('progressBar').style.width='100%';
+
+      const earned = getStars(score);
+      document.getElementById('resultScreen').style.display='block';
+      const title = earned>=2?'Parfait ! 🎉':earned===1?'Bien joué !':score>=(TOTAL_Q/2)?'Pas mal !':'Continue !';
+      document.getElementById('resultTitle').textContent = '🇪🇸 '+title;
+      document.getElementById('starsEarned').textContent = earned>0?'⭐'.repeat(earned):'😊';
+      document.getElementById('scoreDetail').textContent = score+' / '+TOTAL_Q+' — '+LEVELS_CONFIG[currentLevel].label;
+
+      const speakFr = new SpeechSynthesisUtterance(
+        earned>=2?'Parfait ! Tu as gagné deux étoiles !':
+        earned===1?'Bien joué ! Tu as gagné une étoile !':
+        'Continue à t\'entraîner, tu vas y arriver !'
+      );
+      speakFr.lang='fr-FR'; speakFr.rate=0.88; speakFr.pitch=1.1;
+      if (earned>0) launchConfetti();
+      window.speechSynthesis.cancel(); window.speechSynthesis.speak(speakFr);
+      submitStars(earned);
+    }
+
+    function backToLevels() {
+      document.getElementById('resultScreen').style.display  = 'none';
+      document.getElementById('progressBar').style.width     = '0%';
+      document.getElementById('progressText').textContent    = '';
+      document.getElementById('levelScreen').style.display   = 'block';
+    }
+
+    async function submitStars(earned) {
+      if (earned===0) { document.getElementById('submitMsg').textContent='Rejoue pour gagner des étoiles !'; return; }
+      try {
+        document.getElementById('submitMsg').textContent='⏳ Envoi en cours...';
+        const snap = await db.ref(DB_PATH+'/pendingGameStars').get();
+        const val  = snap.val();
+        const arr  = val?(Array.isArray(val)?val:Object.values(val)).filter(Boolean):[];
+        arr.push({
+          id: Date.now().toString(),
+          game: 'Les Chiffres ES Niv.'+currentLevel,
+          stars: earned,
+          playedAt: new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})
+        });
+        await db.ref(DB_PATH+'/pendingGameStars').set(arr);
+        document.getElementById('submitMsg').textContent='✅ '+earned+(earned>1?' étoiles':' étoile')+' en attente de validation !';
+      } catch(e) { document.getElementById('submitMsg').textContent='❌ Erreur d\'envoi. Dis-le à Papa !'; }
+    }
+
+    function goBack() { window.location.href = 'jeux.html'+(isTest?'?test':''); }
+  </script>
+</body>
+</html>
