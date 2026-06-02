@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>La chenille des syllabes ✨</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvRCxPT2W7djJcHSR9kweBnaNXYQtdZqo",
+      authDomain: "app-caly.firebaseapp.com",
+      databaseURL: "https://app-caly-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "app-caly",
+      storageBucket: "app-caly.firebasestorage.app",
+      messagingSenderId: "870451326147",
+      appId: "1:870451326147:web:465cff6467b66efeda4676"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const DB_PATH = new URLSearchParams(window.location.search).has('test') ? 'calyApp-test' : 'calyApp';
+    const isTest = DB_PATH === 'calyApp-test';
+  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #052e16 0%, #14532d 50%, #052e16 100%);
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 20px 16px 40px; color: #fff; overflow-x: hidden;
+    }
+    .test-banner {
+      background: #ff9800; color: #fff; padding: 6px 14px;
+      border-radius: 10px; text-align: center; font-weight: bold;
+      margin-bottom: 10px; font-size: 13px; width: 100%; max-width: 480px;
+    }
+    .game-header { text-align: center; margin-bottom: 18px; width: 100%; max-width: 480px; }
+    .game-title {
+      font-size: 28px; font-weight: 900;
+      background: linear-gradient(135deg, #86efac, #4ade80, #bbf7d0);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 10px;
+    }
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.1);
+      border-radius: 50px; height: 10px; width: 100%; margin-bottom: 6px;
+    }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #4ade80, #86efac);
+      height: 100%; border-radius: 50px; transition: width 0.4s ease;
+    }
+    .progress-text { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+    /* Carte mot */
+    .word-card {
+      background: rgba(74,222,128,0.08);
+      border: 2px solid rgba(74,222,128,0.25);
+      border-radius: 28px; padding: 26px 22px 20px;
+      width: 100%; max-width: 480px;
+      text-align: center; position: relative; margin-bottom: 16px;
+    }
+    .word-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #4ade80, #86efac, #4ade80);
+      border-radius: 28px 28px 0 0;
+    }
+    .sparkle {
+      position: absolute; font-size: 18px;
+      animation: sparkleAnim 2.5s ease-in-out infinite; pointer-events: none;
+    }
+    .sparkle:nth-child(1) { top: -9px; left: 10%; animation-delay: 0s; }
+    .sparkle:nth-child(2) { top: -9px; right: 10%; animation-delay: 1s; }
+    .sparkle:nth-child(3) { bottom: -9px; right: 20%; animation-delay: 1.8s; }
+    @keyframes sparkleAnim {
+      0%, 100% { transform: scale(0.7) rotate(-15deg); opacity: 0.4; }
+      50%       { transform: scale(1.3) rotate(15deg);  opacity: 1; }
+    }
+
+    .word-emoji { font-size: 80px; display: block; margin-bottom: 12px; }
+    .word-text {
+      font-size: 36px; font-weight: 900; letter-spacing: 4px;
+      color: #fff; margin-bottom: 8px;
+    }
+    /* Syllabes révélées après la réponse */
+    .syl-reveal {
+      font-size: 22px; font-weight: 700; color: #86efac;
+      letter-spacing: 2px; min-height: 32px;
+      animation: bumpIn 0.4s ease;
+    }
+    .speak-btn {
+      margin-top: 10px;
+      background: rgba(74,222,128,0.2);
+      border: 2px solid rgba(74,222,128,0.4);
+      border-radius: 50px; color: #86efac; font-size: 14px;
+      padding: 7px 18px; cursor: pointer; transition: background 0.2s;
+    }
+    .speak-btn:active { background: rgba(74,222,128,0.4); }
+
+    /* Question label */
+    .question-label {
+      font-size: 16px; color: rgba(255,255,255,0.65);
+      text-align: center; margin-bottom: 14px;
+      width: 100%; max-width: 480px;
+    }
+
+    /* Grille 2×2 de boutons chenille */
+    .counts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      width: 100%; max-width: 480px; margin-bottom: 20px;
+    }
+    .count-btn {
+      aspect-ratio: 1;
+      border-radius: 22px;
+      border: 3px solid rgba(74,222,128,0.25);
+      background: rgba(74,222,128,0.07);
+      cursor: pointer;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px;
+      padding: 14px 10px;
+      transition: transform 0.1s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+    }
+    .count-btn:active:not(:disabled) { transform: scale(0.93); }
+    .count-btn:disabled { cursor: default; }
+
+    /* Segments chenille (CSS pur) */
+    .cater-row { display: flex; gap: 4px; align-items: center; justify-content: center; }
+    .cater-seg {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: linear-gradient(135deg, #86efac, #22c55e);
+      box-shadow: 0 2px 6px rgba(34,197,94,0.35);
+      flex-shrink: 0;
+    }
+    .cater-head {
+      width: 26px; height: 26px;
+      background: linear-gradient(135deg, #bbf7d0, #4ade80);
+      box-shadow: 0 2px 8px rgba(74,222,128,0.5);
+    }
+    .count-num {
+      font-size: 32px; font-weight: 900; color: #86efac;
+      line-height: 1;
+    }
+
+    /* États correct / wrong */
+    .count-btn.correct {
+      background: linear-gradient(135deg, #16a34a, #15803d) !important;
+      border-color: #86efac !important;
+      transform: scale(1.08) !important;
+      box-shadow: 0 0 30px rgba(34,197,94,0.85) !important;
+      animation: bumpIn 0.35s ease;
+    }
+    .count-btn.wrong {
+      background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+      border-color: #fca5a5 !important;
+      box-shadow: 0 0 25px rgba(239,68,68,0.8) !important;
+      animation: shake 0.45s ease;
+    }
+    .count-btn.correct .cater-seg,
+    .count-btn.correct .cater-head,
+    .count-btn.correct .count-num { filter: brightness(1.3); }
+
+    /* Feedback */
+    .feedback-zone {
+      min-height: 54px; text-align: center;
+      width: 100%; max-width: 480px; margin-bottom: 10px;
+    }
+    .feedback-msg {
+      font-size: 17px; font-weight: bold;
+      padding: 12px 18px; border-radius: 16px;
+      animation: bumpIn 0.3s ease; line-height: 1.4;
+    }
+    .feedback-msg.correct { background: rgba(34,197,94,0.2);  color: #86efac; }
+    .feedback-msg.wrong   { background: rgba(239,68,68,0.2);  color: #fca5a5; }
+
+    /* Suivant */
+    .btn-next {
+      display: none; width: 100%; max-width: 480px;
+      padding: 18px; border-radius: 50px; border: none;
+      background: linear-gradient(135deg, #4ade80, #16a34a);
+      color: #052e16; font-size: 22px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 4px 20px rgba(74,222,128,0.4);
+      margin-bottom: 20px;
+    }
+
+    /* Result */
+    .result-screen { display: none; text-align: center; width: 100%; max-width: 480px; }
+    .result-title {
+      font-size: 36px; font-weight: 900;
+      background: linear-gradient(135deg, #86efac, #4ade80);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 14px;
+    }
+    .stars-earned { font-size: 56px; margin: 14px 0; animation: bumpUp 0.6s ease; min-height: 70px; }
+    .score-detail { font-size: 18px; color: rgba(255,255,255,0.65); margin-bottom: 22px; }
+    .submit-msg   { font-size: 14px; color: rgba(255,255,255,0.5);  margin-bottom: 18px; min-height: 22px; }
+    .btn-retour {
+      width: 100%; padding: 18px; border-radius: 50px; border: none;
+      background: linear-gradient(135deg, #4ade80, #16a34a);
+      color: #052e16; font-size: 20px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 4px 20px rgba(74,222,128,0.4);
+    }
+
+    /* Confetti */
+    .confetti-container {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none; z-index: 100; overflow: hidden;
+    }
+    .confetti-piece {
+      position: absolute; border-radius: 2px;
+      animation: confettiFall linear forwards;
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(-20px) rotate(0deg);   opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    .star-bg {
+      position: fixed; pointer-events: none;
+      top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; z-index: 0;
+    }
+    .star-bg span { position: absolute; font-size: 13px; animation: twinkle linear infinite; }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; transform: scale(0.8); }
+      50%       { opacity: 0.7; transform: scale(1.2); }
+    }
+    .content {
+      position: relative; z-index: 1; width: 100%;
+      display: flex; flex-direction: column; align-items: center;
+    }
+
+    @keyframes bumpIn {
+      0%   { transform: scale(0.85); opacity: 0; }
+      70%  { transform: scale(1.05); }
+      100% { transform: scale(1);   opacity: 1; }
+    }
+    @keyframes bumpUp {
+      0%   { transform: translateY(30px) scale(0.5); opacity: 0; }
+      60%  { transform: translateY(-10px) scale(1.1); }
+      100% { transform: translateY(0) scale(1);      opacity: 1; }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-8px); }
+      40%       { transform: translateX(8px); }
+      60%       { transform: translateX(-6px); }
+      80%       { transform: translateX(6px); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="star-bg" id="starBg"></div>
+  <div class="confetti-container" id="confettiContainer"></div>
+
+  <div class="content">
+    <div id="testBanner"></div>
+
+    <div class="game-header">
+      <div class="game-title">🐛 La chenille des syllabes</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+      </div>
+      <div class="progress-text" id="progressText">Question 1 / 6</div>
+    </div>
+
+    <!-- Carte mot -->
+    <div class="word-card" id="wordCard">
+      <span class="sparkle">✦</span>
+      <span class="sparkle">✧</span>
+      <span class="sparkle">✦</span>
+      <span class="word-emoji" id="wordEmoji"></span>
+      <div class="word-text" id="wordText"></div>
+      <div class="syl-reveal" id="sylReveal"></div>
+      <button class="speak-btn" onclick="speakWord()">🔊 Réécouter</button>
+    </div>
+
+    <!-- Question -->
+    <div class="question-label">Combien de syllabes dans ce mot ?</div>
+
+    <!-- Boutons chenille -->
+    <div class="counts-grid" id="countsGrid"></div>
+
+    <!-- Feedback -->
+    <div class="feedback-zone" id="feedbackZone"></div>
+
+    <!-- Suivant -->
+    <button class="btn-next" id="btnNext" onclick="nextQuestion()">Suivant →</button>
+
+    <!-- Result -->
+    <div class="result-screen" id="resultScreen">
+      <div class="result-title" id="resultTitle"></div>
+      <div class="stars-earned" id="starsEarned"></div>
+      <div class="score-detail" id="scoreDetail"></div>
+      <div class="submit-msg" id="submitMsg"></div>
+      <button class="btn-retour" onclick="goBack()">🎮 Retour aux jeux</button>
+    </div>
+  </div>
+
+  <script>
+    // ── Fond étoilé ──────────────────────────────────────────────────────────
+    const bg = document.getElementById('starBg');
+    for (let i = 0; i < 30; i++) {
+      const s = document.createElement('span');
+      s.textContent = ['✦','✧','⋆','·','🍃'][Math.floor(Math.random()*5)];
+      s.style.left = Math.random()*100 + '%';
+      s.style.top  = Math.random()*100 + '%';
+      s.style.animationDuration = (3 + Math.random()*5) + 's';
+      s.style.animationDelay    = (Math.random()*5) + 's';
+      bg.appendChild(s);
+    }
+    if (isTest) {
+      document.getElementById('testBanner').innerHTML =
+        '<div class="test-banner">🧪 VERSION TEST</div>';
+    }
+
+    // ── Pool de mots ──────────────────────────────────────────────────────────
+    // syls = découpage affiché après la réponse
+    // count = nombre de syllabes correct (1, 2, 3 ou 4)
+    const POOL = {
+      1: [
+        { word: 'CHAT',   syls: 'CHAT',   emoji: '🐱' },
+        { word: 'FLEUR',  syls: 'FLEUR',  emoji: '🌸' },
+        { word: 'TRAIN',  syls: 'TRAIN',  emoji: '🚂' },
+        { word: 'PAIN',   syls: 'PAIN',   emoji: '🍞' },
+        { word: 'CHIEN',  syls: 'CHIEN',  emoji: '🐕' },
+      ],
+      2: [
+        { word: 'MAISON',  syls: 'MAI • SON',  emoji: '🏠' },
+        { word: 'LAPIN',   syls: 'LA • PIN',   emoji: '🐇' },
+        { word: 'NUAGE',   syls: 'NU • AGE',   emoji: '☁️' },
+        { word: 'CANARD',  syls: 'CA • NARD',  emoji: '🦆' },
+        { word: 'CHAPEAU', syls: 'CHA • PEAU', emoji: '👒' },
+        { word: 'TORTUE',  syls: 'TOR • TUE',  emoji: '🐢' },
+        { word: 'CRAYON',  syls: 'CRA • YON',  emoji: '✏️' },
+        { word: 'GIRAFE',  syls: 'GI • RAFE',  emoji: '🦒' },
+      ],
+      3: [
+        { word: 'PAPILLON',  syls: 'PA • PIL • LON',   emoji: '🦋' },
+        { word: 'ÉLÉPHANT',  syls: 'É • LÉ • PHANT',   emoji: '🐘' },
+        { word: 'CHOCOLAT',  syls: 'CHO • CO • LAT',    emoji: '🍫' },
+        { word: 'DINOSAURE', syls: 'DI • NO • SAURE',   emoji: '🦕' },
+        { word: 'CROCODILE', syls: 'CRO • CO • DILE',   emoji: '🐊' },
+        { word: 'ARAIGNÉE',  syls: 'A • RAI • GNÉE',    emoji: '🕷️' },
+        { word: 'TOMATE',    syls: 'TO • MA • TE',      emoji: '🍅' },
+      ],
+      4: [
+        { word: 'HIPPOPOTAME', syls: 'HIP • PO • PO • TAME', emoji: '🦛' },
+        { word: 'HÉLICOPTÈRE', syls: 'HÉ • LI • COP • TÈRE', emoji: '🚁' },
+        { word: 'BIBLIOTHÈQUE',syls: 'BI • BLI • O • THÈQUE', emoji: '📚' },
+        { word: 'ANNIVERSAIRE', syls: 'AN • NI • VER • SAIRE', emoji: '🎂' },
+      ],
+    };
+
+    const TOTAL_Q  = 6;
+    let selectedQ  = [];
+    let currentQ   = 0;
+    let score      = 0;
+    let answered   = false;
+
+    // ── Utilitaires ───────────────────────────────────────────────────────────
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function speak(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang = 'fr-FR'; utt.rate = 0.82; utt.pitch = 1.1;
+      window.speechSynthesis.speak(utt);
+    }
+
+    function speakWord() {
+      const q = selectedQ[currentQ];
+      if (q) speak(q.word + '. Combien de syllabes ?');
+    }
+
+    function playSound(correct) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (correct) {
+          [523, 659, 784, 1047].forEach((freq, i) => {
+            const osc = ctx.createOscillator(), gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value = freq; osc.type = 'sine';
+            gain.gain.setValueAtTime(0.25, ctx.currentTime + i * 0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.1 + 0.25);
+            osc.start(ctx.currentTime + i * 0.1);
+            osc.stop(ctx.currentTime + i * 0.1 + 0.25);
+          });
+        } else {
+          const osc = ctx.createOscillator(), gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.frequency.value = 200; osc.type = 'sawtooth';
+          gain.gain.setValueAtTime(0.25, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+          osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.45);
+        }
+      } catch(e) {}
+    }
+
+    function launchConfetti() {
+      const container = document.getElementById('confettiContainer');
+      const colors = ['#4ade80','#86efac','#ffd700','#60a5fa','#f472b6','#fff'];
+      for (let i = 0; i < 40; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random()*100 + '%';
+        piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+        piece.style.animationDuration = (1.5 + Math.random()*2) + 's';
+        piece.style.animationDelay    = (Math.random()*0.5) + 's';
+        const size = 8 + Math.random()*10;
+        piece.style.width = size + 'px'; piece.style.height = size + 'px';
+        container.appendChild(piece);
+        setTimeout(() => piece.remove(), 3800);
+      }
+    }
+
+    // Génère le HTML d'une chenille avec n segments
+    function caterpillarHTML(n) {
+      let html = '<div class="cater-row">';
+      for (let i = 0; i < n; i++) {
+        html += '<div class="cater-seg' + (i === 0 ? ' cater-head' : '') + '"></div>';
+      }
+      html += '</div>';
+      return html;
+    }
+
+    // ── Jeu ───────────────────────────────────────────────────────────────────
+    function startGame() {
+      // Sélection équilibrée : 1×1 syllabe, 2×2, 2×3, 1×4
+      // On mélange chaque groupe UNE fois, puis on spread le count manquant
+      const p1 = shuffle(POOL[1]);
+      const p2 = shuffle(POOL[2]);
+      const p3 = shuffle(POOL[3]);
+      const p4 = shuffle(POOL[4]);
+      const picks = [
+        { ...p1[0], count: 1 },
+        { ...p2[0], count: 2 }, { ...p2[1], count: 2 },
+        { ...p3[0], count: 3 }, { ...p3[1], count: 3 },
+        { ...p4[0], count: 4 },
+      ];
+      selectedQ = shuffle(picks);
+      currentQ = 0; score = 0;
+      showQuestion();
+    }
+
+    function showQuestion() {
+      answered = false;
+      document.getElementById('btnNext').style.display      = 'none';
+      document.getElementById('feedbackZone').innerHTML     = '';
+      document.getElementById('resultScreen').style.display = 'none';
+      document.getElementById('wordCard').style.display     = '';
+      document.getElementById('countsGrid').style.display   = '';
+      document.getElementById('sylReveal').textContent      = '';
+
+      const q = selectedQ[currentQ];
+      document.getElementById('wordEmoji').textContent = q.emoji;
+      document.getElementById('wordText').textContent  = q.word;
+
+      // Progression
+      document.getElementById('progressBar').style.width  = (currentQ / TOTAL_Q * 100) + '%';
+      document.getElementById('progressText').textContent = 'Question ' + (currentQ + 1) + ' / ' + TOTAL_Q;
+
+      // 4 boutons chenille (toujours 1, 2, 3, 4)
+      const grid = document.getElementById('countsGrid');
+      grid.innerHTML = '';
+      [1, 2, 3, 4].forEach(n => {
+        const btn = document.createElement('button');
+        btn.className = 'count-btn';
+        btn.dataset.count = n;
+        btn.innerHTML =
+          caterpillarHTML(n) +
+          '<div class="count-num">' + n + '</div>';
+        btn.onclick = () => checkAnswer(n);
+        grid.appendChild(btn);
+      });
+
+      // Auto-lecture
+      setTimeout(() => speak(q.word + '. Combien de syllabes ?'), 500);
+    }
+
+    function checkAnswer(chosen) {
+      if (answered) return;
+      answered = true;
+
+      const q    = selectedQ[currentQ];
+      const btns = document.querySelectorAll('.count-btn');
+      btns.forEach(b => b.disabled = true);
+
+      const isCorrect = (chosen === q.count);
+
+      // Révéler le découpage syllabique
+      const revealEl = document.getElementById('sylReveal');
+      revealEl.textContent = q.syls;
+
+      // Mettre en valeur le bon bouton
+      btns.forEach(b => {
+        const n = parseInt(b.dataset.count);
+        if (n === q.count) b.classList.add('correct');
+        else if (n === chosen && !isCorrect) b.classList.add('wrong');
+      });
+
+      if (isCorrect) {
+        score++;
+        playSound(true);
+        launchConfetti();
+        document.getElementById('feedbackZone').innerHTML =
+          '<div class="feedback-msg correct">✨ Bravo ! ' + q.word + ' a ' + q.count + ' syllabe' + (q.count > 1 ? 's' : '') + ' !</div>';
+        speak('Bravo ! ' + q.syls.replace(/•/g, '...') + '. ' + q.count + ' syllabes !');
+      } else {
+        playSound(false);
+        document.getElementById('feedbackZone').innerHTML =
+          '<div class="feedback-msg wrong">💪 ' + q.word + ' a ' + q.count + ' syllabe' + (q.count > 1 ? 's' : '') + ' : ' + q.syls + ' !</div>';
+        speak(q.word + ' a ' + q.count + ' syllabes : ' + q.syls.replace(/•/g, '...'));
+      }
+
+      const btnNext = document.getElementById('btnNext');
+      btnNext.style.display   = 'block';
+      btnNext.style.animation = 'none';
+      void btnNext.offsetWidth;
+      btnNext.style.animation = '';
+    }
+
+    function nextQuestion() {
+      document.getElementById('btnNext').style.display = 'none';
+      currentQ++;
+      if (currentQ < TOTAL_Q) showQuestion();
+      else showResult();
+    }
+
+    // ── Résultat ──────────────────────────────────────────────────────────────
+    function getStars(s) {
+      if (s === 6) return 4;
+      if (s === 5) return 3;
+      if (s === 4) return 2;
+      if (s >= 2)  return 1;
+      return 0;
+    }
+
+    function showResult() {
+      document.getElementById('wordCard').style.display   = 'none';
+      document.getElementById('countsGrid').style.display = 'none';
+      document.getElementById('feedbackZone').innerHTML   = '';
+      document.getElementById('btnNext').style.display    = 'none';
+      document.getElementById('progressBar').style.width  = '100%';
+
+      const earned = getStars(score);
+      document.getElementById('resultScreen').style.display = 'block';
+
+      const titles = ['Continue !', 'Pas mal !', 'Bien joué !', 'Super !', 'Parfait ! 🎉'];
+      document.getElementById('resultTitle').textContent = '🐛 ' + titles[earned];
+      document.getElementById('starsEarned').textContent = earned > 0 ? '⭐'.repeat(earned) : '😊';
+      document.getElementById('scoreDetail').textContent = score + ' / ' + TOTAL_Q + ' bonnes réponses';
+
+      if (earned > 0) {
+        launchConfetti();
+        speak(titles[earned] + ' Tu as gagné ' + earned + (earned > 1 ? ' étoiles !' : ' étoile !'));
+      } else {
+        speak('Continue à t\'entraîner, tu vas y arriver !');
+      }
+
+      submitStars(earned);
+    }
+
+    async function submitStars(earned) {
+      if (earned === 0) {
+        document.getElementById('submitMsg').textContent = 'Rejoue pour gagner des étoiles !';
+        return;
+      }
+      try {
+        document.getElementById('submitMsg').textContent = '⏳ Envoi en cours...';
+        const snap = await db.ref(DB_PATH + '/pendingGameStars').get();
+        const val  = snap.val();
+        const arr  = val ? (Array.isArray(val) ? val : Object.values(val)).filter(Boolean) : [];
+        arr.push({
+          id: Date.now().toString(),
+          game: 'La Chenille des Syllabes',
+          stars: earned,
+          playedAt: new Date().toLocaleDateString('fr-FR', {
+            day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'
+          })
+        });
+        await db.ref(DB_PATH + '/pendingGameStars').set(arr);
+        document.getElementById('submitMsg').textContent =
+          '✅ ' + earned + (earned > 1 ? ' étoiles' : ' étoile') + ' en attente de validation !';
+      } catch(e) {
+        document.getElementById('submitMsg').textContent = '❌ Erreur d\'envoi. Dis-le à Papa !';
+      }
+    }
+
+    function goBack() {
+      window.location.href = 'jeux.html' + (isTest ? '?test' : '');
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
