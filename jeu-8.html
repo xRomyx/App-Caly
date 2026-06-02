@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>La carte au trésor 🗺️</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvRCxPT2W7djJcHSR9kweBnaNXYQtdZqo",
+      authDomain: "app-caly.firebaseapp.com",
+      databaseURL: "https://app-caly-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "app-caly",
+      storageBucket: "app-caly.firebasestorage.app",
+      messagingSenderId: "870451326147",
+      appId: "1:870451326147:web:465cff6467b66efeda4676"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const DB_PATH = new URLSearchParams(window.location.search).has('test') ? 'calyApp-test' : 'calyApp';
+    const isTest = DB_PATH === 'calyApp-test';
+  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #041830 0%, #0a2a4a 50%, #041830 100%);
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 20px 16px 40px; color: #fff; overflow-x: hidden;
+    }
+    .test-banner {
+      background: #ff9800; color: #fff; padding: 6px 14px;
+      border-radius: 10px; text-align: center; font-weight: bold;
+      margin-bottom: 10px; font-size: 13px; width: 100%; max-width: 480px;
+    }
+    .game-header { text-align: center; margin-bottom: 18px; width: 100%; max-width: 480px; }
+    .game-title {
+      font-size: 28px; font-weight: 900;
+      background: linear-gradient(135deg, #fde68a, #38bdf8, #34d399);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 10px;
+    }
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.1);
+      border-radius: 50px; height: 10px; width: 100%; margin-bottom: 6px;
+    }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #38bdf8, #fde68a);
+      height: 100%; border-radius: 50px; transition: width 0.4s ease;
+    }
+    .progress-text { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+    /* Carte instruction */
+    .map-card {
+      background: rgba(56,189,248,0.06);
+      border: 2px solid rgba(56,189,248,0.25);
+      border-radius: 28px; padding: 20px 16px 18px;
+      width: 100%; max-width: 480px;
+      text-align: center; position: relative; margin-bottom: 20px;
+    }
+    .map-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #38bdf8, #fde68a, #34d399, #fde68a, #38bdf8);
+      border-radius: 28px 28px 0 0;
+    }
+
+    .card-label {
+      font-size: 14px; color: #7dd3fc; font-weight: bold;
+      text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;
+    }
+
+    /* Flèches de direction */
+    .arrows-row {
+      display: flex; justify-content: center; align-items: center;
+      flex-wrap: wrap;
+      gap: 8px; margin-bottom: 18px;
+    }
+    .arrow-chip {
+      background: rgba(253,230,138,0.15);
+      border: 2px solid rgba(253,230,138,0.4);
+      border-radius: 12px; padding: 6px 10px;
+      font-size: 24px; font-weight: 900; color: #fde68a;
+      min-width: 44px; text-align: center;
+      animation: itemAppear 0.3s ease both;
+    }
+    @keyframes itemAppear {
+      0%   { transform: scale(0.6); opacity: 0; }
+      70%  { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Grille 4x4 */
+    .grid-wrap {
+      width: 100%; max-width: 340px;
+      margin: 0 auto 14px;
+    }
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 5px;
+      width: 100%;
+    }
+    .grid-cell {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      background: rgba(56,189,248,0.07);
+      border: 2px solid rgba(56,189,248,0.1);
+      transition: all 0.2s;
+      user-select: none;
+      position: relative;
+    }
+    .grid-cell.start {
+      background: rgba(253,230,138,0.15);
+      border-color: rgba(253,230,138,0.5);
+      box-shadow: 0 0 12px rgba(253,230,138,0.3);
+    }
+    .grid-cell.option {
+      cursor: pointer;
+      background: rgba(56,189,248,0.12);
+      border: 2px solid rgba(56,189,248,0.5);
+      font-size: 16px; font-weight: 900; color: #38bdf8;
+    }
+    .grid-cell.option:active { transform: scale(0.9); }
+    .grid-cell.option.correct {
+      background: linear-gradient(135deg, #16a34a, #15803d) !important;
+      border-color: #86efac !important; color: #fff !important;
+      box-shadow: 0 0 20px rgba(34,197,94,0.8) !important;
+      animation: bumpIn 0.35s ease;
+    }
+    .grid-cell.option.wrong {
+      background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+      border-color: #fca5a5 !important; color: #fff !important;
+      animation: shake 0.45s ease;
+    }
+    .grid-cell.path {
+      background: rgba(253,230,138,0.08);
+      border-color: rgba(253,230,138,0.2);
+    }
+
+    /* Légende */
+    .legend {
+      display: flex; justify-content: center; gap: 16px;
+      font-size: 12px; color: rgba(255,255,255,0.5); margin-bottom: 10px;
+    }
+    .legend span { display: flex; align-items: center; gap: 4px; }
+
+    .speak-btn {
+      background: rgba(56,189,248,0.15);
+      border: 2px solid rgba(56,189,248,0.35);
+      border-radius: 50px; color: #7dd3fc; font-size: 14px;
+      padding: 7px 18px; cursor: pointer; transition: background 0.2s;
+    }
+    .speak-btn:active { background: rgba(56,189,248,0.35); }
+
+    .feedback-zone {
+      min-height: 54px; text-align: center;
+      width: 100%; max-width: 480px; margin-bottom: 10px;
+    }
+    .feedback-msg {
+      font-size: 17px; font-weight: bold;
+      padding: 12px 18px; border-radius: 16px;
+      animation: bumpIn 0.3s ease; line-height: 1.4;
+    }
+    .feedback-msg.correct { background: rgba(34,197,94,0.2);  color: #86efac; }
+    .feedback-msg.wrong   { background: rgba(239,68,68,0.2);  color: #fca5a5; }
+
+    .btn-next {
+      display: none; width: 100%; max-width: 480px;
+      padding: 18px; border-radius: 50px; border: none;
+      background: linear-gradient(135deg, #38bdf8, #0284c7);
+      color: #fff; font-size: 22px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 4px 20px rgba(56,189,248,0.4);
+      margin-bottom: 20px;
+    }
+
+    .result-screen { display: none; text-align: center; width: 100%; max-width: 480px; }
+    .result-title {
+      font-size: 36px; font-weight: 900;
+      background: linear-gradient(135deg, #fde68a, #38bdf8);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 14px;
+    }
+    .stars-earned { font-size: 56px; margin: 14px 0; animation: bumpUp 0.6s ease; min-height: 70px; }
+    .score-detail { font-size: 18px; color: rgba(255,255,255,0.65); margin-bottom: 22px; }
+    .submit-msg   { font-size: 14px; color: rgba(255,255,255,0.5);  margin-bottom: 18px; min-height: 22px; }
+    .btn-retour {
+      width: 100%; padding: 18px; border-radius: 50px; border: none;
+      background: linear-gradient(135deg, #fde68a, #f59e0b);
+      color: #041830; font-size: 20px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 4px 20px rgba(253,230,138,0.4);
+    }
+
+    .confetti-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 100; overflow: hidden; }
+    .confetti-piece { position: absolute; border-radius: 2px; animation: confettiFall linear forwards; }
+    @keyframes confettiFall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+    .star-bg { position: fixed; pointer-events: none; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; z-index: 0; }
+    .star-bg span { position: absolute; font-size: 12px; animation: twinkle linear infinite; }
+    @keyframes twinkle { 0%, 100% { opacity: 0.15; transform: scale(0.8); } 50% { opacity: 0.5; transform: scale(1.2); } }
+    .content { position: relative; z-index: 1; width: 100%; display: flex; flex-direction: column; align-items: center; }
+    @keyframes bumpIn { 0% { transform: scale(0.85); opacity: 0; } 70% { transform: scale(1.04); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes bumpUp { 0% { transform: translateY(30px) scale(0.5); opacity: 0; } 60% { transform: translateY(-10px) scale(1.1); } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); } }
+  </style>
+</head>
+<body>
+  <div class="star-bg" id="starBg"></div>
+  <div class="confetti-container" id="confettiContainer"></div>
+
+  <div class="content">
+    <div id="testBanner"></div>
+
+    <div class="game-header">
+      <div class="game-title">🗺️ La carte au trésor</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+      </div>
+      <div class="progress-text" id="progressText">Question 1 / 10</div>
+    </div>
+
+    <div class="map-card" id="mapCard">
+      <div class="card-label">🏴‍☠️ Suis le chemin du pirate</div>
+      <div class="arrows-row" id="arrowsRow"></div>
+      <div class="grid-wrap">
+        <div class="game-grid" id="gameGrid"></div>
+      </div>
+      <div class="legend">
+        <span>🏝️ Départ</span>
+        <span><span style="color:#38bdf8">A B C</span> Coffres</span>
+      </div>
+      <button class="speak-btn" onclick="speakQ()">🔊 Réécouter</button>
+    </div>
+
+    <div class="feedback-zone" id="feedbackZone"></div>
+    <button class="btn-next" id="btnNext" onclick="nextQuestion()">Suivant →</button>
+
+    <div class="result-screen" id="resultScreen">
+      <div class="result-title" id="resultTitle"></div>
+      <div class="stars-earned" id="starsEarned"></div>
+      <div class="score-detail" id="scoreDetail"></div>
+      <div class="submit-msg" id="submitMsg"></div>
+      <button class="btn-retour" onclick="goBack()">🎮 Retour aux jeux</button>
+    </div>
+  </div>
+
+  <script>
+    const bg = document.getElementById('starBg');
+    for (let i = 0; i < 28; i++) {
+      const s = document.createElement('span');
+      s.textContent = ['✦','✧','·','⋆','🌊','⚓'][Math.floor(Math.random()*6)];
+      s.style.left = Math.random()*100 + '%';
+      s.style.top  = Math.random()*100 + '%';
+      s.style.animationDuration = (3 + Math.random()*5) + 's';
+      s.style.animationDelay    = (Math.random()*5) + 's';
+      bg.appendChild(s);
+    }
+    if (isTest) document.getElementById('testBanner').innerHTML = '<div class="test-banner">🧪 VERSION TEST</div>';
+
+    const GRID_SIZE = 5;
+    const DIRS = [
+      { name: 'droite', dr: 0,  dc: 1,  arrow: '→', label: 'à droite' },
+      { name: 'bas',    dr: 1,  dc: 0,  arrow: '↓', label: 'en bas'   },
+      { name: 'gauche', dr: 0,  dc: -1, arrow: '←', label: 'à gauche' },
+      { name: 'haut',   dr: -1, dc: 0,  arrow: '↑', label: 'en haut'  },
+    ];
+    const OPTION_LABELS = ['A', 'B', 'C'];
+
+    const TOTAL_Q  = 10;
+    let selectedQ  = [];
+    let currentQ   = 0;
+    let score      = 0;
+    let answered   = false;
+    let currentQ_data = null;
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function speak(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang = 'fr-FR'; utt.rate = 0.88; utt.pitch = 1.1;
+      window.speechSynthesis.speak(utt);
+    }
+
+    function speakQ() {
+      if (currentQ_data) speak(currentQ_data.speechText);
+    }
+
+    function playSound(correct) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (correct) {
+          [523,659,784,1047].forEach((freq, i) => {
+            const osc = ctx.createOscillator(), gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value = freq; osc.type = 'sine';
+            gain.gain.setValueAtTime(0.25, ctx.currentTime + i*0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.1 + 0.25);
+            osc.start(ctx.currentTime + i*0.1); osc.stop(ctx.currentTime + i*0.1 + 0.25);
+          });
+        } else {
+          const osc = ctx.createOscillator(), gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.frequency.value = 200; osc.type = 'sawtooth';
+          gain.gain.setValueAtTime(0.25, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+          osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.45);
+        }
+      } catch(e) {}
+    }
+
+    function launchConfetti() {
+      const container = document.getElementById('confettiContainer');
+      const colors = ['#fde68a','#38bdf8','#34d399','#f472b6','#a78bfa','#fff'];
+      for (let i = 0; i < 45; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random()*100 + '%';
+        piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+        piece.style.animationDuration = (1.5 + Math.random()*2) + 's';
+        piece.style.animationDelay    = (Math.random()*0.5) + 's';
+        const size = 8 + Math.random()*10;
+        piece.style.width = size+'px'; piece.style.height = size+'px';
+        container.appendChild(piece);
+        setTimeout(() => piece.remove(), 3800);
+      }
+    }
+
+    function generateQuestion() {
+      // Départ : positions intérieures de la grille 5×5
+      const startPositions = [[1,1],[1,2],[1,3],[2,1],[2,2],[2,3],[3,1],[3,2],[3,3]];
+      const [sRow, sCol] = startPositions[Math.floor(Math.random() * startPositions.length)];
+
+      // 6 à 8 mouvements (demi-tours autorisés pour rendre le chemin difficile)
+      const numMoves = 6 + Math.floor(Math.random() * 3); // 6, 7 ou 8
+      const moves = [];
+      let row = sRow, col = sCol;
+
+      for (let m = 0; m < numMoves; m++) {
+        const validDirs = DIRS.filter(d => {
+          const nr = row + d.dr, nc = col + d.dc;
+          return nr >= 0 && nr < GRID_SIZE && nc >= 0 && nc < GRID_SIZE;
+        });
+        if (!validDirs.length) break;
+        const dir = validDirs[Math.floor(Math.random() * validDirs.length)];
+        moves.push(dir);
+        row += dir.dr; col += dir.dc;
+      }
+
+      const endRow = row, endCol = col;
+
+      // Cellules du chemin (hors départ)
+      const pathCells = new Set();
+      let pr = sRow, pc = sCol;
+      for (const m of moves) {
+        pr += m.dr; pc += m.dc;
+        pathCells.add(pr + ',' + pc);
+      }
+
+      // 2 mauvaises positions : proches de l'arrivée, hors chemin et départ
+      const candidates = [];
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          const key = r + ',' + c;
+          if ((r !== endRow || c !== endCol) &&
+              (r !== sRow   || c !== sCol)   &&
+              !pathCells.has(key)) {
+            candidates.push({ r, c, dist: Math.abs(r - endRow) + Math.abs(c - endCol) });
+          }
+        }
+      }
+      candidates.sort((a, b) => a.dist - b.dist);
+      const wrong1 = candidates[0];
+      const wrong2 = candidates[1];
+
+      // Mélanger les 3 options (correct + 2 wrongs) avec les lettres A/B/C
+      const rawOptions = shuffle([
+        { r: endRow, c: endCol, isCorrect: true  },
+        { r: wrong1.r, c: wrong1.c, isCorrect: false },
+        { r: wrong2.r, c: wrong2.c, isCorrect: false },
+      ]);
+      const options = rawOptions.map((o, i) => ({ ...o, label: OPTION_LABELS[i] }));
+      const correctLabel = options.find(o => o.isCorrect).label;
+
+      const speechText =
+        'Le pirate part de l\'île. ' +
+        moves.map(m => 'Une case ' + m.label).join(', puis ') +
+        '. Appuie sur le bon coffre !';
+
+      return { sRow, sCol, endRow, endCol, moves, pathCells, options, correctLabel, speechText };
+    }
+
+    function startGame() {
+      selectedQ = Array.from({ length: TOTAL_Q }, () => generateQuestion());
+      currentQ = 0; score = 0;
+      showQuestion();
+    }
+
+    function showQuestion() {
+      answered = false;
+      document.getElementById('btnNext').style.display      = 'none';
+      document.getElementById('feedbackZone').innerHTML     = '';
+      document.getElementById('resultScreen').style.display = 'none';
+      document.getElementById('mapCard').style.display      = '';
+
+      const q = selectedQ[currentQ];
+      currentQ_data = q;
+
+      // Flèches
+      const arrowsRow = document.getElementById('arrowsRow');
+      arrowsRow.innerHTML = '';
+      q.moves.forEach((m, i) => {
+        const chip = document.createElement('div');
+        chip.className = 'arrow-chip';
+        chip.textContent = m.arrow;
+        chip.style.animationDelay = (i * 0.1) + 's';
+        arrowsRow.appendChild(chip);
+      });
+
+      // Grille
+      const grid = document.getElementById('gameGrid');
+      grid.innerHTML = '';
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          const cell = document.createElement('div');
+          const isStart = (r === q.sRow && c === q.sCol);
+          const option = q.options.find(o => o.r === r && o.c === c);
+
+          if (isStart) {
+            cell.className = 'grid-cell start';
+            cell.textContent = '🏝️';
+          } else if (option) {
+            cell.className = 'grid-cell option';
+            cell.dataset.label = option.label;
+            cell.dataset.correct = option.isCorrect;
+            cell.innerHTML = '<span style="font-size:14px;opacity:.6">💰</span><br><span>' + option.label + '</span>';
+            cell.onclick = () => checkAnswer(cell, option.isCorrect, q.correctLabel);
+          } else {
+            cell.className = 'grid-cell';
+            cell.textContent = '🌊';
+          }
+          grid.appendChild(cell);
+        }
+      }
+
+      // Progression
+      document.getElementById('progressBar').style.width  = (currentQ / TOTAL_Q * 100) + '%';
+      document.getElementById('progressText').textContent = 'Question ' + (currentQ + 1) + ' / ' + TOTAL_Q;
+
+      setTimeout(() => speak(q.speechText), 500);
+    }
+
+    function checkAnswer(clickedCell, isCorrect, correctLabel) {
+      if (answered) return;
+      answered = true;
+
+      // Désactiver tous les coffres
+      document.querySelectorAll('.grid-cell.option').forEach(c => {
+        c.onclick = null;
+        c.style.cursor = 'default';
+      });
+
+      if (isCorrect) {
+        clickedCell.classList.add('correct');
+        score++;
+        playSound(true);
+        launchConfetti();
+        document.getElementById('feedbackZone').innerHTML =
+          '<div class="feedback-msg correct">🏆 Bravo ! Le trésor est au coffre ' + correctLabel + ' !</div>';
+        speak('Bravo ! Tu as trouvé le trésor !');
+      } else {
+        clickedCell.classList.add('wrong');
+        // Montrer la bonne case
+        document.querySelectorAll('.grid-cell.option').forEach(c => {
+          if (c.dataset.correct === 'true') c.classList.add('correct');
+        });
+        playSound(false);
+        document.getElementById('feedbackZone').innerHTML =
+          '<div class="feedback-msg wrong">💪 Le trésor était au coffre ' + correctLabel + ' ! Suis bien le chemin.</div>';
+        speak('Le trésor était au coffre ' + correctLabel + ' !');
+      }
+
+      // Afficher le chemin parcouru
+      revealPath();
+
+      const btnNext = document.getElementById('btnNext');
+      btnNext.style.display   = 'block';
+      btnNext.style.animation = 'none';
+      void btnNext.offsetWidth;
+      btnNext.style.animation = '';
+    }
+
+    function revealPath() {
+      const q = currentQ_data;
+      const cells = document.querySelectorAll('.grid-cell');
+      // Marquer les cases du chemin intermédiaire (pas départ ni arrivée)
+      let pr = q.sRow, pc = q.sCol;
+      const intermediates = [];
+      for (let i = 0; i < q.moves.length - 1; i++) {
+        pr += q.moves[i].dr; pc += q.moves[i].dc;
+        intermediates.push(pr * GRID_SIZE + pc);
+      }
+      intermediates.forEach(idx => {
+        const cell = cells[idx];
+        if (cell && !cell.classList.contains('option') && !cell.classList.contains('start')) {
+          cell.classList.add('path');
+          cell.textContent = '👣';
+        }
+      });
+    }
+
+    function nextQuestion() {
+      document.getElementById('btnNext').style.display = 'none';
+      currentQ++;
+      if (currentQ < TOTAL_Q) showQuestion();
+      else showResult();
+    }
+
+    function getStars(s) {
+      if (s === 10) return 4;
+      if (s >= 8)   return 3;
+      if (s >= 6)   return 2;
+      if (s >= 4)   return 1;
+      return 0;
+    }
+
+    function showResult() {
+      document.getElementById('mapCard').style.display    = 'none';
+      document.getElementById('feedbackZone').innerHTML   = '';
+      document.getElementById('btnNext').style.display    = 'none';
+      document.getElementById('progressBar').style.width  = '100%';
+
+      const earned = getStars(score);
+      document.getElementById('resultScreen').style.display = 'block';
+
+      const titles = ['Continue !', 'Pas mal !', 'Bien joué !', 'Super !', 'Parfait ! 🎉'];
+      document.getElementById('resultTitle').textContent = '🗺️ ' + titles[earned];
+      document.getElementById('starsEarned').textContent = earned > 0 ? '⭐'.repeat(earned) : '😊';
+      document.getElementById('scoreDetail').textContent = score + ' / ' + TOTAL_Q + ' bonnes réponses';
+
+      if (earned > 0) {
+        launchConfetti();
+        speak(titles[earned] + ' Tu as gagné ' + earned + (earned > 1 ? ' étoiles !' : ' étoile !'));
+      } else {
+        speak('Continue à t\'entraîner, tu vas y arriver !');
+      }
+      submitStars(earned);
+    }
+
+    async function submitStars(earned) {
+      if (earned === 0) {
+        document.getElementById('submitMsg').textContent = 'Rejoue pour gagner des étoiles !';
+        return;
+      }
+      try {
+        document.getElementById('submitMsg').textContent = '⏳ Envoi en cours...';
+        const snap = await db.ref(DB_PATH + '/pendingGameStars').get();
+        const val  = snap.val();
+        const arr  = val ? (Array.isArray(val) ? val : Object.values(val)).filter(Boolean) : [];
+        arr.push({
+          id: Date.now().toString(),
+          game: 'La Carte au Trésor',
+          stars: earned,
+          playedAt: new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+        });
+        await db.ref(DB_PATH + '/pendingGameStars').set(arr);
+        document.getElementById('submitMsg').textContent =
+          '✅ ' + earned + (earned > 1 ? ' étoiles' : ' étoile') + ' en attente de validation !';
+      } catch(e) {
+        document.getElementById('submitMsg').textContent = '❌ Erreur d\'envoi. Dis-le à Papa !';
+      }
+    }
+
+    function goBack() {
+      window.location.href = 'jeux.html' + (isTest ? '?test' : '');
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
