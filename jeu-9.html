@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>L'intrus enchanté 🔮</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvRCxPT2W7djJcHSR9kweBnaNXYQtdZqo",
+      authDomain: "app-caly.firebaseapp.com",
+      databaseURL: "https://app-caly-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "app-caly",
+      storageBucket: "app-caly.firebasestorage.app",
+      messagingSenderId: "870451326147",
+      appId: "1:870451326147:web:465cff6467b66efeda4676"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const DB_PATH = new URLSearchParams(window.location.search).has('test') ? 'calyApp-test' : 'calyApp';
+    const isTest = DB_PATH === 'calyApp-test';
+  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #1a0f2e 0%, #2d1a5c 50%, #1a0f2e 100%);
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 20px 16px 40px; color: #fff; overflow-x: hidden;
+    }
+    .test-banner {
+      background: #ff9800; color: #fff; padding: 6px 14px;
+      border-radius: 10px; text-align: center; font-weight: bold;
+      margin-bottom: 10px; font-size: 13px; width: 100%; max-width: 480px;
+    }
+    .game-header { text-align: center; margin-bottom: 18px; width: 100%; max-width: 480px; }
+    .game-title {
+      font-size: 28px; font-weight: 900;
+      background: linear-gradient(135deg, #c4b5fd, #f472b6, #fde68a);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 10px;
+    }
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.1);
+      border-radius: 50px; height: 10px; width: 100%; margin-bottom: 6px;
+    }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #c4b5fd, #f472b6);
+      height: 100%; border-radius: 50px; transition: width 0.4s ease;
+    }
+    .progress-text { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+    /* Carte */
+    .intrus-card {
+      background: rgba(196,181,253,0.07);
+      border: 2px solid rgba(196,181,253,0.25);
+      border-radius: 28px; padding: 22px 18px 20px;
+      width: 100%; max-width: 480px;
+      text-align: center; position: relative; margin-bottom: 22px;
+    }
+    .intrus-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, #c4b5fd, #f472b6, #fde68a, #f472b6, #c4b5fd);
+      border-radius: 28px 28px 0 0;
+    }
+
+    .category-label {
+      font-size: 15px; color: #e9d5ff; font-weight: bold;
+      margin-bottom: 20px; line-height: 1.4;
+    }
+    .category-name {
+      color: #fde68a;
+      font-size: 17px;
+    }
+
+    /* Grille 2×2 */
+    .items-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      width: 100%; max-width: 340px;
+      margin: 0 auto 18px;
+    }
+    .item-btn {
+      aspect-ratio: 1;
+      border-radius: 22px;
+      border: 3px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.07);
+      font-size: 64px;
+      cursor: pointer;
+      transition: transform 0.1s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .item-btn:active:not(:disabled) { transform: scale(0.92); }
+    .item-btn:disabled { cursor: default; }
+    .item-btn.correct {
+      background: linear-gradient(135deg, #16a34a, #15803d) !important;
+      border-color: #86efac !important;
+      transform: scale(1.08) !important;
+      box-shadow: 0 0 30px rgba(34,197,94,0.85) !important;
+      animation: bumpIn 0.35s ease;
+    }
+    .item-btn.wrong {
+      background: linear-gradient(135deg, #dc2626, #b91c1c) !important;
+      border-color: #fca5a5 !important;
+      box-shadow: 0 0 25px rgba(239,68,68,0.8) !important;
+      animation: shake 0.45s ease;
+    }
+    .item-btn.dimmed {
+      opacity: 0.35;
+    }
+
+    .speak-btn {
+      background: rgba(196,181,253,0.15);
+      border: 2px solid rgba(196,181,253,0.35);
+      border-radius: 50px; color: #e9d5ff; font-size: 14px;
+      padding: 7px 18px; cursor: pointer; transition: background 0.2s;
+    }
+    .speak-btn:active { background: rgba(196,181,253,0.35); }
+
+    .feedback-zone {
+      min-height: 60px; text-align: center;
+      width: 100%; max-width: 480px; margin-bottom: 10px;
+    }
+    .feedback-msg {
+      font-size: 17px; font-weight: bold;
+      padding: 12px 18px; border-radius: 16px;
+      animation: bumpIn 0.3s ease; line-height: 1.4;
+    }
+    .feedback-msg.correct { background: rgba(34,197,94,0.2);  color: #86efac; }
+    .feedback-msg.wrong   { background: rgba(239,68,68,0.2);  color: #fca5a5; }
+
+    .btn-next {
+      display: none; width: 100%; max-width: 480px;
+      padding: 18px; border-radius: 50px; border: none;
+      background: linear-gradient(135deg, #c4b5fd, #7c3aed);
+      color: #fff; font-size: 22px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 4px 20px rgba(196,181,253,0.4);
+      margin-bottom: 20px;
+    }
+
+    .result-screen { display: none; text-align: center; width: 100%; max-width: 480px; }
+    .result-title {
+      font-size: 36px; font-weight: 900;
+      background: linear-gradient(135deg, #fde68a, #c4b5fd);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 14px;
+    }
+    .stars-earned { font-size: 56px; margin: 14px 0; animation: bumpUp 0.6s ease; min-height: 70px; }
+    .score-detail { font-size: 18px; color: rgba(255,255,255,0.65); margin-bottom: 22px; }
+    .submit-msg   { font-size: 14px; color: rgba(255,255,255,0.5);  margin-bottom: 18px; min-height: 22px; }
+    .btn-retour {
+      width: 100%; padding: 18px; border-radius: 50px; border: none;
+      background: linear-gradient(135deg, #fde68a, #f59e0b);
+      color: #1a0f2e; font-size: 20px; font-weight: 900;
+      cursor: pointer; box-shadow: 0 4px 20px rgba(253,230,138,0.4);
+    }
+
+    .confetti-container { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 100; overflow: hidden; }
+    .confetti-piece { position: absolute; border-radius: 2px; animation: confettiFall linear forwards; }
+    @keyframes confettiFall { 0% { transform: translateY(-20px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+    .star-bg { position: fixed; pointer-events: none; top: 0; left: 0; right: 0; bottom: 0; overflow: hidden; z-index: 0; }
+    .star-bg span { position: absolute; font-size: 12px; animation: twinkle linear infinite; }
+    @keyframes twinkle { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 0.7; transform: scale(1.3); } }
+    .content { position: relative; z-index: 1; width: 100%; display: flex; flex-direction: column; align-items: center; }
+    @keyframes bumpIn { 0% { transform: scale(0.85); opacity: 0; } 70% { transform: scale(1.04); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes bumpUp { 0% { transform: translateY(30px) scale(0.5); opacity: 0; } 60% { transform: translateY(-10px) scale(1.1); } 100% { transform: translateY(0) scale(1); opacity: 1; } }
+    @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-8px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-6px); } 80% { transform: translateX(6px); } }
+  </style>
+</head>
+<body>
+  <div class="star-bg" id="starBg"></div>
+  <div class="confetti-container" id="confettiContainer"></div>
+
+  <div class="content">
+    <div id="testBanner"></div>
+
+    <div class="game-header">
+      <div class="game-title">🔮 L'intrus enchanté</div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+      </div>
+      <div class="progress-text" id="progressText">Question 1 / 10</div>
+    </div>
+
+    <div class="intrus-card" id="intrusCard">
+      <div class="category-label" id="categoryLabel"></div>
+      <div class="items-grid" id="itemsGrid"></div>
+      <button class="speak-btn" onclick="speakQ()">🔊 Réécouter</button>
+    </div>
+
+    <div class="feedback-zone" id="feedbackZone"></div>
+    <button class="btn-next" id="btnNext" onclick="nextQuestion()">Suivant →</button>
+
+    <div class="result-screen" id="resultScreen">
+      <div class="result-title" id="resultTitle"></div>
+      <div class="stars-earned" id="starsEarned"></div>
+      <div class="score-detail" id="scoreDetail"></div>
+      <div class="submit-msg" id="submitMsg"></div>
+      <button class="btn-retour" onclick="goBack()">🎮 Retour aux jeux</button>
+    </div>
+  </div>
+
+  <script>
+    const bg = document.getElementById('starBg');
+    for (let i = 0; i < 30; i++) {
+      const s = document.createElement('span');
+      s.textContent = ['✦','✧','·','✨','🔮','⭐'][Math.floor(Math.random()*6)];
+      s.style.left = Math.random()*100 + '%';
+      s.style.top  = Math.random()*100 + '%';
+      s.style.animationDuration = (3 + Math.random()*5) + 's';
+      s.style.animationDelay    = (Math.random()*5) + 's';
+      bg.appendChild(s);
+    }
+    if (isTest) document.getElementById('testBanner').innerHTML = '<div class="test-banner">🧪 VERSION TEST</div>';
+
+    const POOL = [
+      // Animaux
+      { cat: 'animaux',     items: ['🐕','🐈','🐟','🚗'],    intruder: '🚗',  hint: 'La voiture n\'est pas un animal !' },
+      { cat: 'animaux',     items: ['🦁','🐘','🦒','🍎'],    intruder: '🍎',  hint: 'La pomme n\'est pas un animal !' },
+      { cat: 'animaux',     items: ['🐸','🦊','🐰','✏️'],   intruder: '✏️', hint: 'Le crayon n\'est pas un animal !' },
+      { cat: 'animaux',     items: ['🐧','🦜','🦅','🌙'],    intruder: '🌙',  hint: 'La lune n\'est pas un animal !' },
+      { cat: 'insectes',    items: ['🦋','🐝','🐛','🎈'],    intruder: '🎈',  hint: 'Le ballon n\'est pas un insecte !' },
+      // Fruits
+      { cat: 'fruits',      items: ['🍎','🍊','🍋','🥕'],    intruder: '🥕',  hint: 'La carotte est un légume !' },
+      { cat: 'fruits',      items: ['🍓','🍇','🍌','🥦'],    intruder: '🥦',  hint: 'Le brocoli est un légume !' },
+      { cat: 'fruits',      items: ['🍒','🍑','🍍','🧅'],    intruder: '🧅',  hint: 'L\'oignon est un légume !' },
+      { cat: 'fruits',      items: ['🍈','🍏','🫐','🚀'],    intruder: '🚀',  hint: 'La fusée n\'est pas un fruit !' },
+      // Véhicules
+      { cat: 'véhicules',   items: ['🚗','🚂','✈️','🐶'],    intruder: '🐶',  hint: 'Le chien n\'est pas un véhicule !' },
+      { cat: 'véhicules',   items: ['🚀','🚢','🚁','🦁'],    intruder: '🦁',  hint: 'Le lion n\'est pas un véhicule !' },
+      { cat: 'véhicules',   items: ['🚲','🛵','🚌','🌺'],    intruder: '🌺',  hint: 'La fleur n\'est pas un véhicule !' },
+      // Vêtements
+      { cat: 'vêtements',   items: ['👕','👗','🧢','🍕'],    intruder: '🍕',  hint: 'La pizza n\'est pas un vêtement !' },
+      { cat: 'chaussures',  items: ['👟','👠','🥾','🐱'],    intruder: '🐱',  hint: 'Le chat n\'est pas une chaussure !' },
+      // Aliments
+      { cat: 'aliments',    items: ['🍕','🍔','🍜','🔑'],    intruder: '🔑',  hint: 'La clé n\'est pas à manger !' },
+      { cat: 'gâteaux',     items: ['🍰','🧁','🍩','🏠'],    intruder: '🏠',  hint: 'La maison n\'est pas un gâteau !' },
+      // École
+      { cat: 'fournitures scolaires', items: ['✏️','📏','📚','🍌'], intruder: '🍌', hint: 'La banane n\'est pas une fourniture scolaire !' },
+      { cat: 'fournitures scolaires', items: ['📐','📝','🖊️','🐠'], intruder: '🐠', hint: 'Le poisson n\'est pas une fourniture scolaire !' },
+      // Instruments
+      { cat: 'instruments de musique', items: ['🎸','🎺','🥁','🌵'], intruder: '🌵', hint: 'Le cactus n\'est pas un instrument de musique !' },
+      { cat: 'instruments de musique', items: ['🎹','🎻','🪗','🍟'], intruder: '🍟', hint: 'Les frites ne font pas de musique !' },
+      // Sports
+      { cat: 'ballons de sport', items: ['⚽','🏀','🎾','🦄'],  intruder: '🦄',  hint: 'La licorne n\'est pas un ballon !' },
+      { cat: 'sports',      items: ['🏊','⛷️','🚴','🍭'],    intruder: '🍭',  hint: 'Le bonbon n\'est pas un sport !' },
+      // Nature
+      { cat: 'fleurs',      items: ['🌺','🌸','🌼','🔔'],    intruder: '🔔',  hint: 'La cloche n\'est pas une fleur !' },
+      { cat: 'arbres',      items: ['🌳','🌴','🌲','🚀'],    intruder: '🚀',  hint: 'La fusée n\'est pas un arbre !' },
+      // Corps
+      { cat: 'parties du visage', items: ['👁️','👂','👃','🏆'], intruder: '🏆', hint: 'Le trophée n\'est pas sur ton visage !' },
+      { cat: 'parties du corps',  items: ['🦷','🦵','💪','🌙'], intruder: '🌙', hint: 'La lune n\'est pas une partie du corps !' },
+    ];
+
+    const TOTAL_Q  = 10;
+    let selectedQ  = [];
+    let currentQ   = 0;
+    let score      = 0;
+    let answered   = false;
+    let currentQ_data = null;
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function speak(text) {
+      if (!('speechSynthesis' in window)) return;
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang = 'fr-FR'; utt.rate = 0.88; utt.pitch = 1.1;
+      window.speechSynthesis.speak(utt);
+    }
+
+    function speakQ() {
+      if (currentQ_data) speak(currentQ_data.speechText);
+    }
+
+    function playSound(correct) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (correct) {
+          [523,659,784,1047].forEach((freq, i) => {
+            const osc = ctx.createOscillator(), gain = ctx.createGain();
+            osc.connect(gain); gain.connect(ctx.destination);
+            osc.frequency.value = freq; osc.type = 'sine';
+            gain.gain.setValueAtTime(0.25, ctx.currentTime + i*0.1);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i*0.1 + 0.25);
+            osc.start(ctx.currentTime + i*0.1); osc.stop(ctx.currentTime + i*0.1 + 0.25);
+          });
+        } else {
+          const osc = ctx.createOscillator(), gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.frequency.value = 200; osc.type = 'sawtooth';
+          gain.gain.setValueAtTime(0.25, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+          osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.45);
+        }
+      } catch(e) {}
+    }
+
+    function launchConfetti() {
+      const container = document.getElementById('confettiContainer');
+      const colors = ['#c4b5fd','#f472b6','#fde68a','#a5f3fc','#86efac','#fff'];
+      for (let i = 0; i < 45; i++) {
+        const piece = document.createElement('div');
+        piece.className = 'confetti-piece';
+        piece.style.left = Math.random()*100 + '%';
+        piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+        piece.style.animationDuration = (1.5 + Math.random()*2) + 's';
+        piece.style.animationDelay    = (Math.random()*0.5) + 's';
+        const size = 8 + Math.random()*10;
+        piece.style.width = size+'px'; piece.style.height = size+'px';
+        container.appendChild(piece);
+        setTimeout(() => piece.remove(), 3800);
+      }
+    }
+
+    function startGame() {
+      selectedQ = shuffle(POOL).slice(0, TOTAL_Q);
+      currentQ = 0; score = 0;
+      showQuestion();
+    }
+
+    function showQuestion() {
+      answered = false;
+      document.getElementById('btnNext').style.display      = 'none';
+      document.getElementById('feedbackZone').innerHTML     = '';
+      document.getElementById('resultScreen').style.display = 'none';
+      document.getElementById('intrusCard').style.display   = '';
+
+      const q = selectedQ[currentQ];
+      currentQ_data = q;
+
+      // Mélanger les items pour que l'intrus ne soit pas toujours au même endroit
+      const shuffledItems = shuffle([...q.items]);
+      q._shuffledItems = shuffledItems;
+
+      document.getElementById('categoryLabel').innerHTML =
+        'Quel est l\'intrus parmi les <span class="category-name">' + q.cat + '</span> ?';
+
+      const speechText = 'Quel est l\'intrus parmi les ' + q.cat + ' ?';
+      q.speechText = speechText;
+
+      // Progression
+      document.getElementById('progressBar').style.width  = (currentQ / TOTAL_Q * 100) + '%';
+      document.getElementById('progressText').textContent = 'Question ' + (currentQ + 1) + ' / ' + TOTAL_Q;
+
+      // Grille 2×2
+      const grid = document.getElementById('itemsGrid');
+      grid.innerHTML = '';
+      shuffledItems.forEach((emoji, i) => {
+        const btn = document.createElement('button');
+        btn.className   = 'item-btn';
+        btn.textContent = emoji;
+        btn.dataset.emoji = emoji;
+        btn.style.animationDelay = (i * 0.08) + 's';
+        btn.style.animation = 'bumpIn 0.35s ease both';
+        btn.onclick = () => checkAnswer(btn, emoji === q.intruder, emoji);
+        grid.appendChild(btn);
+      });
+
+      setTimeout(() => speak(speechText), 500);
+    }
+
+    function checkAnswer(clickedBtn, isCorrect, emoji) {
+      if (answered) return;
+      answered = true;
+
+      const btns = document.querySelectorAll('.item-btn');
+      btns.forEach(b => { b.disabled = true; b.onclick = null; });
+
+      const q = currentQ_data;
+
+      if (isCorrect) {
+        clickedBtn.classList.add('correct');
+        // Atténuer les autres
+        btns.forEach(b => { if (b !== clickedBtn) b.classList.add('dimmed'); });
+        score++;
+        playSound(true);
+        launchConfetti();
+        document.getElementById('feedbackZone').innerHTML =
+          '<div class="feedback-msg correct">✨ Bravo ! ' + emoji + ' est l\'intrus ! ' + q.hint + '</div>';
+        speak('Bravo ! ' + q.hint);
+      } else {
+        clickedBtn.classList.add('wrong');
+        // Révéler l'intrus
+        btns.forEach(b => {
+          if (b.dataset.emoji === q.intruder) b.classList.add('correct');
+          else if (b !== clickedBtn) b.classList.add('dimmed');
+        });
+        playSound(false);
+        document.getElementById('feedbackZone').innerHTML =
+          '<div class="feedback-msg wrong">💪 L\'intrus était ' + q.intruder + ' ! ' + q.hint + '</div>';
+        speak('L\'intrus était ' + q.intruder + ' ! ' + q.hint);
+      }
+
+      const btnNext = document.getElementById('btnNext');
+      btnNext.style.display   = 'block';
+      btnNext.style.animation = 'none';
+      void btnNext.offsetWidth;
+      btnNext.style.animation = '';
+    }
+
+    function nextQuestion() {
+      document.getElementById('btnNext').style.display = 'none';
+      currentQ++;
+      if (currentQ < TOTAL_Q) showQuestion();
+      else showResult();
+    }
+
+    function getStars(s) {
+      if (s >= 9) return 2;
+      if (s >= 7) return 1;
+      return 0;
+    }
+
+    function showResult() {
+      document.getElementById('intrusCard').style.display   = 'none';
+      document.getElementById('feedbackZone').innerHTML     = '';
+      document.getElementById('btnNext').style.display      = 'none';
+      document.getElementById('progressBar').style.width    = '100%';
+
+      const earned = getStars(score);
+      document.getElementById('resultScreen').style.display = 'block';
+
+      const titles = ['Continue !', 'Pas mal !', 'Bien joué !', 'Parfait ! 🎉'];
+      document.getElementById('resultTitle').textContent = '🔮 ' + titles[earned];
+      document.getElementById('starsEarned').textContent = earned > 0 ? '⭐'.repeat(earned) : '😊';
+      document.getElementById('scoreDetail').textContent = score + ' / ' + TOTAL_Q + ' bonnes réponses';
+
+      if (earned > 0) {
+        launchConfetti();
+        speak(titles[earned] + ' Tu as gagné ' + earned + (earned > 1 ? ' étoiles !' : ' étoile !'));
+      } else {
+        speak('Continue à t\'entraîner, tu vas y arriver !');
+      }
+      submitStars(earned);
+    }
+
+    async function submitStars(earned) {
+      if (earned === 0) {
+        document.getElementById('submitMsg').textContent = 'Rejoue pour gagner des étoiles !';
+        return;
+      }
+      try {
+        document.getElementById('submitMsg').textContent = '⏳ Envoi en cours...';
+        const snap = await db.ref(DB_PATH + '/pendingGameStars').get();
+        const val  = snap.val();
+        const arr  = val ? (Array.isArray(val) ? val : Object.values(val)).filter(Boolean) : [];
+        arr.push({
+          id: Date.now().toString(),
+          game: 'L\'Intrus Enchanté',
+          stars: earned,
+          playedAt: new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })
+        });
+        await db.ref(DB_PATH + '/pendingGameStars').set(arr);
+        document.getElementById('submitMsg').textContent =
+          '✅ ' + earned + (earned > 1 ? ' étoiles' : ' étoile') + ' en attente de validation !';
+      } catch(e) {
+        document.getElementById('submitMsg').textContent = '❌ Erreur d\'envoi. Dis-le à Papa !';
+      }
+    }
+
+    function goBack() {
+      window.location.href = 'jeux.html' + (isTest ? '?test' : '');
+    }
+
+    startGame();
+  </script>
+</body>
+</html>
