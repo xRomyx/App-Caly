@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>La lettre manquante 🐱</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvRCxPT2W7djJcHSR9kweBnaNXYQtdZqo",
+      authDomain: "app-caly.firebaseapp.com",
+      databaseURL: "https://app-caly-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "app-caly",
+      storageBucket: "app-caly.firebasestorage.app",
+      messagingSenderId: "870451326147",
+      appId: "1:870451326147:web:465cff6467b66efeda4676"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const DB_PATH = new URLSearchParams(window.location.search).has('test') ? 'calyApp-test' : 'calyApp';
+    const isTest = DB_PATH === 'calyApp-test';
+  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #1a0020 0%, #330040 50%, #1a0020 100%);
+      min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 20px 16px 40px; color: #fff; overflow-x: hidden;
+    }
+
+    .test-banner {
+      background: #ff9800; color: #fff; padding: 6px 14px;
+      border-radius: 10px; text-align: center; font-weight: bold;
+      margin-bottom: 10px; font-size: 13px; width: 100%; max-width: 480px;
+    }
+
+    .game-header { text-align: center; margin-bottom: 18px; width: 100%; max-width: 480px; }
+    .game-title {
+      font-size: 26px; font-weight: 900;
+      background: linear-gradient(135deg, #f9a8d4, #f472b6, #ec4899);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 10px;
+    }
+    .progress-bar-wrap {
+      background: rgba(255,255,255,0.1);
+      border-radius: 50px; height: 10px; width: 100%; margin-bottom: 6px;
+    }
+    .progress-bar-fill {
+      background: linear-gradient(90deg, #ec4899, #f9a8d4);
+      height: 100%; border-radius: 50px; transition: width 0.4s ease;
+    }
+    .progress-text { font-size: 13px; color: rgba(255,255,255,0.6); }
+
+    /* Fond étoilé */
+    .star-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+    .star { position: absolute; border-radius: 50%; background: #fff; }
+    @keyframes twinkle {
+      0%,100% { opacity: 0.15; transform: scale(1); }
+      50% { opacity: 0.9; transform: scale(1.4); }
+    }
+
+    /* Carte du jeu */
+    .game-card {
+      background: rgba(255,255,255,0.04);
+      border: 1.5px solid rgba(244,114,182,0.2);
+      border-radius: 20px;
+      padding: 24px 20px;
+      width: 100%; max-width: 420px;
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
+    }
+
+    /* Emoji */
+    .emoji-big { font-size: 72px; line-height: 1; animation: bumpIn 0.4s ease; }
+    @keyframes bumpIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      70% { transform: scale(1.15); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    /* Affichage du mot avec cases */
+    .word-display {
+      display: flex; gap: 5px; justify-content: center;
+      flex-wrap: wrap; align-items: center; width: 100%;
+    }
+    .letter-box {
+      min-width: 36px; height: 48px; padding: 0 6px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 900; color: #fff;
+      background: rgba(255,255,255,0.08);
+      border: 2px solid rgba(255,255,255,0.15);
+      letter-spacing: 0;
+    }
+    .letter-box.blank {
+      border: 2px dashed #f472b6;
+      background: rgba(244,114,182,0.1);
+      color: #f472b6;
+      font-size: 20px;
+      animation: pulse 1.4s ease-in-out infinite;
+      min-width: 42px;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(244,114,182,0.5); }
+      50% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(244,114,182,0); }
+    }
+    .letter-box.correct {
+      border: 2px solid #4ade80;
+      background: rgba(74,222,128,0.2);
+      color: #4ade80;
+      animation: slotFill 0.35s ease, none;
+    }
+    @keyframes slotFill {
+      0% { transform: scale(0.7); }
+      70% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    /* Texte indice */
+    .hint-text { font-size: 14px; color: rgba(255,255,255,0.55); text-align: center; font-style: italic; }
+
+    /* Boutons choix de lettres */
+    .choices-row {
+      display: flex; gap: 16px; justify-content: center; width: 100%;
+    }
+    .choice-btn {
+      flex: 1; max-width: 80px; height: 72px;
+      border-radius: 16px;
+      border: 2px solid rgba(244,114,182,0.4);
+      background: rgba(244,114,182,0.1);
+      font-size: 28px; font-weight: 900; color: #fff;
+      cursor: pointer; transition: all 0.2s ease;
+    }
+    .choice-btn:hover:not(:disabled) {
+      background: rgba(244,114,182,0.28);
+      border-color: #f472b6;
+      transform: translateY(-3px);
+    }
+    .choice-btn:active:not(:disabled) { transform: scale(0.93); }
+    .choice-btn:disabled { opacity: 0.3; cursor: default; pointer-events: none; }
+    .choice-btn.shake { animation: shake 0.4s ease; }
+    .choice-btn.wrong-flash {
+      border-color: #f87171;
+      background: rgba(248,113,113,0.2);
+    }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-9px); }
+      40% { transform: translateX(9px); }
+      60% { transform: translateX(-6px); }
+      80% { transform: translateX(5px); }
+    }
+
+    /* Feedback */
+    .feedback { font-size: 20px; font-weight: 700; text-align: center; min-height: 30px; }
+
+    /* Bouton suivant */
+    .btn-next {
+      padding: 15px 36px; border: none; border-radius: 50px;
+      font-size: 18px; font-weight: 800; cursor: pointer;
+      background: linear-gradient(135deg, #ec4899, #f9a8d4);
+      color: #1a0020;
+      display: none;
+      animation: bumpIn 0.3s ease;
+      box-shadow: 0 4px 20px rgba(236,72,153,0.4);
+    }
+
+    /* Confetti */
+    .confetti-container { position: fixed; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:100; overflow:hidden; }
+    .confetti-piece { position:absolute; width:9px; height:9px; border-radius:2px; animation: confFall var(--dur,1.4s) ease-in forwards; }
+    @keyframes confFall {
+      0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+
+    /* Écran résultat */
+    .result-screen {
+      display: none; flex-direction: column; align-items: center;
+      gap: 20px; padding: 20px; text-align: center; width: 100%; max-width: 420px;
+    }
+    .result-title { font-size: 30px; font-weight: 900; }
+    .result-stars { display: flex; gap: 10px; justify-content: center; }
+    .result-star { font-size: 40px; animation: starPop 0.4s ease backwards; }
+    @keyframes starPop {
+      0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+      70% { transform: scale(1.3) rotate(5deg); }
+      100% { transform: scale(1) rotate(0); opacity: 1; }
+    }
+    .result-score { font-size: 16px; color: rgba(255,255,255,0.7); }
+    .btn-submit {
+      padding: 16px 36px; border: none; border-radius: 50px;
+      font-size: 18px; font-weight: 800; cursor: pointer;
+      background: linear-gradient(135deg, #ec4899, #f9a8d4);
+      color: #1a0020;
+      box-shadow: 0 4px 20px rgba(236,72,153,0.4);
+    }
+    .btn-home {
+      padding: 12px 28px;
+      border: 2px solid rgba(255,255,255,0.25);
+      border-radius: 50px; font-size: 15px; font-weight: 700;
+      cursor: pointer; background: transparent; color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="confetti-container" id="confettiContainer"></div>
+  <div class="star-bg" id="starBg"></div>
+
+  <div id="testBanner" class="test-banner" style="display:none">🧪 MODE TEST — données non réelles</div>
+
+  <div class="game-header">
+    <div class="game-title">🐱 La lettre manquante</div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+    </div>
+    <div class="progress-text" id="progressText">Question 1 / 10</div>
+  </div>
+
+  <div class="game-card" id="gameCard">
+    <div class="emoji-big" id="emojiDisplay"></div>
+    <div class="word-display" id="wordDisplay"></div>
+    <div class="hint-text" id="hintText">Quelle lettre manque dans ce mot ?</div>
+    <div class="choices-row" id="choicesRow"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-next" id="btnNext" onclick="nextQuestion()">Suivant →</button>
+  </div>
+
+  <div class="result-screen" id="resultScreen">
+    <div class="result-title" id="resultTitle"></div>
+    <div class="result-stars" id="resultStars"></div>
+    <div class="result-score" id="resultScore"></div>
+    <button class="btn-submit" onclick="submitStars()">Envoyer mes étoiles !</button>
+    <button class="btn-home" onclick="goHome()">← Retour aux jeux</button>
+  </div>
+
+  <script>
+    if (isTest) document.getElementById('testBanner').style.display = 'block';
+
+    // Fond étoilé
+    (function() {
+      var bg = document.getElementById('starBg');
+      for (var i = 0; i < 60; i++) {
+        var s = document.createElement('div');
+        s.className = 'star';
+        var size = Math.random() * 2.5 + 0.5;
+        s.style.cssText = 'width:' + size + 'px;height:' + size + 'px;top:' + (Math.random()*100) + '%;left:' + (Math.random()*100) + '%;animation:twinkle ' + (2 + Math.random()*3) + 's ' + (Math.random()*3) + 's ease-in-out infinite;';
+        bg.appendChild(s);
+      }
+    })();
+
+    // Pool de mots (blankIdx = index de la lettre masquée)
+    var ALL_WORDS = [
+      { emoji: '🐱', word: 'CHATON',   blankIdx: 4, answer: 'O', distractors: ['A', 'U'] },
+      { emoji: '🐰', word: 'LAPIN',    blankIdx: 1, answer: 'A', distractors: ['E', 'O'] },
+      { emoji: '🏠', word: 'MAISON',   blankIdx: 2, answer: 'I', distractors: ['E', 'A'] },
+      { emoji: '🌙', word: 'LUNE',     blankIdx: 2, answer: 'N', distractors: ['M', 'R'] },
+      { emoji: '🐉', word: 'DRAGON',   blankIdx: 2, answer: 'A', distractors: ['E', 'O'] },
+      { emoji: '🦄', word: 'LICORNE',  blankIdx: 4, answer: 'R', distractors: ['N', 'T'] },
+      { emoji: '⭐', word: 'ÉTOILE',   blankIdx: 3, answer: 'I', distractors: ['E', 'A'] },
+      { emoji: '🐴', word: 'CHEVAL',   blankIdx: 2, answer: 'E', distractors: ['A', 'I'] },
+      { emoji: '🎈', word: 'BALLON',   blankIdx: 1, answer: 'A', distractors: ['E', 'O'] },
+      { emoji: '🎂', word: 'GÂTEAU',   blankIdx: 3, answer: 'E', distractors: ['A', 'I'] },
+      { emoji: '🦊', word: 'RENARD',   blankIdx: 2, answer: 'N', distractors: ['M', 'T'] },
+      { emoji: '🌻', word: 'JARDIN',   blankIdx: 3, answer: 'D', distractors: ['T', 'P'] },
+      { emoji: '🎩', word: 'CHAPEAU',  blankIdx: 3, answer: 'P', distractors: ['T', 'B'] },
+      { emoji: '🐷', word: 'COCHON',   blankIdx: 2, answer: 'C', distractors: ['T', 'S'] },
+      { emoji: '🐦', word: 'OISEAU',   blankIdx: 2, answer: 'S', distractors: ['T', 'R'] },
+      { emoji: '🤖', word: 'ROBOT',    blankIdx: 0, answer: 'R', distractors: ['T', 'B'] },
+      { emoji: '☁️', word: 'NUAGE',    blankIdx: 2, answer: 'A', distractors: ['E', 'I'] },
+      { emoji: '🏰', word: 'CHÂTEAU',  blankIdx: 3, answer: 'T', distractors: ['P', 'R'] },
+      { emoji: '🦋', word: 'PAPILLON', blankIdx: 5, answer: 'L', distractors: ['R', 'N'] },
+      { emoji: '🐘', word: 'ÉLÉPHANT', blankIdx: 3, answer: 'P', distractors: ['B', 'T'] },
+      { emoji: '🚗', word: 'VOITURE',  blankIdx: 3, answer: 'T', distractors: ['R', 'S'] },
+      { emoji: '☀️', word: 'SOLEIL',   blankIdx: 3, answer: 'E', distractors: ['A', 'I'] },
+    ];
+
+    var TOTAL_Q = 10;
+    var questions = [];
+    var currentQ = 0;
+    var score = 0;       // bonnes réponses du premier coup
+    var firstTap = true; // premier essai pour ce mot ?
+
+    function shuffle(arr) {
+      var a = arr.slice();
+      for (var i = a.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+      }
+      return a;
+    }
+
+    function startGame() {
+      questions = shuffle(ALL_WORDS.slice()).slice(0, TOTAL_Q);
+      currentQ = 0;
+      score = 0;
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      var q = questions[currentQ];
+      firstTap = true;
+
+      // Progression
+      document.getElementById('progressBar').style.width = ((currentQ / TOTAL_Q) * 100) + '%';
+      document.getElementById('progressText').textContent = 'Question ' + (currentQ + 1) + ' / ' + TOTAL_Q;
+
+      // Emoji
+      var emojiEl = document.getElementById('emojiDisplay');
+      emojiEl.style.animation = 'none';
+      void emojiEl.offsetWidth;
+      emojiEl.style.animation = '';
+      emojiEl.textContent = q.emoji;
+
+      // Mot avec cases
+      buildWordDisplay(q.word, q.blankIdx);
+
+      // Texte indice
+      document.getElementById('hintText').textContent = 'Quelle lettre manque dans ce mot ?';
+
+      // Boutons de choix (réponse + distracteurs mélangés)
+      var choices = shuffle([q.answer].concat(q.distractors));
+      var row = document.getElementById('choicesRow');
+      row.innerHTML = '';
+      choices.forEach(function(letter) {
+        var btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = letter;
+        btn.addEventListener('click', function() { tapChoice(btn, letter); });
+        row.appendChild(btn);
+      });
+
+      // Feedback + bouton
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('feedback').style.color = '';
+      document.getElementById('btnNext').style.display = 'none';
+
+      // Lecture du mot
+      speakText(q.word);
+    }
+
+    function buildWordDisplay(word, blankIdx) {
+      var display = document.getElementById('wordDisplay');
+      display.innerHTML = '';
+      for (var i = 0; i < word.length; i++) {
+        var box = document.createElement('div');
+        box.className = 'letter-box' + (i === blankIdx ? ' blank' : '');
+        if (i === blankIdx) {
+          box.id = 'blankBox';
+          box.textContent = '?';
+        } else {
+          box.textContent = word[i];
+        }
+        display.appendChild(box);
+      }
+    }
+
+    function tapChoice(btn, letter) {
+      var q = questions[currentQ];
+
+      if (letter === q.answer) {
+        // Bonne réponse !
+        if (firstTap) score++;
+
+        // Désactiver tous les boutons
+        document.querySelectorAll('.choice-btn').forEach(function(b) { b.disabled = true; });
+
+        // Remplir la case vide
+        var blankBox = document.getElementById('blankBox');
+        blankBox.textContent = q.answer;
+        blankBox.classList.remove('blank');
+        blankBox.classList.add('correct');
+
+        // Feedback
+        var fb = document.getElementById('feedback');
+        fb.textContent = '⭐ C\'est la lettre ' + q.answer + ' !';
+        fb.style.color = '#4ade80';
+
+        document.getElementById('btnNext').style.display = 'inline-block';
+        playSound(true);
+        spawnConfetti();
+        setTimeout(function() { speakText(q.word); }, 350);
+
+      } else {
+        // Mauvaise réponse
+        firstTap = false;
+        btn.style.animation = 'none';
+        btn.style.borderColor = '#f87171';
+        btn.style.background = 'rgba(248,113,113,0.2)';
+        void btn.offsetWidth;
+        btn.style.animation = 'shake 0.45s ease';
+        playSound(false);
+        setTimeout(function() {
+          btn.style.animation = '';
+          btn.style.borderColor = '';
+          btn.style.background = '';
+        }, 500);
+      }
+    }
+
+    function nextQuestion() {
+      currentQ++;
+      if (currentQ >= TOTAL_Q) {
+        showResult();
+      } else {
+        loadQuestion();
+      }
+    }
+
+    function getStars(s) {
+      if (s >= 9) return 3;
+      if (s >= 7) return 2;
+      if (s >= 5) return 1;
+      return 0;
+    }
+
+    function showResult() {
+      document.getElementById('gameCard').style.display = 'none';
+      var rs = document.getElementById('resultScreen');
+      rs.style.display = 'flex';
+
+      document.getElementById('progressBar').style.width = '100%';
+      document.getElementById('progressText').textContent = 'Terminé ! 🎉';
+
+      var stars = getStars(score);
+      var titles = ['Continue d\'essayer ! 💪', 'Bien joué ! 🌸', 'Super ! ✨', 'PARFAIT ! 🐱'];
+      document.getElementById('resultTitle').textContent = titles[stars];
+
+      var starsEl = document.getElementById('resultStars');
+      starsEl.innerHTML = '';
+      for (var i = 0; i < 3; i++) {
+        var s = document.createElement('span');
+        s.className = 'result-star';
+        s.textContent = i < stars ? '⭐' : '☆';
+        s.style.animationDelay = (i * 0.18) + 's';
+        s.style.opacity = i < stars ? '1' : '0.3';
+        starsEl.appendChild(s);
+      }
+
+      document.getElementById('resultScore').textContent =
+        score + ' bonne' + (score > 1 ? 's' : '') + ' réponse' + (score > 1 ? 's' : '') + ' du premier coup sur ' + TOTAL_Q;
+
+      spawnConfetti();
+      setTimeout(function() {
+        speakText('Bravo ! Tu as gagné ' + stars + ' étoile' + (stars > 1 ? 's' : '') + ' !');
+      }, 600);
+    }
+
+    function submitStars() {
+      var stars = getStars(score);
+      if (stars === 0) { goHome(); return; }
+      var ref = db.ref(DB_PATH + '/pendingGameStars');
+      ref.once('value').then(function(snap) {
+        var list = snap.val();
+        if (!list) list = [];
+        else if (!Array.isArray(list)) list = Object.values(list);
+        list.push({
+          id: Date.now(),
+          game: 'La lettre manquante 🐱',
+          stars: stars,
+          date: new Date().toLocaleDateString('fr-FR')
+        });
+        return ref.set(list);
+      }).then(function() { goHome(); }).catch(function() { goHome(); });
+    }
+
+    function goHome() {
+      window.location.href = isTest ? 'jeux.html?test' : 'jeux.html';
+    }
+
+    // Audio
+    var audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return audioCtx;
+    }
+    function playSound(ok) {
+      try {
+        var ctx = getAudioCtx();
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        if (ok) {
+          osc.frequency.setValueAtTime(523, ctx.currentTime);
+          osc.frequency.setValueAtTime(659, ctx.currentTime + 0.08);
+          gain.gain.setValueAtTime(0.2, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.28);
+          osc.start(); osc.stop(ctx.currentTime + 0.28);
+        } else {
+          osc.frequency.setValueAtTime(200, ctx.currentTime);
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+          osc.start(); osc.stop(ctx.currentTime + 0.22);
+        }
+      } catch(e) {}
+    }
+
+    // Synthèse vocale
+    function speakText(text) {
+      if (!window.speechSynthesis) return;
+      window.speechSynthesis.cancel();
+      var utt = new SpeechSynthesisUtterance(text);
+      utt.lang = 'fr-FR';
+      utt.rate = 0.88;
+      utt.pitch = 1.1;
+      window.speechSynthesis.speak(utt);
+    }
+
+    // Confetti
+    function spawnConfetti() {
+      var container = document.getElementById('confettiContainer');
+      var colors = ['#ec4899', '#f9a8d4', '#f472b6', '#fbbf24', '#4ade80', '#a78bfa', '#fff'];
+      for (var i = 0; i < 45; i++) {
+        var c = document.createElement('div');
+        c.className = 'confetti-piece';
+        c.style.left = (Math.random() * 100) + '%';
+        c.style.background = colors[Math.floor(Math.random() * colors.length)];
+        c.style.setProperty('--dur', (1.1 + Math.random() * 0.9) + 's');
+        c.style.animationDelay = (Math.random() * 0.5) + 's';
+        container.appendChild(c);
+        setTimeout(function(el) { el.remove(); }, 2600, c);
+      }
+    }
+
+    // Démarrage
+    startGame();
+  </script>
+</body>
+</html>
