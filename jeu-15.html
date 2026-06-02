@@ -437,15 +437,14 @@ async function showResult() {
   const titleEl    = document.getElementById('resultTitle');
   const detailEl   = document.getElementById('resultDetail');
 
-  const earned = score; // 1 étoile par bonne réponse, max 3
+  const earned = Math.min(score, 2); // max 2 étoiles
 
-  starsRow.textContent = '⭐'.repeat(earned) + '☆'.repeat(TOTAL_Q - earned);
+  starsRow.textContent = '⭐'.repeat(earned) + '☆'.repeat(2 - earned);
 
   const messages = [
-    ['Continue !',        'Tu vas y arriver !'],
-    ['Bien essayé !',     'Tu gagnes 1 étoile !'],
-    ['Super !',           'Tu gagnes 2 étoiles !'],
-    ['Parfait !',         'Tu gagnes 3 étoiles ! 🎉'],
+    ['Continue !',   'Tu vas y arriver !'],
+    ['Bien joué !',  'Tu gagnes 1 étoile !'],
+    ['Parfait !',    'Tu gagnes 2 étoiles ! 🎉'],
   ];
   const [title, detail] = messages[earned];
   titleEl.textContent  = title;

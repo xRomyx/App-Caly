@@ -375,11 +375,10 @@ async function showResult() {
 
   // Calcul étoiles : 0-1 → 0★, 2 → 1★, 3-4 → 2★, 5 → 3★
   let earned = 0;
-  if (score === TOTAL_Q) earned = 3;
-  else if (score >= 3)   earned = 2;
-  else if (score >= 2)   earned = 1;
+  if (score >= 4) earned = 2;
+  else if (score >= 2) earned = 1;
 
-  document.getElementById('resultStars').textContent  = '⭐'.repeat(earned) + '☆'.repeat(3 - earned);
+  document.getElementById('resultStars').textContent  = '⭐'.repeat(earned) + '☆'.repeat(2 - earned);
   const msgs = [
     ['Continue !',       'Essaie encore, tu vas y arriver !'],
     ['Bien essayé !',    'Tu gagnes 1 étoile !'],

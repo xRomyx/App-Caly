@@ -410,8 +410,7 @@
     }
 
     function getStars(s) {
-      if (s >= 9) return 3;
-      if (s >= 7) return 2;
+      if (s >= 8) return 2;
       if (s >= 5) return 1;
       return 0;
     }
@@ -430,7 +429,7 @@
 
       var starsEl = document.getElementById('resultStars');
       starsEl.innerHTML = '';
-      for (var i = 0; i < 3; i++) {
+      for (var i = 0; i < 2; i++) {
         var s = document.createElement('span');
         s.className = 'result-star';
         s.textContent = i < stars ? '⭐' : '☆';
