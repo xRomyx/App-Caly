@@ -516,7 +516,10 @@ animation: gradientMove 8s ease infinite;
                 setGrantedReward(data.grantedReward ?? null);
                 setVoiceEnabled(data.voiceEnabled ?? true);
                 setDarkMode(data.darkMode ?? false);
-                const savedTasks = data.tasks ?? [];
+                const rawTasks = data.tasks;
+                const savedTasks = rawTasks
+                  ? (Array.isArray(rawTasks) ? rawTasks : Object.values(rawTasks)).filter(Boolean)
+                  : [];
                 setTasks(defaultTasks.map(dt => {
                   const saved = savedTasks.find(t => t && t.id === dt.id);
                   return saved ? { ...dt, done: saved.done, pending: saved.pending } : dt;
@@ -572,8 +575,10 @@ animation: gradientMove 8s ease infinite;
             if (lastSavedDate && lastSavedDate !== todayStr) {
               const isMonday = now.getDay() === 1;
               setTasks(prev => prev.map(t => {
-                if (t.category === 'nettoyage') return isMonday ? { ...t, done: false, pending: false } : t;
-                return { ...t, done: false, pending: false };
+                // Ne pas réinitialiser les tâches en attente de validation parent
+                if (t.pending) return t;
+                if (t.category === 'nettoyage') return isMonday ? { ...t, done: false } : t;
+                return { ...t, done: false };
               }));
             }
             localStorage.setItem('caly_last_date', todayStr);
