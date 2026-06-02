@@ -244,7 +244,7 @@
       <div class="progress-bar-wrap">
         <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
       </div>
-      <div class="progress-text" id="progressText">Question 1 / 5</div>
+      <div class="progress-text" id="progressText">Question 1 / 10</div>
     </div>
 
     <!-- Carte étoiles -->
@@ -295,7 +295,7 @@
     // Emojis étoiles variés pour rendre le comptage plus amusant
     const STAR_EMOJIS = ['🌟','⭐','✨','💫'];
 
-    const TOTAL_Q  = 5;
+    const TOTAL_Q  = 10;
     let selectedQ  = [];   // liste des nombres corrects
     let currentQ   = 0;
     let score      = 0;
@@ -375,9 +375,9 @@
     }
 
     function startGame() {
-      // 5 nombres distincts entre 2 et 12
+      // 10 nombres distincts entre 5 et 20
       const pool = [];
-      for (let i = 2; i <= 12; i++) pool.push(i);
+      for (let i = 5; i <= 20; i++) pool.push(i);
       selectedQ = shuffle(pool).slice(0, TOTAL_Q);
       currentQ = 0; score = 0;
       showQuestion();
@@ -472,9 +472,9 @@
     }
 
     function getStars(s) {
-      if (s === 5) return 3;
-      if (s === 4) return 2;
-      if (s >= 2)  return 1;
+      if (s >= 9) return 3;
+      if (s >= 7) return 2;
+      if (s >= 5) return 1;
       return 0;
     }
 

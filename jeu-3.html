@@ -244,7 +244,7 @@
       <div class="progress-bar-wrap">
         <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
       </div>
-      <div class="progress-text" id="progressText">Question 1 / 6</div>
+      <div class="progress-text" id="progressText">Question 1 / 10</div>
     </div>
 
     <!-- Carte opération -->
@@ -307,7 +307,7 @@
 
     // Questions : addition ou soustraction
     // type: 'add' ou 'sub'
-    const TOTAL_Q  = 6;
+    const TOTAL_Q  = 10;
     let selectedQ  = [];
     let currentQ   = 0;
     let score      = 0;
@@ -384,15 +384,17 @@
       let a, b, result, opSymbol, context, speechText;
 
       if (isAdd) {
-        a = 1 + Math.floor(Math.random() * 7);  // 1-7
-        b = 1 + Math.floor(Math.random() * 7);  // 1-7
+        a = 5 + Math.floor(Math.random() * 10); // 5-14
+        b = 2 + Math.floor(Math.random() * 7);  // 2-8  → résultat max 22, on plafonne à 20
+        if (a + b > 20) b = 20 - a;
         result = a + b;
         opSymbol = '+';
         context = 'Tu as ' + a + ' ' + item.name + ', on t\'en donne ' + b + ' de plus.';
         speechText = 'Tu as ' + a + ' ' + item.name + ' et on t\'en donne ' + b + ' de plus. Combien en as-tu maintenant ?';
       } else {
-        a = 4 + Math.floor(Math.random() * 8);  // 4-11
-        b = 1 + Math.floor(Math.random() * (a - 1)); // 1 à a-1
+        a = 10 + Math.floor(Math.random() * 11); // 10-20
+        b = 2 + Math.floor(Math.random() * 7);   // 2-8, toujours < a
+        if (b >= a) b = a - 1;
         result = a - b;
         opSymbol = '−';
         context = 'Tu as ' + a + ' ' + item.name + ', tu en manges ' + b + '.';
@@ -504,10 +506,10 @@
     }
 
     function getStars(s) {
-      if (s === 6) return 4;
-      if (s === 5) return 3;
-      if (s >= 3)  return 2;
-      if (s >= 1)  return 1;
+      if (s === 10) return 4;
+      if (s >= 8)   return 3;
+      if (s >= 6)   return 2;
+      if (s >= 4)   return 1;
       return 0;
     }
 
