@@ -477,6 +477,15 @@ animation: gradientMove 8s ease infinite;
           { id: 'jeux', icon: '🎮', label: 'Mes Jeux', voice: 'Direction les jeux !' },
         ];
 
+        // ── Hachage SHA-256 du PIN (Web Crypto API, sans librairie) ──
+        async function hashPin(pin) {
+          const data = new TextEncoder().encode(pin + ':caly-pin-salt');
+          const buf  = await crypto.subtle.digest('SHA-256', data);
+          return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+        }
+        // Un hash SHA-256 fait 64 caractères — un PIN brut fait ≤ 10 car.
+        function isPinPlaintext(val) { return !val || val.length <= 10; }
+
         function App() {
           const [loading, setLoading] = React.useState(true);
           const [tasks, setTasks] = React.useState(defaultTasks);
@@ -510,7 +519,16 @@ animation: gradientMove 8s ease infinite;
               if (data) {
                 setStars(data.stars ?? 0);
                 setLevel(data.level ?? 1);
-                setParentPassword(data.parentPassword ?? '1234');
+                // Migration : si le PIN est encore en clair → le hacher et sauver
+                const rawPin = data.parentPassword ?? '1234';
+                if (isPinPlaintext(rawPin)) {
+                  hashPin(rawPin).then(hashed => {
+                    db.ref(DB_PATH + '/parentPassword').set(hashed);
+                    setParentPassword(hashed);
+                  });
+                } else {
+                  setParentPassword(rawPin);
+                }
                 setHistoryLog(data.historyLog ?? []);
                 setRewardLog(data.rewardLog ?? []);
                 setPendingRewards(data.pendingRewards ?? []);
@@ -535,7 +553,12 @@ animation: gradientMove 8s ease infinite;
                 isRemoteRef.current = false;
                 setStars(parseInt(localStorage.getItem('caly_stars') || '0', 10));
                 setLevel(parseInt(localStorage.getItem('caly_level') || '1', 10));
-                setParentPassword(localStorage.getItem('caly_parent_pin') || '1234');
+                const localPin = localStorage.getItem('caly_parent_pin') || '1234';
+                if (isPinPlaintext(localPin)) {
+                  hashPin(localPin).then(h => setParentPassword(h));
+                } else {
+                  setParentPassword(localPin);
+                }
                 setHistoryLog(JSON.parse(localStorage.getItem('caly_history_log') || '[]'));
                 setRewardLog(JSON.parse(localStorage.getItem('caly_reward_log') || '[]'));
                 setTasks(defaultTasks.map(dt => {
@@ -676,16 +699,33 @@ animation: gradientMove 8s ease infinite;
             window.speechSynthesis.speak(msg);
           };
 
-          const toggleModeSecure = () => {
+          const toggleModeSecure = async () => {
             if (!childMode) {
               const input = window.prompt("Entrez le code secret de Maman :");
               if (input === null) return;
               if (!/^\d+$/.test(input)) { alert("Le code doit contenir uniquement des chiffres !"); return; }
-              if (input === parentPassword) setChildMode(true);
+              const inputHash = await hashPin(input);
+              if (inputHash === parentPassword) setChildMode(true);
               else alert("Code incorrect ! 🤫");
             } else {
               setChildMode(false);
             }
+          };
+
+          const changePin = async () => {
+            const current = window.prompt("Code actuel :");
+            if (current === null) return;
+            const currentHash = await hashPin(current);
+            if (currentHash !== parentPassword) { alert("Code actuel incorrect !"); return; }
+            const newPin = window.prompt("Nouveau code (chiffres uniquement) :");
+            if (newPin === null) return;
+            if (!/^\d{4,8}$/.test(newPin)) { alert("Le code doit contenir entre 4 et 8 chiffres !"); return; }
+            const confirm = window.prompt("Confirmer le nouveau code :");
+            if (confirm !== newPin) { alert("Les codes ne correspondent pas !"); return; }
+            const newHash = await hashPin(newPin);
+            setParentPassword(newHash);
+            await db.ref(DB_PATH + '/parentPassword').set(newHash);
+            alert("✅ Code PIN modifié avec succès !");
           };
 
           const requestTaskValidation = (id) => {
@@ -914,13 +954,16 @@ animation: gradientMove 8s ease infinite;
                     <button onClick={handleBonus} className="btn-parent" style={{ background: '#ba68c8' }}>✨ Grand Bonus (+15 ⭐)</button>
                     <button onClick={handlePenalty} className="btn-parent" style={{ background: '#ef5350' }}>⚠️ Bêtise (-5 ⭐)</button>
                   </div>
-                  <div style={{ display: 'flex', gap: '10px', marginBottom: '25px' }}>
+                  <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
                     <button onClick={() => setVoiceEnabled(v => !v)} className="btn-parent" style={{ background: voiceEnabled ? '#4caf50' : '#9e9e9e' }}>
                       {voiceEnabled ? '🔊 Vocal activé' : '🔇 Vocal désactivé'}
                     </button>
                     <button onClick={() => setDarkMode(d => !d)} className="btn-parent" style={{ background: darkMode ? '#3730a3' : '#64748b' }}>
                       {darkMode ? '🌙 Mode sombre' : '☀️ Mode clair'}
                     </button>
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px', marginBottom: '25px' }}>
+                    <button onClick={changePin} className="btn-parent" style={{ background: '#546e7a' }}>🔑 Changer le code PIN</button>
                   </div>
 
                   {/* ── Gestion des Jeux ── */}
