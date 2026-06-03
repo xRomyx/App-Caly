@@ -583,18 +583,27 @@ animation: gradientMove 8s ease infinite;
 
           const checkDailyReset = React.useCallback(() => {
             const now = new Date();
-            const todayStr = now.toDateString();
-            const lastSavedDate = localStorage.getItem('caly_last_date');
-            if (lastSavedDate && lastSavedDate !== todayStr) {
-              const isMonday = now.getDay() === 1;
-              setTasks(prev => prev.map(t => {
-                // Ne pas réinitialiser les tâches en attente de validation parent
-                if (t.pending) return t;
-                if (t.category === 'nettoyage') return isMonday ? { ...t, done: false } : t;
-                return { ...t, done: false };
-              }));
-            }
-            localStorage.setItem('caly_last_date', todayStr);
+            // Date locale explicite : getDate/getMonth/getFullYear utilisent l'heure du téléphone, pas UTC
+            const todayStr = now.getFullYear() + '-' +
+              String(now.getMonth() + 1).padStart(2, '0') + '-' +
+              String(now.getDate()).padStart(2, '0');
+            // Stocké dans Firebase (et non localStorage) → fiable même si le cache est vidé
+            db.ref(DB_PATH + '/lastResetDate').get().then(snap => {
+              const lastSavedDate = snap.val();
+              if (lastSavedDate && lastSavedDate !== todayStr) {
+                const isMonday = now.getDay() === 1;
+                setTasks(prev => prev.map(t => {
+                  // Ne pas réinitialiser les tâches en attente de validation parent
+                  if (t.pending) return t;
+                  if (t.category === 'nettoyage') return isMonday ? { ...t, done: false } : t;
+                  return { ...t, done: false };
+                }));
+              }
+              // Toujours mettre à jour la date (première ouverture ou nouveau jour)
+              if (lastSavedDate !== todayStr) {
+                db.ref(DB_PATH + '/lastResetDate').set(todayStr);
+              }
+            });
           }, []);
 
           React.useEffect(() => {
