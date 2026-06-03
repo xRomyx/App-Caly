@@ -561,7 +561,7 @@ animation: gradientMove 8s ease infinite;
           React.useEffect(() => {
             if (isRemoteRef.current) { isRemoteRef.current = false; return; }
             if (loading) return;
-            db.ref(DB_PATH).set({
+            db.ref(DB_PATH).update({
               tasks: tasks.map(t => ({ id: t.id, done: t.done, pending: t.pending })),
               stars,
               level,
