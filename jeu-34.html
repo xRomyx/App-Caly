@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Les mots néerlandais 🇳🇱</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyBvRCxPT2W7djJcHSR9kweBnaNXYQtdZqo",
+      authDomain: "app-caly.firebaseapp.com",
+      databaseURL: "https://app-caly-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "app-caly",
+      storageBucket: "app-caly.firebasestorage.app",
+      messagingSenderId: "870451326147",
+      appId: "1:870451326147:web:465cff6467b66efeda4676"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const isTest = new URLSearchParams(window.location.search).has('test');
+    const DB_PATH = isTest ? 'calyApp-test' : 'calyApp';
+  </script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+      background: linear-gradient(135deg, #1a2a0a 0%, #2d4a10 50%, #1a2a0a 100%);
+      min-height: 100vh;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px;
+    }
+    @keyframes twinkle {
+      0%,100% { opacity:.3; transform:scale(.8); }
+      50%      { opacity:1;  transform:scale(1.2); }
+    }
+    .star-bg { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+    .star-bg span { position:absolute; font-size:14px; animation:twinkle linear infinite; }
+
+    .test-banner {
+      background:#ff9800; color:#fff; padding:6px 14px;
+      border-radius:10px; font-weight:bold; font-size:13px;
+      margin-bottom:12px; z-index:1;
+    }
+    .warning-banner {
+      background:rgba(255,150,0,0.2); border:2px solid #ff9500;
+      border-radius:12px; padding:10px 14px; font-size:12px;
+      color:#ffcc80; margin-bottom:12px; text-align:center; z-index:1;
+      max-width:400px;
+    }
+    .game-wrap {
+      width:100%; max-width:420px;
+      z-index:1;
+    }
+    .top-bar {
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:14px;
+    }
+    .btn-quit {
+      padding:8px 16px; border-radius:20px;
+      background:rgba(255,255,255,0.1); border:2px solid rgba(255,255,255,0.25);
+      color:#fff; font-size:14px; font-weight:bold;
+      text-decoration:none; cursor:pointer;
+    }
+    .score-badge {
+      background:rgba(255,149,0,0.2); border:2px solid #ff9500;
+      border-radius:20px; padding:5px 14px;
+      font-size:14px; font-weight:bold; color:#ffcc80;
+    }
+
+    /* Barre de progression */
+    .progress-bar {
+      width:100%; height:10px; background:rgba(255,255,255,0.15);
+      border-radius:10px; margin-bottom:20px; overflow:hidden;
+    }
+    .progress-fill {
+      height:100%; background:linear-gradient(90deg,#ff9500,#ffcc00);
+      border-radius:10px; transition:width .4s ease;
+    }
+
+    /* Zone image */
+    .question-card {
+      background:rgba(255,255,255,0.08); border:2px solid rgba(255,255,255,0.15);
+      border-radius:24px; padding:28px 20px;
+      text-align:center; margin-bottom:20px;
+    }
+    .question-emoji {
+      font-size:88px; line-height:1.1;
+      margin-bottom:12px; display:block;
+      cursor:pointer; transition:transform .15s;
+    }
+    .question-emoji:active { transform:scale(.93); }
+    .question-hint {
+      font-size:13px; color:rgba(255,255,255,0.5);
+    }
+
+    /* Boutons de choix */
+    .choices-grid {
+      display:grid; grid-template-columns:1fr 1fr 1fr;
+      gap:10px; margin-bottom:20px;
+    }
+    .choice-btn {
+      background:rgba(255,255,255,0.08);
+      border:2px solid rgba(255,255,255,0.2);
+      border-radius:16px; padding:14px 8px;
+      font-size:20px; font-weight:900; color:#fff;
+      cursor:pointer; transition:all .15s;
+      letter-spacing:.5px;
+    }
+    .choice-btn:hover { background:rgba(255,255,255,0.16); }
+    .choice-btn.correct {
+      background:rgba(34,197,94,0.3);
+      border-color:#22c55e;
+      color:#bbf7d0;
+    }
+    .choice-btn.wrong {
+      background:rgba(239,68,68,0.3);
+      border-color:#ef4444;
+      color:#fca5a5;
+    }
+    .choice-btn:disabled { cursor:default; }
+
+    /* Bouton suivant */
+    .btn-next {
+      display:none; width:100%;
+      padding:16px; border-radius:20px; border:none;
+      background:linear-gradient(135deg,#ff9500,#ffcc00);
+      color:#fff; font-size:18px; font-weight:900;
+      cursor:pointer; margin-bottom:12px;
+    }
+
+    /* Confetti */
+    @keyframes confetti-fall {
+      0%   { transform:translateY(-20px) rotate(0deg); opacity:1; }
+      100% { transform:translateY(100vh)  rotate(720deg); opacity:0; }
+    }
+    .confetti-piece {
+      position:fixed; top:0; pointer-events:none; z-index:999;
+      animation:confetti-fall linear forwards;
+    }
+
+    /* Écran résultat */
+    .result-screen {
+      display:none; text-align:center;
+      background:rgba(255,255,255,0.07);
+      border:2px solid rgba(255,255,255,0.15);
+      border-radius:24px; padding:30px 20px;
+    }
+    .result-title { font-size:26px; font-weight:900; margin-bottom:8px; }
+    .result-stars { font-size:52px; margin:16px 0; }
+    .result-score { font-size:18px; color:rgba(255,255,255,0.7); margin-bottom:20px; }
+    .result-msg   { font-size:16px; font-weight:bold; color:#ffcc80; margin-bottom:20px; }
+    #submitMsg    { font-size:13px; color:rgba(255,255,255,0.6); margin-bottom:14px; min-height:18px; }
+    .btn-back {
+      display:inline-block; padding:14px 32px;
+      border-radius:20px; border:none;
+      background:rgba(255,255,255,0.12); color:#fff;
+      font-size:16px; font-weight:bold; cursor:pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="star-bg" id="starBg"></div>
+
+  <div id="testBanner" style="display:none" class="test-banner">🧪 VERSION TEST</div>
+  <div id="voiceWarning" class="warning-banner" style="display:none">
+    🇳🇱 La voix néerlandaise n'est pas installée sur cet appareil.<br>
+    <strong>Paramètres → Accessibilité → Synthèse vocale → Installer le néerlandais</strong>
+  </div>
+
+  <div class="game-wrap">
+
+    <!-- ── JEU ── -->
+    <div id="gameScreen">
+      <div class="top-bar">
+        <a id="quitBtn" href="jeux.html" class="btn-quit">← Menu</a>
+        <div class="score-badge">✅ <span id="scoreDisplay">0</span> / 10</div>
+      </div>
+
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill" style="width:0%"></div>
+      </div>
+
+      <div class="question-card">
+        <span class="question-emoji" id="questionEmoji">🐒</span>
+      </div>
+
+      <div class="choices-grid" id="choicesGrid"></div>
+
+      <button class="btn-next" id="nextBtn" onclick="nextQuestion()">Suivant →</button>
+    </div>
+
+    <!-- ── RÉSULTAT ── -->
+    <div id="resultScreen" class="result-screen">
+      <div class="result-title">🇳🇱 Fini !</div>
+      <div class="result-stars" id="resultStars"></div>
+      <div class="result-score" id="resultScore"></div>
+      <div class="result-msg"  id="resultMsg"></div>
+      <div id="submitMsg"></div>
+      <button class="btn-back" onclick="goBack()">← Retour aux jeux</button>
+    </div>
+
+  </div>
+
+  <script>
+    // ── Fond étoilé ──────────────────────────────────────────────────────────
+    const bg = document.getElementById('starBg');
+    for (let i = 0; i < 28; i++) {
+      const s = document.createElement('span');
+      s.textContent = ['✦','✧','⋆','·'][Math.floor(Math.random()*4)];
+      s.style.left   = Math.random()*100 + '%';
+      s.style.top    = Math.random()*100 + '%';
+      s.style.animationDuration = (2 + Math.random()*4) + 's';
+      s.style.animationDelay   = (Math.random()*4) + 's';
+      bg.appendChild(s);
+    }
+    if (isTest) document.getElementById('testBanner').style.display = 'block';
+    document.getElementById('quitBtn').href = 'jeux.html' + (isTest ? '?test' : '');
+
+    // ── Voix néerlandaise ────────────────────────────────────────────────────
+    let dutchVoice = null;
+    function loadVoices() {
+      const voices = window.speechSynthesis.getVoices();
+      dutchVoice = voices.find(v => v.lang.startsWith('nl')) || null;
+      document.getElementById('voiceWarning').style.display = dutchVoice ? 'none' : 'block';
+    }
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+    loadVoices();
+
+    function speakDutch(word) {
+      window.speechSynthesis.cancel();
+      const utt = new SpeechSynthesisUtterance(word);
+      utt.lang = 'nl-NL';
+      if (dutchVoice) utt.voice = dutchVoice;
+      utt.rate = 0.75;
+      utt.pitch = 1.0;
+      window.speechSynthesis.speak(utt);
+    }
+
+    // ── Base de mots (Kern Start + Kern 1 + extras) ──────────────────────────
+    // Pour ajouter des mots : { nl: 'mot', icon: 'emoji' }
+    const WORDS = [
+      // Animaux
+      { nl: 'aap',   icon: '🐒' },
+      { nl: 'rat',   icon: '🐀' },
+      { nl: 'poes',  icon: '🐱' },
+      { nl: 'lam',   icon: '🐑' },
+      { nl: 'vis',   icon: '🐟' },
+      { nl: 'beer',  icon: '🐻' },
+      { nl: 'koe',   icon: '🐄' },
+      { nl: 'vos',   icon: '🦊' },
+      { nl: 'haan',  icon: '🐓' },
+      { nl: 'boer',  icon: '👨‍🌾' },
+      // Nourriture
+      { nl: 'peer',  icon: '🍐' },
+      { nl: 'bes',   icon: '🫐' },
+      { nl: 'reep',  icon: '🍫' },
+      { nl: 'ijs',   icon: '🍦' },
+      { nl: 'room',  icon: '🧁' },
+      { nl: 'kaas',  icon: '🧀' },
+      { nl: 'soep',  icon: '🍲' },
+      { nl: 'pan',   icon: '🍳' },
+      // Maison / objets
+      { nl: 'huis',  icon: '🏠' },
+      { nl: 'doos',  icon: '📦' },
+      { nl: 'vaas',  icon: '🏺' },
+      { nl: 'boek',  icon: '📖' },
+      { nl: 'muur',  icon: '🧱' },
+      { nl: 'bal',   icon: '⚽' },
+      { nl: 'bel',   icon: '🔔' },
+      { nl: 'hek',   icon: '🚧' },
+      // Vêtements
+      { nl: 'pet',   icon: '🧢' },
+      { nl: 'jas',   icon: '🧥' },
+      { nl: 'zak',   icon: '🛍️' },
+      { nl: 'pak',   icon: '🎒' },
+      { nl: 'sok',   icon: '🧦' },
+      { nl: 'hak',   icon: '👠' },
+      // Outils
+      { nl: 'mes',   icon: '🔪' },
+      { nl: 'zaag',  icon: '🪚' },
+      // Nature
+      { nl: 'vuur',  icon: '🔥' },
+      { nl: 'roos',  icon: '🌹' },
+      { nl: 'tak',   icon: '🌿' },
+      { nl: 'veer',  icon: '🪶' },
+      // Corps
+      { nl: 'oor',   icon: '👂' },
+      { nl: 'lip',   icon: '👄' },
+      { nl: 'voet',  icon: '🦶' },
+      { nl: 'buik',  icon: '🫃' },
+      // Transport
+      { nl: 'bus',   icon: '🚌' },
+      // Divers
+      { nl: 'zeep',  icon: '🧼' },
+      { nl: 'rook',  icon: '🌫️' },
+      { nl: 'boos',  icon: '😠' },
+      { nl: 'was',   icon: '🧺' },
+      { nl: 'reus',  icon: '🧌' },
+      { nl: 'paars', icon: '🟣' },
+      // Chiffres
+      { nl: 'vijf',  icon: '5️⃣' },
+      { nl: 'zes',   icon: '6️⃣' },
+      { nl: 'vier',  icon: '4️⃣' },
+      { nl: 'een',   icon: '1️⃣' },
+    ];
+
+    // ── Logique de jeu ───────────────────────────────────────────────────────
+    const TOTAL_Q = 10;
+    let questions = [], current = 0, score = 0, answered = false;
+
+    function shuffle(arr) { return [...arr].sort(() => Math.random() - .5); }
+
+    function buildQuestions() {
+      const pool = shuffle(WORDS).slice(0, TOTAL_Q);
+      questions = pool.map(word => {
+        const distractors = shuffle(WORDS.filter(w => w.nl !== word.nl)).slice(0, 2);
+        return { word, choices: shuffle([word, ...distractors]) };
+      });
+    }
+
+    function showQuestion() {
+      const q = questions[current];
+      answered = false;
+
+      // Emoji
+      const emojiEl = document.getElementById('questionEmoji');
+      emojiEl.textContent = q.word.icon;
+      emojiEl.onclick = null;
+
+      // Progression
+      document.getElementById('progressFill').style.width = (current / TOTAL_Q * 100) + '%';
+      document.getElementById('scoreDisplay').textContent = score;
+
+      // Boutons de choix
+      const grid = document.getElementById('choicesGrid');
+      grid.innerHTML = '';
+      q.choices.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.className = 'choice-btn';
+        btn.textContent = choice.nl;
+        btn.onclick = () => handleAnswer(choice.nl === q.word.nl, btn);
+        grid.appendChild(btn);
+      });
+
+      document.getElementById('nextBtn').style.display = 'none';
+    }
+
+    function handleAnswer(isCorrect, btn) {
+      if (answered) return;
+      answered = true;
+
+      document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+
+      if (isCorrect) {
+        score++;
+        btn.classList.add('correct');
+        spawnConfetti();
+        playSound(true);
+      } else {
+        btn.classList.add('wrong');
+        // Montrer la bonne réponse
+        const correctWord = questions[current].word.nl;
+        document.querySelectorAll('.choice-btn').forEach(b => {
+          if (b.textContent === correctWord) b.classList.add('correct');
+        });
+        playSound(false);
+      }
+
+      document.getElementById('scoreDisplay').textContent = score;
+      document.getElementById('nextBtn').style.display = 'block';
+    }
+
+    function nextQuestion() {
+      current++;
+      if (current >= TOTAL_Q) showResult();
+      else showQuestion();
+    }
+
+    // ── Résultat ─────────────────────────────────────────────────────────────
+    function showResult() {
+      document.getElementById('progressFill').style.width = '100%';
+      const earned = score >= 8 ? 2 : score >= 5 ? 1 : 0;
+      document.getElementById('gameScreen').style.display  = 'none';
+      document.getElementById('resultScreen').style.display = 'block';
+      document.getElementById('resultStars').textContent = earned > 0 ? '⭐'.repeat(earned) : '💪';
+      document.getElementById('resultScore').textContent = score + ' / ' + TOTAL_Q + ' bons mots !';
+      document.getElementById('resultMsg').textContent =
+        earned === 2 ? 'Bravo ! Tu connais super bien les mots néerlandais ! 🌟' :
+        earned === 1 ? 'Bien joué ! Continue à pratiquer ! 😊' :
+                      'Continue de t\'entraîner, tu vas y arriver ! 💪';
+
+      // Voix française
+      const msg = new SpeechSynthesisUtterance(
+        earned === 2 ? 'Bravo ! Tu connais super bien les mots néerlandais !' :
+        earned === 1 ? 'Bien joué ! Continue à pratiquer !' :
+                      'Continue de t\'entraîner, tu vas y arriver !'
+      );
+      msg.lang = 'fr-FR'; msg.rate = 0.88; msg.pitch = 1.1;
+      setTimeout(() => window.speechSynthesis.speak(msg), 400);
+
+      submitStars(earned);
+    }
+
+    async function submitStars(earned) {
+      if (earned === 0) {
+        document.getElementById('submitMsg').textContent = 'Rejoue pour gagner des étoiles !';
+        return;
+      }
+      try {
+        document.getElementById('submitMsg').textContent = '⏳ Envoi en cours...';
+        const snap = await db.ref(DB_PATH + '/pendingGameStars').get();
+        const val  = snap.val();
+        const arr  = val ? (Array.isArray(val) ? val : Object.values(val)).filter(Boolean) : [];
+        arr.push({
+          id:       Date.now().toString(),
+          game:     'Les mots néerlandais',
+          stars:    earned,
+          playedAt: new Date().toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
+        });
+        await db.ref(DB_PATH + '/pendingGameStars').set(arr);
+        document.getElementById('submitMsg').textContent =
+          '✅ ' + earned + (earned > 1 ? ' étoiles' : ' étoile') + ' en attente de validation !';
+      } catch(e) {
+        document.getElementById('submitMsg').textContent = '❌ Erreur. Dis-le à Papa !';
+      }
+    }
+
+    function goBack() {
+      window.location.href = 'jeux.html' + (isTest ? '?test' : '');
+    }
+
+    // ── Sons ─────────────────────────────────────────────────────────────────
+    function playSound(correct) {
+      try {
+        const ctx  = new (window.AudioContext || window.webkitAudioContext)();
+        const osc  = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain); gain.connect(ctx.destination);
+        if (correct) {
+          osc.frequency.setValueAtTime(523, ctx.currentTime);
+          osc.frequency.setValueAtTime(659, ctx.currentTime + .1);
+          osc.frequency.setValueAtTime(784, ctx.currentTime + .2);
+        } else {
+          osc.frequency.setValueAtTime(300, ctx.currentTime);
+          osc.frequency.setValueAtTime(240, ctx.currentTime + .15);
+        }
+        gain.gain.setValueAtTime(.3, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(.001, ctx.currentTime + .35);
+        osc.start(); osc.stop(ctx.currentTime + .35);
+      } catch(e) {}
+    }
+
+    // ── Confetti ─────────────────────────────────────────────────────────────
+    function spawnConfetti() {
+      const emojis = ['🌟','⭐','✨','💫','🇳🇱','🟠'];
+      for (let i = 0; i < 12; i++) {
+        const el = document.createElement('div');
+        el.className = 'confetti-piece';
+        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        el.style.left     = Math.random() * 100 + 'vw';
+        el.style.fontSize = (16 + Math.random() * 16) + 'px';
+        el.style.animationDuration = (1.2 + Math.random() * 1.5) + 's';
+        el.style.animationDelay   = (Math.random() * .4) + 's';
+        document.body.appendChild(el);
+        el.addEventListener('animationend', () => el.remove());
+      }
+    }
+
+    // ── Démarrage ────────────────────────────────────────────────────────────
+    buildQuestions();
+    showQuestion();
+  </script>
+</body>
+</html>
