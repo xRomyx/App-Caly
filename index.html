@@ -665,21 +665,40 @@ animation: gradientMove 8s ease infinite;
             const todayStr = now.getFullYear() + '-' +
               String(now.getMonth() + 1).padStart(2, '0') + '-' +
               String(now.getDate()).padStart(2, '0');
-            // Stocké dans Firebase (et non localStorage) → fiable même si le cache est vidé
             db.ref(DB_PATH + '/lastResetDate').get().then(snap => {
               const lastSavedDate = snap.val();
-              if (lastSavedDate && lastSavedDate !== todayStr) {
-                const isMonday = now.getDay() === 1;
-                setTasks(prev => prev.map(t => {
-                  // Ne pas réinitialiser les tâches en attente de validation parent
-                  if (t.pending) return t;
-                  if (t.category === 'nettoyage') return isMonday ? { ...t, done: false } : t;
-                  return { ...t, done: false };
-                }));
-              }
-              // Toujours mettre à jour la date (première ouverture ou nouveau jour)
               if (lastSavedDate !== todayStr) {
-                db.ref(DB_PATH + '/lastResetDate').set(todayStr);
+                if (lastSavedDate) {
+                  // Nouveau jour détecté → lire les tâches actuelles dans Firebase
+                  // puis écrire le reset + la nouvelle date en UNE SEULE opération atomique.
+                  // (Évite la boucle : écrire lastResetDate seul déclenchait onValue
+                  //  qui ré-écrasait le reset avec les anciennes tâches.)
+                  const isMonday = now.getDay() === 1;
+                  db.ref(DB_PATH + '/tasks').get().then(tasksSnap => {
+                    const rawTasks = tasksSnap.val();
+                    const savedTasks = rawTasks
+                      ? (Array.isArray(rawTasks) ? rawTasks : Object.values(rawTasks)).filter(Boolean)
+                      : [];
+                    const resetTasksForDB = defaultTasks.map(dt => {
+                      const saved = savedTasks.find(t => t && t.id === dt.id);
+                      if (saved && saved.pending) return saved; // conserver en attente de validation
+                      if (dt.category === 'nettoyage') {
+                        return { id: dt.id, done: isMonday ? false : (saved ? saved.done : false), pending: false };
+                      }
+                      return { id: dt.id, done: false, pending: false };
+                    });
+                    // Écriture atomique : tâches réinitialisées + nouvelle date.
+                    // Le listener onValue se déclenchera et mettra à jour React state
+                    // avec les tâches déjà réinitialisées (plus de race condition).
+                    db.ref(DB_PATH).update({
+                      tasks: resetTasksForDB,
+                      lastResetDate: todayStr,
+                    });
+                  });
+                } else {
+                  // Première ouverture : juste enregistrer la date, pas de reset
+                  db.ref(DB_PATH + '/lastResetDate').set(todayStr);
+                }
               }
             });
           }, []);
