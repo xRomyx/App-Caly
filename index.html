@@ -681,7 +681,7 @@ animation: gradientMove 8s ease infinite;
                       : [];
                     const resetTasksForDB = defaultTasks.map(dt => {
                       const saved = savedTasks.find(t => t && t.id === dt.id);
-                      if (saved && saved.pending) return saved; // conserver en attente de validation
+                      // Les pending non validés sont effacés au reset du matin
                       if (dt.category === 'nettoyage') {
                         return { id: dt.id, done: isMonday ? false : (saved ? saved.done : false), pending: false };
                       }
