@@ -242,72 +242,145 @@
       window.speechSynthesis.speak(utt);
     }
 
-    // ── Base de mots (Kern Start + Kern 1 + extras) ──────────────────────────
-    // Pour ajouter des mots : { nl: 'mot', icon: 'emoji' }
+    // ── Base de mots (Kern Start + Kern 1 + 2 + 3 + 4 + 5&6) ─────────────────
+    // Pour ajouter des mots : { nl: 'mot', icon: 'emoji', img: 'img/vocab/mot.png' (optionnel) }
+    // Si img est défini et que le fichier existe, l'image scannée est affichée.
+    // Sinon, l'emoji sert de fallback automatique.
+    const IMG = (w) => ({ img: `img/vocab/${w}.png` });
     const WORDS = [
       // Animaux
       { nl: 'aap',   icon: '🐒' },
       { nl: 'rat',   icon: '🐀' },
       { nl: 'poes',  icon: '🐱' },
-      { nl: 'lam',   icon: '🐑' },
-      { nl: 'vis',   icon: '🐟' },
+      { nl: 'lam',   icon: '🐑', ...IMG('lam') },
+      { nl: 'vis',   icon: '🐟', ...IMG('vis') },
       { nl: 'beer',  icon: '🐻' },
       { nl: 'koe',   icon: '🐄' },
-      { nl: 'vos',   icon: '🦊' },
+      { nl: 'vos',   icon: '🦊', ...IMG('vos') },
       { nl: 'haan',  icon: '🐓' },
       { nl: 'boer',  icon: '👨‍🌾' },
+      { nl: 'kat',   icon: '🐈', ...IMG('kat') },
+      { nl: 'hond',  icon: '🐕', ...IMG('hond') },
+      { nl: 'muis',  icon: '🐭' },
+      { nl: 'kip',   icon: '🐔', ...IMG('kip') },
+      { nl: 'bij',   icon: '🐝' },
+      { nl: 'haas',  icon: '🐇' },
+      { nl: 'duif',  icon: '🕊️', ...IMG('duif') },
+      { nl: 'geit',  icon: '🐐', ...IMG('geit') },
+      { nl: 'pauw',  icon: '🦚' },
+      { nl: 'stier', icon: '🐂' },
+      { nl: 'big',   icon: '🐷' },
+      { nl: 'mier',  icon: '🐜' },
+      { nl: 'mug',   icon: '🦟' },
+      { nl: 'draak', icon: '🐉' },
+      { nl: 'pup',   icon: '🐶', ...IMG('pup') },
+      { nl: 'mus',   icon: '🐦', ...IMG('mus') },
       // Nourriture
       { nl: 'peer',  icon: '🍐' },
       { nl: 'bes',   icon: '🫐' },
       { nl: 'reep',  icon: '🍫' },
       { nl: 'ijs',   icon: '🍦' },
       { nl: 'room',  icon: '🧁' },
-      { nl: 'kaas',  icon: '🧀' },
-      { nl: 'soep',  icon: '🍲' },
+      { nl: 'kaas',  icon: '🧀', ...IMG('kaas') },
+      { nl: 'soep',  icon: '🍲', ...IMG('soep') },
       { nl: 'pan',   icon: '🍳' },
+      { nl: 'peen',  icon: '🥕' },
+      { nl: 'boon',  icon: '🫘', ...IMG('boon') },
+      { nl: 'noot',  icon: '🥜', ...IMG('noot') },
+      { nl: 'druif', icon: '🍇' },
+      { nl: 'sap',   icon: '🥤', ...IMG('sap') },
+      { nl: 'worst', icon: '🌭', ...IMG('worst') },
+      { nl: 'ei',    icon: '🥚' },
+      { nl: 'zout',  icon: '🧂', ...IMG('zout') },
+      { nl: 'wijn',  icon: '🍷', ...IMG('wijn') },
       // Maison / objets
       { nl: 'huis',  icon: '🏠' },
       { nl: 'doos',  icon: '📦' },
-      { nl: 'vaas',  icon: '🏺' },
-      { nl: 'boek',  icon: '📖' },
-      { nl: 'muur',  icon: '🧱' },
-      { nl: 'bal',   icon: '⚽' },
+      { nl: 'vaas',  icon: '🏺', ...IMG('vaas') },
+      { nl: 'boek',  icon: '📖', ...IMG('boek') },
+      { nl: 'muur',  icon: '🧱', ...IMG('muur') },
+      { nl: 'bal',   icon: '⚽', ...IMG('bal') },
       { nl: 'bel',   icon: '🔔' },
       { nl: 'hek',   icon: '🚧' },
+      { nl: 'raam',  icon: '🪟', ...IMG('raam') },
+      { nl: 'deur',  icon: '🚪', ...IMG('deur') },
+      { nl: 'bed',   icon: '🛏️' },
+      { nl: 'klok',  icon: '🕐', ...IMG('klok') },
+      { nl: 'beker', icon: '☕', ...IMG('beker') },
+      { nl: 'bijl',  icon: '🪓', ...IMG('bijl') },
+      { nl: 'touw',  icon: '🪢', ...IMG('touw') },
+      { nl: 'bril',  icon: '👓', ...IMG('bril') },
+      { nl: 'kom',   icon: '🥣', ...IMG('kom') },
+      { nl: 'tas',   icon: '👜', ...IMG('tas') },
+      { nl: 'kar',   icon: '🛒', ...IMG('kar') },
+      { nl: 'pop',   icon: '🪆', ...IMG('pop') },
+      { nl: 'bom',   icon: '💣', ...IMG('bom') },
       // Vêtements
-      { nl: 'pet',   icon: '🧢' },
-      { nl: 'jas',   icon: '🧥' },
+      { nl: 'pet',   icon: '🧢', ...IMG('pet') },
+      { nl: 'jas',   icon: '🧥', ...IMG('jas') },
       { nl: 'zak',   icon: '🛍️' },
       { nl: 'pak',   icon: '🎒' },
-      { nl: 'sok',   icon: '🧦' },
+      { nl: 'sok',   icon: '🧦', ...IMG('sok') },
       { nl: 'hak',   icon: '👠' },
+      { nl: 'jurk',  icon: '👗', ...IMG('jurk') },
+      { nl: 'wol',   icon: '🧶', ...IMG('wol') },
+      { nl: 'das',   icon: '👔', ...IMG('das') },
       // Outils
-      { nl: 'mes',   icon: '🔪' },
+      { nl: 'mes',   icon: '🔪', ...IMG('mes') },
       { nl: 'zaag',  icon: '🪚' },
       // Nature
       { nl: 'vuur',  icon: '🔥' },
       { nl: 'roos',  icon: '🌹' },
-      { nl: 'tak',   icon: '🌿' },
+      { nl: 'tak',   icon: '🌿', ...IMG('tak') },
       { nl: 'veer',  icon: '🪶' },
+      { nl: 'zon',   icon: '☀️', ...IMG('zon') },
+      { nl: 'zee',   icon: '🌊' },
+      { nl: 'boom',  icon: '🌳', ...IMG('boom') },
+      { nl: 'bloem', icon: '🌸' },
+      { nl: 'bos',   icon: '🌲', ...IMG('bos') },
+      { nl: 'maan',  icon: '🌙', ...IMG('maan') },
+      { nl: 'hout',  icon: '🪵' },
       // Corps
       { nl: 'oor',   icon: '👂' },
       { nl: 'lip',   icon: '👄' },
-      { nl: 'voet',  icon: '🦶' },
+      { nl: 'voet',  icon: '🦶', ...IMG('voet') },
       { nl: 'buik',  icon: '🫃' },
+      { nl: 'neus',  icon: '👃' },
+      { nl: 'oog',   icon: '👁️', ...IMG('oog') },
+      { nl: 'kies',  icon: '🦷' },
       // Transport
-      { nl: 'bus',   icon: '🚌' },
+      { nl: 'bus',   icon: '🚌', ...IMG('bus') },
+      { nl: 'fiets', icon: '🚲' },
+      { nl: 'boot',  icon: '⛵' },
+      { nl: 'jeep',  icon: '🚙' },
       // Divers
-      { nl: 'zeep',  icon: '🧼' },
+      { nl: 'zeep',  icon: '🧼', ...IMG('zeep') },
       { nl: 'rook',  icon: '🌫️' },
       { nl: 'boos',  icon: '😠' },
-      { nl: 'was',   icon: '🧺' },
+      { nl: 'was',   icon: '🧺', ...IMG('was') },
       { nl: 'reus',  icon: '🧌' },
       { nl: 'paars', icon: '🟣' },
-      // Chiffres
-      { nl: 'vijf',  icon: '5️⃣' },
-      { nl: 'zes',   icon: '6️⃣' },
-      { nl: 'vier',  icon: '4️⃣' },
+      { nl: 'kus',   icon: '😘', ...IMG('kus') },
+      { nl: 'zuur',  icon: '🍋' },
+      { nl: 'gaap',  icon: '🥱', ...IMG('gaap') },
+      { nl: 'hut',   icon: '🛖' },
+      { nl: 'kok',   icon: '👨‍🍳', ...IMG('kok') },
+      { nl: 'juf',   icon: '👩‍🏫', ...IMG('juf') },
+      { nl: 'geel',  icon: '💛', ...IMG('geel') },
+      { nl: 'blauw', icon: '🔵', ...IMG('blauw') },
+      { nl: 'koud',  icon: '🥶' },
+      // Chiffres 0 → 10
+      { nl: 'nul',   icon: '0️⃣' },
       { nl: 'een',   icon: '1️⃣' },
+      { nl: 'twee',  icon: '2️⃣' },
+      { nl: 'drie',  icon: '3️⃣' },
+      { nl: 'vier',  icon: '4️⃣', ...IMG('vier') },
+      { nl: 'vijf',  icon: '5️⃣', ...IMG('vijf') },
+      { nl: 'zes',   icon: '6️⃣', ...IMG('zes') },
+      { nl: 'zeven', icon: '7️⃣' },
+      { nl: 'acht',  icon: '8️⃣' },
+      { nl: 'negen', icon: '9️⃣' },
+      { nl: 'tien',  icon: '🔟' },
     ];
 
     // ── Logique de jeu ───────────────────────────────────────────────────────
@@ -328,10 +401,23 @@
       const q = questions[current];
       answered = false;
 
-      // Emoji
+      // Image scannée ou emoji fallback
       const emojiEl = document.getElementById('questionEmoji');
-      emojiEl.textContent = q.word.icon;
       emojiEl.onclick = null;
+      if (q.word.img) {
+        // Essaie l'image scannée, repasse en emoji si elle ne charge pas
+        const testImg = new Image();
+        testImg.onload  = () => {
+          emojiEl.style.fontSize = '';
+          emojiEl.innerHTML = `<img src="${q.word.img}" style="width:140px;height:100px;object-fit:contain;border-radius:12px;">`;
+        };
+        testImg.onerror = () => { emojiEl.textContent = q.word.icon; };
+        testImg.src = q.word.img;
+        // Affiche l'emoji pendant le chargement
+        emojiEl.textContent = q.word.icon;
+      } else {
+        emojiEl.textContent = q.word.icon;
+      }
 
       // Progression
       document.getElementById('progressFill').style.width = (current / TOTAL_Q * 100) + '%';
