@@ -28,14 +28,14 @@
       background: linear-gradient(135deg, #1a2e05 0%, #2d4a0e 50%, #1a2e05 100%);
       min-height: 100vh;
       display: flex; flex-direction: column; align-items: center;
-      padding: 20px 16px 40px; color: #fff; overflow-x: hidden;
+      padding: 12px 16px 20px; color: #fff; overflow-x: hidden;
     }
     .test-banner {
       background: #ff9800; color: #fff; padding: 6px 14px;
       border-radius: 10px; text-align: center; font-weight: bold;
       margin-bottom: 10px; font-size: 13px; width: 100%; max-width: 480px;
     }
-    .game-header { text-align: center; margin-bottom: 18px; width: 100%; max-width: 480px; }
+    .game-header { text-align: center; margin-bottom: 12px; width: 100%; max-width: 480px; }
     .game-title {
       font-size: 28px; font-weight: 900;
       background: linear-gradient(135deg, #fde68a, #86efac, #fde68a);
@@ -58,7 +58,7 @@
       border: 2px solid rgba(134,239,172,0.25);
       border-radius: 28px; padding: 28px 22px 22px;
       width: 100%; max-width: 480px;
-      text-align: center; position: relative; margin-bottom: 22px;
+      text-align: center; position: relative; margin-bottom: 14px;
     }
     .op-card::before {
       content: '';
@@ -120,15 +120,15 @@
     .numbers-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-      width: 100%; max-width: 480px; margin-bottom: 20px;
+      gap: 10px;
+      width: 100%; max-width: 480px; margin-bottom: 12px;
     }
     .number-btn {
-      aspect-ratio: 1;
+      min-height: 78px;
       border-radius: 20px;
       border: 3px solid rgba(255,255,255,0.15);
       background: rgba(255,255,255,0.07);
-      color: #fff; font-size: 42px; font-weight: 900;
+      color: #fff; font-size: 36px; font-weight: 900;
       cursor: pointer; transition: transform 0.1s;
       box-shadow: 0 3px 14px rgba(0,0,0,0.25);
       display: flex; align-items: center; justify-content: center;
@@ -163,7 +163,7 @@
 
     .btn-next {
       display: none; width: 100%; max-width: 480px;
-      padding: 18px; border-radius: 50px; border: none;
+      padding: 13px; border-radius: 50px; border: none;
       background: linear-gradient(135deg, #86efac, #16a34a);
       color: #1a2e05; font-size: 22px; font-weight: 900;
       cursor: pointer; box-shadow: 0 4px 20px rgba(134,239,172,0.4);
@@ -178,10 +178,10 @@
       background-clip: text; margin-bottom: 14px;
     }
     .stars-earned { font-size: 56px; margin: 14px 0; animation: bumpUp 0.6s ease; min-height: 70px; }
-    .score-detail { font-size: 18px; color: rgba(255,255,255,0.65); margin-bottom: 22px; }
+    .score-detail { font-size: 18px; color: rgba(255,255,255,0.65); margin-bottom: 14px; }
     .submit-msg   { font-size: 14px; color: rgba(255,255,255,0.5);  margin-bottom: 18px; min-height: 22px; }
     .btn-retour {
-      width: 100%; padding: 18px; border-radius: 50px; border: none;
+      width: 100%; padding: 13px; border-radius: 50px; border: none;
       background: linear-gradient(135deg, #fde68a, #f59e0b);
       color: #1a2e05; font-size: 20px; font-weight: 900;
       cursor: pointer; box-shadow: 0 4px 20px rgba(253,230,138,0.4);
