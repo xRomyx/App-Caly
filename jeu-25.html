@@ -83,7 +83,7 @@
     /* Affichage du mot avec cases */
     .word-display {
       display: flex; gap: 5px; justify-content: center;
-      flex-wrap: wrap; align-items: center; width: 100%;
+      flex-wrap: nowrap; align-items: center; width: 100%;
     }
     .letter-box {
       min-width: 36px; height: 48px; padding: 0 6px;
@@ -93,6 +93,7 @@
       background: rgba(255,255,255,0.08);
       border: 2px solid rgba(255,255,255,0.15);
       letter-spacing: 0;
+      flex-shrink: 0;
     }
     .letter-box.blank {
       border: 2px dashed #f472b6;
@@ -344,9 +345,29 @@
     function buildWordDisplay(word, blankIdx) {
       var display = document.getElementById('wordDisplay');
       display.innerHTML = '';
+
+      // Adapter la taille des cases selon la longueur du mot
+      // pour que tout tienne sur une ligne sans déborder
+      var len = word.length;
+      var boxW, boxH, fontSize, gap;
+      if (len >= 8) {
+        boxW = '26px'; boxH = '40px'; fontSize = '15px'; gap = '3px';
+      } else if (len >= 7) {
+        boxW = '30px'; boxH = '43px'; fontSize = '17px'; gap = '4px';
+      } else if (len >= 6) {
+        boxW = '34px'; boxH = '46px'; fontSize = '19px'; gap = '4px';
+      } else {
+        boxW = '36px'; boxH = '48px'; fontSize = '20px'; gap = '5px';
+      }
+      display.style.gap = gap;
+
       for (var i = 0; i < word.length; i++) {
         var box = document.createElement('div');
         box.className = 'letter-box' + (i === blankIdx ? ' blank' : '');
+        // Appliquer la taille dynamique
+        box.style.minWidth = boxW;
+        box.style.height = boxH;
+        box.style.fontSize = fontSize;
         if (i === blankIdx) {
           box.id = 'blankBox';
           box.textContent = '?';
