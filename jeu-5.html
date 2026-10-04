@@ -407,7 +407,8 @@
         n - 1,    n + 1,
         n - 2,    n + 2
       ];
-      return shuffle(candidates.filter(x => x > 0 && x !== n)).slice(0, 2);
+      // Set = retire les doublons (avec step 2, n-step et n-2 sont le même nombre)
+      return shuffle([...new Set(candidates)].filter(x => x > 0 && x !== n)).slice(0, 2);
     }
 
     function startGame() {
