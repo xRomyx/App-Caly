@@ -546,11 +546,14 @@ animation: gradientMove 8s ease infinite;
           const [loading, setLoading] = React.useState(true);
           const [tasks, setTasks] = React.useState(defaultTasks);
           const [stars, setStars] = React.useState(0);
-          const [level, setLevel] = React.useState(1);
+          // Niveau déduit des étoiles qui restent (décision 002) : il redescend après un achat
+          const level = Math.floor(stars / 60) + 1;
           const [parentPassword, setParentPassword] = React.useState('1234');
           const [historyLog, setHistoryLog] = React.useState([]);
           const [rewardLog, setRewardLog] = React.useState([]);
           const [pendingRewards, setPendingRewards] = React.useState([]);
+          // Étoiles disponibles pour la boutique = étoiles moins les demandes déjà en attente
+          const availableStars = stars - pendingRewards.reduce((s, r) => s + (r.cost || 0), 0);
           const [pendingGameStars, setPendingGameStars] = React.useState([]);
           const [grantedReward, setGrantedReward] = React.useState(null);
           const [voiceEnabled, setVoiceEnabled] = React.useState(true);
@@ -573,7 +576,8 @@ animation: gradientMove 8s ease infinite;
               isRemoteRef.current = true;
               if (data) {
                 setStars(data.stars ?? 0);
-                setLevel(data.level ?? 1);
+                // Célébration partagée : le bouton « nouveau niveau » apparaît aussi sur le téléphone de Caly
+                setShowCelebration(data.showCelebration === true);
                 // Migration : si le PIN est encore en clair → le hacher et sauver
                 const rawPin = data.parentPassword ?? '1234';
                 if (isPinPlaintext(rawPin)) {
@@ -607,7 +611,6 @@ animation: gradientMove 8s ease infinite;
                 const migratedTasks = localTasks ? JSON.parse(localTasks) : [];
                 isRemoteRef.current = false;
                 setStars(parseInt(localStorage.getItem('caly_stars') || '0', 10));
-                setLevel(parseInt(localStorage.getItem('caly_level') || '1', 10));
                 const localPin = localStorage.getItem('caly_parent_pin') || '1234';
                 if (isPinPlaintext(localPin)) {
                   hashPin(localPin).then(h => setParentPassword(h));
@@ -651,8 +654,9 @@ animation: gradientMove 8s ease infinite;
               grantedReward,
               voiceEnabled,
               darkMode,
+              showCelebration,
             });
-          }, [tasks, stars, level, parentPassword, historyLog, rewardLog, pendingRewards, pendingGameStars, grantedReward, voiceEnabled, darkMode, loading]);
+          }, [tasks, stars, level, parentPassword, historyLog, rewardLog, pendingRewards, pendingGameStars, grantedReward, voiceEnabled, darkMode, showCelebration, loading]);
 
           // Dark mode : classe CSS sur <body> uniquement en mode parent
           React.useEffect(() => {
@@ -673,7 +677,15 @@ animation: gradientMove 8s ease infinite;
                   // puis écrire le reset + la nouvelle date en UNE SEULE opération atomique.
                   // (Évite la boucle : écrire lastResetDate seul déclenchait onValue
                   //  qui ré-écrasait le reset avec les anciennes tâches.)
-                  const isMonday = now.getDay() === 1;
+                  // Nouvelle semaine = le lundi d'aujourd'hui n'est pas celui du dernier reset
+                  // (marche même si personne n'a ouvert l'app le lundi)
+                  const lundiDe = (d) => {
+                    const m = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+                    m.setDate(m.getDate() - ((m.getDay() + 6) % 7));
+                    return m.getTime();
+                  };
+                  const [ly, lm, ld] = lastSavedDate.split('-').map(Number);
+                  const isNewWeek = lundiDe(new Date(ly, lm - 1, ld)) !== lundiDe(now);
                   db.ref(DB_PATH + '/tasks').get().then(tasksSnap => {
                     const rawTasks = tasksSnap.val();
                     const savedTasks = rawTasks
@@ -683,7 +695,7 @@ animation: gradientMove 8s ease infinite;
                       const saved = savedTasks.find(t => t && t.id === dt.id);
                       // Les pending non validés sont effacés au reset du matin
                       if (dt.category === 'nettoyage') {
-                        return { id: dt.id, done: isMonday ? false : (saved ? saved.done : false), pending: false };
+                        return { id: dt.id, done: isNewWeek ? false : (saved ? saved.done : false), pending: false };
                       }
                       return { id: dt.id, done: false, pending: false };
                     });
@@ -770,7 +782,7 @@ animation: gradientMove 8s ease infinite;
             speak('Bravo ma princesse !');
 
             const targetLevel = Math.floor(newStars / 60) + 1;
-            if (targetLevel > level) { setLevel(targetLevel); setShowCelebration(true); }
+            if (targetLevel > level) setShowCelebration(true);
           };
 
           const rejectTask = (id) => {
@@ -799,7 +811,7 @@ animation: gradientMove 8s ease infinite;
             { const _n=new Date(); addToHistory({ type:'bonus', icon:'✨', name:'Bonus parental +15', points:15, date:String(_n.getDate()).padStart(2,'0')+'/'+String(_n.getMonth()+1).padStart(2,'0'), time:String(_n.getHours()).padStart(2,'0')+':'+String(_n.getMinutes()).padStart(2,'0'), ts:_n.getTime() }); }
             speak('Super bonus pour ma princesse !');
             const targetLevel = Math.floor(newStars / 60) + 1;
-            if (targetLevel > level) { setLevel(targetLevel); setShowCelebration(true); }
+            if (targetLevel > level) setShowCelebration(true);
           };
 
           const handlePenalty = () => {
@@ -810,9 +822,9 @@ animation: gradientMove 8s ease infinite;
           };
 
           const requestReward = (reward) => {
-            if (stars < reward.cost) return;
+            if (availableStars < reward.cost) return;
             setPendingRewards(prev => [...prev, { id: reward.id, name: reward.name, cost: reward.cost }]);
-            speak("Demande envoyée ! Tu auras " + (stars - reward.cost) + " étoiles si c'est accordé.");
+            speak("Demande envoyée ! Tu auras " + (availableStars - reward.cost) + " étoiles si c'est accordé.");
           };
 
           const acceptReward = (reward) => {
@@ -842,10 +854,6 @@ animation: gradientMove 8s ease infinite;
             }
           };
 
-          const recalcLevel = () => {
-            setLevel(Math.floor(stars / 60) + 1);
-          };
-
           const acceptGameReward = (item) => {
             setPendingGameStars(prev => prev.filter(g => g.id !== item.id));
             const newStars = stars + item.stars;
@@ -853,7 +861,7 @@ animation: gradientMove 8s ease infinite;
             { const _n=new Date(); addToHistory({ type:'game', icon:'🎮', name:item.game, points:item.stars, date:String(_n.getDate()).padStart(2,'0')+'/'+String(_n.getMonth()+1).padStart(2,'0'), time:String(_n.getHours()).padStart(2,'0')+':'+String(_n.getMinutes()).padStart(2,'0'), ts:_n.getTime() }); }
             speak("Bravo pour ton jeu !");
             const targetLevel = Math.floor(newStars / 60) + 1;
-            if (targetLevel > level) { setLevel(targetLevel); setShowCelebration(true); }
+            if (targetLevel > level) setShowCelebration(true);
           };
 
           const rejectGameReward = (id) => {
@@ -967,15 +975,10 @@ animation: gradientMove 8s ease infinite;
                     <p style={{ color: ps.text, fontSize: '18px', margin: '0' }}>Score actuel de Caly :</p>
                     <div style={{ fontSize: '45px', fontWeight: 'bold', color: '#e91e63', margin: '5px 0' }}>⭐ {stars}</div>
                     <p style={{ color: ps.textSec, margin: '0' }}>Niveau : {level}</p>
-                    {Math.floor(stars / 60) + 1 !== level && (
-                      <button onClick={recalcLevel} style={{ marginTop: '10px', padding: '7px 16px', background: '#ff9800', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', fontSize: '13px' }}>
-                        🔧 Corriger le niveau (devrait être {Math.floor(stars / 60) + 1})
-                      </button>
-                    )}
                   </div>
 
                   <div style={{ display: 'flex', gap: '10px', marginBottom: '15px' }}>
-                    <button onClick={() => { const n = stars + 5; setStars(n); { const _n=new Date(); addToHistory({ type:'bonus', icon:'✨', name:'Bonus parental +5', points:5, date:String(_n.getDate()).padStart(2,'0')+'/'+String(_n.getMonth()+1).padStart(2,'0'), time:String(_n.getHours()).padStart(2,'0')+':'+String(_n.getMinutes()).padStart(2,'0'), ts:_n.getTime() }); } speak('Petit bonus pour ma princesse !'); const t = Math.floor(n/60)+1; if(t>level){setLevel(t);setShowCelebration(true);} }} className="btn-parent" style={{ background: '#ce93d8' }}>✨ Petit Bonus (+5 ⭐)</button>
+                    <button onClick={() => { const n = stars + 5; setStars(n); { const _n=new Date(); addToHistory({ type:'bonus', icon:'✨', name:'Bonus parental +5', points:5, date:String(_n.getDate()).padStart(2,'0')+'/'+String(_n.getMonth()+1).padStart(2,'0'), time:String(_n.getHours()).padStart(2,'0')+':'+String(_n.getMinutes()).padStart(2,'0'), ts:_n.getTime() }); } speak('Petit bonus pour ma princesse !'); const t = Math.floor(n/60)+1; if(t>level){setShowCelebration(true);} }} className="btn-parent" style={{ background: '#ce93d8' }}>✨ Petit Bonus (+5 ⭐)</button>
                     <button onClick={handleBonus} className="btn-parent" style={{ background: '#ba68c8' }}>✨ Grand Bonus (+15 ⭐)</button>
                     <button onClick={handlePenalty} className="btn-parent" style={{ background: '#ef5350' }}>⚠️ Bêtise (-5 ⭐)</button>
                   </div>
@@ -1130,7 +1133,8 @@ animation: gradientMove 8s ease infinite;
                         return { label, isToday: idx===todayDay, tasks, games, bonus, malus, total: tasks+games+bonus-malus };
                       });
                       const maxDay = Math.max(...weekStats.map(d=>d.tasks+d.games+d.bonus), 1);
-                      const weekTotal = structured.reduce((s,e)=>s+(e.points||0), 0);
+                      // Seulement les 7 jours de la semaine en cours (comme le graphique)
+                      const weekTotal = weekStats.reduce((s,d)=>s+d.total, 0);
                       const taskCounts = {}; structured.filter(e=>e.type==='task').forEach(e=>{ taskCounts[e.name]=(taskCounts[e.name]||0)+1; });
                       const topTasks = Object.entries(taskCounts).sort((a,b)=>b[1]-a[1]).slice(0,3);
                       const gameCounts = {}; structured.filter(e=>e.type==='game').forEach(e=>{ gameCounts[e.name]=(gameCounts[e.name]||0)+1; });
@@ -1313,15 +1317,18 @@ animation: gradientMove 8s ease infinite;
                     <div className="card" style={{ background: '#fffdeb', border: '2px solid #ffd700', borderRadius: '24px', textAlign: 'left' }}>
                       <h3 style={{ margin: '0 0 12px 0', fontSize: '20px', color: '#5d4037', fontFamily: 'Georgia, serif' }}>👑 Boutique magique</h3>
                       {rewards.map(r => {
-                        const canAfford = stars >= r.cost;
-                        const remaining = stars - r.cost;
                         const isPending = pendingRewards.some(p => p.id === r.id);
+                        // Une récompense déjà demandée ne se compte pas elle-même comme « réservée »
+                        const dispo = availableStars + (isPending ? r.cost : 0);
+                        const canAfford = dispo >= r.cost;
+                        const remaining = dispo - r.cost;
+                        const missing = r.cost - dispo;
                         return (
                           <div key={r.id} style={{ padding: '10px 0', borderBottom: '1px solid #ffefc0', cursor: 'pointer' }}
                             onClick={() => {
                               if (isPending) speak("Ta demande pour " + r.name + " est déjà envoyée, attends que maman la valide !");
                               else if (canAfford) speak(r.name + " ! Il te restera " + remaining + " étoile" + (remaining > 1 ? "s" : "") + " après cet achat.");
-                              else speak(r.name + " coûte " + r.cost + " étoiles. Il te faut encore " + (r.cost - stars) + " étoile" + ((r.cost - stars) > 1 ? "s" : "") + " pour ça.");
+                              else speak(r.name + " coûte " + r.cost + " étoiles. Il te faut encore " + missing + " étoile" + (missing > 1 ? "s" : "") + " pour ça.");
                             }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
                               <div style={{ flex: 1 }}>
@@ -1331,7 +1338,7 @@ animation: gradientMove 8s ease infinite;
                                 <div style={{ fontSize: '12px', marginTop: '3px', color: '#888' }}>
                                   {r.cost} ⭐ &nbsp;{canAfford
                                     ? <span>(= <strong style={{ color: '#2e7d32' }}>{remaining} étoile{remaining > 1 ? 's' : ''} restante{remaining > 1 ? 's' : ''}</strong>)</span>
-                                    : <span>(encore <strong style={{ color: '#e53935' }}>{r.cost - stars} étoile{(r.cost - stars) > 1 ? 's' : ''} nécessaire{(r.cost - stars) > 1 ? 's' : ''}</strong>)</span>
+                                    : <span>(encore <strong style={{ color: '#e53935' }}>{missing} étoile{missing > 1 ? 's' : ''} nécessaire{missing > 1 ? 's' : ''}</strong>)</span>
                                   }
                                 </div>
                               </div>
