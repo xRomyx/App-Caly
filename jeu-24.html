@@ -178,13 +178,7 @@
       100% { transform: scale(1) rotate(0); opacity: 1; }
     }
     .result-score { font-size: 16px; color: rgba(255,255,255,0.7); }
-    .btn-submit {
-      padding: 16px 36px; border: none; border-radius: 50px;
-      font-size: 18px; font-weight: 800; cursor: pointer;
-      background: linear-gradient(135deg, #22d3ee, #67e8f9);
-      color: #001220;
-      box-shadow: 0 4px 20px rgba(34,211,238,0.4);
-    }
+    .submit-msg { font-size: 15px; font-weight: 700; color: #fff; min-height: 20px; }
     .btn-home {
       padding: 12px 28px;
       border: 2px solid rgba(255,255,255,0.25);
@@ -221,7 +215,7 @@
     <div class="result-title" id="resultTitle"></div>
     <div class="result-stars" id="resultStars"></div>
     <div class="result-score" id="resultScore"></div>
-    <button class="btn-submit" onclick="submitStars()">Envoyer mes étoiles !</button>
+    <div class="submit-msg" id="submitMsg"></div>
     <button class="btn-home" onclick="goHome()">← Retour aux jeux</button>
   </div>
 
@@ -263,7 +257,7 @@
       { emoji: '🏰', word: 'CHÂTEAU',   syllables: ['CHÂ', 'TEAU'] },
       { emoji: '🎩', word: 'CHAPEAU',   syllables: ['CHA', 'PEAU'] },
       { emoji: '🤖', word: 'ROBOT',     syllables: ['RO', 'BOT'] },
-      { emoji: '☁️', word: 'NUAGE',     syllables: ['NU', 'AGE'] },
+      { emoji: '☁️', word: 'NUAGE',     syllables: ['NU', 'A', 'GE'] },
     ];
 
     const TOTAL_Q = 10;
@@ -442,11 +436,16 @@
       setTimeout(function() {
         speakText('Bravo ! Tu as gagné ' + stars + ' étoile' + (stars > 1 ? 's' : '') + ' !');
       }, 600);
+
+      // Envoi automatique, comme dans les autres jeux
+      submitStars();
     }
 
     function submitStars() {
       const stars = getStars(score);
-      if (stars === 0) { goHome(); return; }
+      const msg = document.getElementById('submitMsg');
+      if (stars === 0) { msg.textContent = 'Rejoue pour gagner des étoiles !'; return; }
+      msg.textContent = '⏳ Envoi en cours...';
       const ref = db.ref(DB_PATH + '/pendingGameStars');
       ref.once('value').then(function(snap) {
         let list = snap.val();
@@ -459,7 +458,11 @@
           date: new Date().toLocaleDateString('fr-FR')
         });
         return ref.set(list);
-      }).then(function() { goHome(); }).catch(function() { goHome(); });
+      }).then(function() {
+        msg.textContent = '✅ ' + stars + (stars > 1 ? ' étoiles' : ' étoile') + ' en attente de validation !';
+      }).catch(function() {
+        msg.textContent = '❌ Erreur d\'envoi. Dis-le à Papa !';
+      });
     }
 
     function goHome() {
