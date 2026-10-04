@@ -319,6 +319,7 @@
     // ── Pool de mots ──────────────────────────────────────────────────────────
     // syls = découpage affiché après la réponse
     // count = nombre de syllabes correct (1, 2, 3 ou 4)
+    // Syllabes ÉCRITES (décision 001) : le e muet final compte (GI • RA • FE)
     const POOL = {
       1: [
         { word: 'CHAT',   syls: 'CHAT',   emoji: '🐱' },
@@ -330,27 +331,25 @@
       2: [
         { word: 'MAISON',  syls: 'MAI • SON',  emoji: '🏠' },
         { word: 'LAPIN',   syls: 'LA • PIN',   emoji: '🐇' },
-        { word: 'NUAGE',   syls: 'NU • AGE',   emoji: '☁️' },
         { word: 'CANARD',  syls: 'CA • NARD',  emoji: '🦆' },
         { word: 'CHAPEAU', syls: 'CHA • PEAU', emoji: '👒' },
         { word: 'TORTUE',  syls: 'TOR • TUE',  emoji: '🐢' },
         { word: 'CRAYON',  syls: 'CRA • YON',  emoji: '✏️' },
-        { word: 'GIRAFE',  syls: 'GI • RAFE',  emoji: '🦒' },
       ],
       3: [
         { word: 'PAPILLON',  syls: 'PA • PIL • LON',   emoji: '🦋' },
         { word: 'ÉLÉPHANT',  syls: 'É • LÉ • PHANT',   emoji: '🐘' },
         { word: 'CHOCOLAT',  syls: 'CHO • CO • LAT',    emoji: '🍫' },
-        { word: 'DINOSAURE', syls: 'DI • NO • SAURE',   emoji: '🦕' },
-        { word: 'CROCODILE', syls: 'CRO • CO • DILE',   emoji: '🐊' },
         { word: 'ARAIGNÉE',  syls: 'A • RAI • GNÉE',    emoji: '🕷️' },
         { word: 'TOMATE',    syls: 'TO • MA • TE',      emoji: '🍅' },
+        { word: 'GIRAFE',    syls: 'GI • RA • FE',      emoji: '🦒' },
+        { word: 'NUAGE',     syls: 'NU • A • GE',       emoji: '☁️' },
       ],
       4: [
-        { word: 'HIPPOPOTAME', syls: 'HIP • PO • PO • TAME', emoji: '🦛' },
-        { word: 'HÉLICOPTÈRE', syls: 'HÉ • LI • COP • TÈRE', emoji: '🚁' },
-        { word: 'BIBLIOTHÈQUE',syls: 'BI • BLI • O • THÈQUE', emoji: '📚' },
-        { word: 'ANNIVERSAIRE', syls: 'AN • NI • VER • SAIRE', emoji: '🎂' },
+        { word: 'DINOSAURE',  syls: 'DI • NO • SAU • RE',   emoji: '🦕' },
+        { word: 'CROCODILE',  syls: 'CRO • CO • DI • LE',   emoji: '🐊' },
+        { word: 'TÉLÉPHONE',  syls: 'TÉ • LÉ • PHO • NE',   emoji: '📞' },
+        { word: 'COCCINELLE', syls: 'COC • CI • NEL • LE',  emoji: '🐞' },
       ],
     };
 
